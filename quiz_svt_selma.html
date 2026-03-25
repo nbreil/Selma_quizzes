@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quiz SVT – Respiration & Circulation sanguine</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #e0f7fa, #e8f5e9);
+      min-height: 100vh;
+      padding: 20px;
+      color: #333;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    header h1 {
+      font-size: 1.8em;
+      color: #00695c;
+    }
+    header p {
+      color: #555;
+      margin-top: 6px;
+    }
+    .progress-bar-wrap {
+      background: #c8e6c9;
+      border-radius: 10px;
+      height: 12px;
+      margin: 16px auto;
+      max-width: 500px;
+    }
+    .progress-bar {
+      background: #43a047;
+      height: 12px;
+      border-radius: 10px;
+      transition: width 0.4s;
+    }
+    #progress-label {
+      text-align: center;
+      color: #388e3c;
+      font-size: 0.9em;
+      margin-bottom: 24px;
+    }
+    .card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      max-width: 620px;
+      margin: 0 auto 24px auto;
+      padding: 28px;
+    }
+    .question-num {
+      font-size: 0.8em;
+      color: #00897b;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+    .question-text {
+      font-size: 1.15em;
+      font-weight: 600;
+      margin-bottom: 20px;
+      line-height: 1.4;
+    }
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .choice-btn {
+      background: #f1f8e9;
+      border: 2px solid #c5e1a5;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 1em;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.2s;
+    }
+    .choice-btn:hover:not(:disabled) {
+      background: #dcedc8;
+      border-color: #8bc34a;
+    }
+    .choice-btn.correct {
+      background: #c8e6c9;
+      border-color: #43a047;
+      color: #2e7d32;
+      font-weight: bold;
+    }
+    .choice-btn.wrong {
+      background: #ffcdd2;
+      border-color: #e53935;
+      color: #b71c1c;
+    }
+    .feedback {
+      margin-top: 16px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 0.95em;
+      display: none;
+      line-height: 1.5;
+    }
+    .feedback.show { display: block; }
+    .feedback.ok { background: #e8f5e9; color: #2e7d32; border-left: 4px solid #43a047; }
+    .feedback.nok { background: #fff3e0; color: #e65100; border-left: 4px solid #ff9800; }
+    .next-btn {
+      display: none;
+      margin-top: 18px;
+      background: #00897b;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 28px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .next-btn:hover { background: #00695c; }
+    .next-btn.show { display: inline-block; }
+    #result-card {
+      display: none;
+      text-align: center;
+    }
+    #result-card h2 { font-size: 2em; margin-bottom: 10px; color: #00695c; }
+    #result-card .score { font-size: 3em; font-weight: bold; color: #43a047; margin: 16px 0; }
+    #result-card p { color: #555; margin-bottom: 20px; font-size: 1.05em; }
+    #result-card .medal { font-size: 3em; }
+    .restart-btn {
+      background: #00897b;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 14px 32px;
+      font-size: 1em;
+      cursor: pointer;
+    }
+    .restart-btn:hover { background: #00695c; }
+    .tag {
+      display: inline-block;
+      background: #e0f2f1;
+      color: #00695c;
+      border-radius: 20px;
+      padding: 3px 12px;
+      font-size: 0.8em;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🌿 Quiz SVT – 6ème</h1>
+  <p>Respiration &amp; Circulation sanguine</p>
+</header>
+
+<div class="progress-bar-wrap">
+  <div class="progress-bar" id="progress-bar" style="width:0%"></div>
+</div>
+<div id="progress-label">Question 1 / 14</div>
+
+<div class="card" id="quiz-card">
+  <div class="question-num" id="q-num">Question 1</div>
+  <div class="tag" id="q-tag">Respiration</div>
+  <div class="question-text" id="q-text"></div>
+  <div class="choices" id="choices"></div>
+  <div class="feedback" id="feedback"></div>
+  <button class="next-btn" id="next-btn" onclick="nextQuestion()">Question suivante →</button>
+</div>
+
+<div class="card" id="result-card">
+  <div class="medal" id="medal">🏆</div>
+  <h2>Résultat final</h2>
+  <div class="score" id="score-display"></div>
+  <p id="score-msg"></p>
+  <button class="restart-btn" onclick="restart()">🔄 Recommencer</button>
+</div>
+
+<script>
+const questions = [
+  // --- RESPIRATION ---
+  {
+    tag: "🫁 Respiration",
+    q: "Par où l'air entre-t-il dans le corps ?",
+    choices: ["Par les poumons directement", "Par le nez et/ou la bouche", "Par la trachée", "Par les alvéoles"],
+    answer: 1,
+    explain: "L'air entre dans le corps par le nez et/ou la bouche, puis descend jusqu'aux poumons."
+  },
+  {
+    tag: "🫁 Respiration",
+    q: "Dans quel ordre l'air circule-t-il après être entré par le nez ?",
+    choices: [
+      "Bouche → poumons → trachée → alvéoles",
+      "Trachée → bronches → bronchioles → alvéoles",
+      "Alvéoles → bronches → trachée → poumons",
+      "Poumons → trachée → bronches"
+    ],
+    answer: 1,
+    explain: "L'air suit ce trajet : nez/bouche → trachée → bronches → bronchioles → alvéoles pulmonaires."
+  },
+  {
+    tag: "🫁 Respiration",
+    q: "Qu'est-ce que le diaphragme ?",
+    choices: [
+      "Un os de la cage thoracique",
+      "Un organe qui filtre l'air",
+      "Un muscle situé sous les poumons",
+      "Une veine qui transporte le sang"
+    ],
+    answer: 2,
+    explain: "Le diaphragme est un muscle situé sous les poumons. Il joue un rôle essentiel dans la respiration."
+  },
+  {
+    tag: "🫁 Respiration",
+    q: "Que se passe-t-il quand le diaphragme se contracte et s'abaisse ?",
+    choices: [
+      "Les poumons se dégonflent → c'est l'expiration",
+      "Les poumons se gonflent → c'est l'inspiration",
+      "Le cœur bat plus vite",
+      "L'air sort des poumons"
+    ],
+    answer: 1,
+    explain: "Quand le diaphragme se contracte (s'abaisse), les poumons se gonflent : c'est l'inspiration (l'air entre)."
+  },
+  {
+    tag: "🫁 Respiration",
+    q: "Qu'est-ce que l'expiration ?",
+    choices: [
+      "Le diaphragme se contracte, les poumons se gonflent",
+      "Le diaphragme se relâche, les poumons se dégonflent",
+      "Le sang arrive aux poumons",
+      "L'air entre dans la trachée"
+    ],
+    answer: 1,
+    explain: "Lors de l'expiration, le diaphragme se relâche et remonte → les poumons se dégonflent → l'air sort."
+  },
+  {
+    tag: "🫁 Respiration",
+    q: "Quel gaz l'organisme a-t-il besoin d'absorber pour fonctionner ?",
+    choices: ["Le dioxyde de carbone (CO₂)", "Le diazote (N₂)", "Le dioxygène (O₂)", "La vapeur d'eau"],
+    answer: 2,
+    explain: "L'organisme a besoin de dioxygène (O₂) pour que les organes fonctionnent."
+  },
+  {
+    tag: "🫁 Respiration",
+    q: "Quel déchet gazeux les organes produisent-ils et qui est rejeté lors de l'expiration ?",
+    choices: ["Le dioxygène (O₂)", "L'azote", "Le dioxyde de carbone (CO₂)", "La vapeur d'eau uniquement"],
+    answer: 2,
+    explain: "Les organes produisent du dioxyde de carbone (CO₂) comme déchet. Il est transporté par le sang jusqu'aux poumons puis rejeté lors de l'expiration."
+  },
+  {
+    tag: "🫁 Respiration",
+    q: "Pourquoi la respiration s'accélère-t-elle quand on fait du sport ?",
+    choices: [
+      "Parce que le cœur s'arrête de battre",
+      "Parce que les organes ont besoin de moins d'oxygène",
+      "Parce que les muscles travaillent plus et ont besoin de plus de dioxygène",
+      "Parce que le diaphragme se bloque"
+    ],
+    answer: 2,
+    explain: "Plus les organes (muscles) travaillent, plus ils ont besoin de dioxygène → la respiration s'accélère pour en apporter davantage."
+  },
+  // --- CIRCULATION SANGUINE ---
+  {
+    tag: "❤️ Circulation sanguine",
+    q: "Que transporte le sang dans l'organisme ?",
+    choices: [
+      "Uniquement le dioxygène",
+      "Le dioxygène, le dioxyde de carbone et les nutriments",
+      "Uniquement les nutriments",
+      "Le dioxygène et l'eau uniquement"
+    ],
+    answer: 1,
+    explain: "Le sang transporte le dioxygène (O₂), le dioxyde de carbone (CO₂) et les nutriments dans tout l'organisme."
+  },
+  {
+    tag: "❤️ Circulation sanguine",
+    q: "Qu'est-ce que le pouls ?",
+    choices: [
+      "Le bruit que font les poumons",
+      "Le mouvement du diaphragme",
+      "La sensation du sang qui circule dans les vaisseaux, au même rythme que les battements du cœur",
+      "La pression dans les veines uniquement"
+    ],
+    answer: 2,
+    explain: "Le pouls correspond aux battements du cœur que l'on peut sentir dans les vaisseaux sanguins. Pouls = rythme cardiaque."
+  },
+  {
+    tag: "❤️ Circulation sanguine",
+    q: "Dans quelle situation le rythme cardiaque s'accélère-t-il ?",
+    choices: [
+      "Quand on dort profondément",
+      "Quand on court ou quand on a peur",
+      "Quand on mange",
+      "Quand on respire lentement"
+    ],
+    answer: 1,
+    explain: "Le rythme cardiaque (et donc le pouls) s'accélère lorsqu'on court ou qu'on a peur, car les muscles ont besoin de plus d'O₂."
+  },
+  {
+    tag: "❤️ Circulation sanguine",
+    q: "Quelle est la différence entre une artère et une veine ?",
+    choices: [
+      "Les artères portent le sang des organes vers le cœur ; les veines portent le sang du cœur vers les organes",
+      "Les artères portent le sang du cœur vers les organes ; les veines portent le sang des organes vers le cœur",
+      "Les artères et les veines font exactement la même chose",
+      "Les artères vont aux poumons, les veines vont aux muscles"
+    ],
+    answer: 1,
+    explain: "Les artères portent le sang DU cœur VERS les organes. Les veines portent le sang DES organes VERS le cœur. Astuce : A comme Artère = A comme Aller (du cœur)."
+  },
+  {
+    tag: "❤️ Circulation sanguine",
+    q: "Qu'est-ce que la circulation générale ?",
+    choices: [
+      "Le trajet du sang entre le cœur et les poumons",
+      "Le trajet du sang entre le cœur et tous les autres organes du corps",
+      "Le trajet de l'air dans les poumons",
+      "La circulation du sang uniquement dans le cerveau"
+    ],
+    answer: 1,
+    explain: "La circulation générale = cœur → artères → organes du corps → veines → cœur. Elle alimente tous les organes (sauf les poumons)."
+  },
+  {
+    tag: "❤️ Circulation sanguine",
+    q: "À quoi ressemble le cœur dans son fonctionnement ?",
+    choices: [
+      "À un filtre",
+      "À une éponge",
+      "À une pompe",
+      "À un réservoir passif"
+    ],
+    answer: 2,
+    explain: "Le cœur est un muscle qui fonctionne comme une pompe : en se contractant, il envoie le sang dans les artères. Le sang revient ensuite au cœur par les veines."
+  }
+];
+
+let current = 0;
+let score = 0;
+let answered = false;
+
+function loadQuestion() {
+  answered = false;
+  const q = questions[current];
+  document.getElementById('q-num').textContent = `Question ${current + 1}`;
+  document.getElementById('q-tag').textContent = q.tag;
+  document.getElementById('q-text').textContent = q.q;
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback';
+  fb.textContent = '';
+  document.getElementById('next-btn').className = 'next-btn';
+
+  const choicesDiv = document.getElementById('choices');
+  choicesDiv.innerHTML = '';
+  q.choices.forEach((c, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.textContent = c;
+    btn.onclick = () => selectAnswer(i);
+    choicesDiv.appendChild(btn);
+  });
+
+  // Progress
+  const pct = (current / questions.length) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = `Question ${current + 1} / ${questions.length}`;
+}
+
+function selectAnswer(idx) {
+  if (answered) return;
+  answered = true;
+  const q = questions[current];
+  const btns = document.querySelectorAll('.choice-btn');
+  btns.forEach(b => b.disabled = true);
+  btns[idx].classList.add(idx === q.answer ? 'correct' : 'wrong');
+  if (idx !== q.answer) btns[q.answer].classList.add('correct');
+
+  const fb = document.getElementById('feedback');
+  if (idx === q.answer) {
+    score++;
+    fb.className = 'feedback ok show';
+    fb.innerHTML = '✅ <strong>Bonne réponse !</strong> ' + q.explain;
+  } else {
+    fb.className = 'feedback nok show';
+    fb.innerHTML = '❌ <strong>Pas tout à fait.</strong> ' + q.explain;
+  }
+  document.getElementById('next-btn').className = 'next-btn show';
+  if (current === questions.length - 1) {
+    document.getElementById('next-btn').textContent = 'Voir mon résultat 🎉';
+  }
+}
+
+function nextQuestion() {
+  current++;
+  if (current >= questions.length) {
+    showResult();
+  } else {
+    loadQuestion();
+  }
+}
+
+function showResult() {
+  document.getElementById('quiz-card').style.display = 'none';
+  document.getElementById('progress-bar-wrap') && (document.querySelector('.progress-bar-wrap').style.display = 'none');
+  document.getElementById('progress-label').style.display = 'none';
+  const rc = document.getElementById('result-card');
+  rc.style.display = 'block';
+  document.getElementById('score-display').textContent = score + ' / ' + questions.length;
+  const pct = score / questions.length;
+  let medal = '', msg = '';
+  if (pct >= 0.9) { medal = '🏆'; msg = 'Excellent ! Tu maîtrises très bien le cours. Bonne chance demain, tu vas cartonner ! 🎉'; }
+  else if (pct >= 0.7) { medal = '😊'; msg = 'Très bien ! Relis juste les points où tu as hésité et tu seras prête pour demain.'; }
+  else if (pct >= 0.5) { medal = '💪'; msg = 'Pas mal ! Quelques notions à revoir encore. Relis la fiche résumé ce soir !'; }
+  else { medal = '📚'; msg = 'Continue à travailler, tu y es presque ! Relis la fiche résumé et refais le quiz.'; }
+  document.getElementById('medal').textContent = medal;
+  document.getElementById('score-msg').textContent = msg;
+  document.getElementById('progress-bar').style.width = '100%';
+}
+
+function restart() {
+  current = 0; score = 0;
+  document.getElementById('result-card').style.display = 'none';
+  document.getElementById('quiz-card').style.display = 'block';
+  document.querySelector('.progress-bar-wrap').style.display = 'block';
+  document.getElementById('progress-label').style.display = 'block';
+  loadQuestion();
+}
+
+loadQuestion();
+</script>
+</body>
+</html>

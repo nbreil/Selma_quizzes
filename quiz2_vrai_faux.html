@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quiz 2 – Vrai ou Faux ? SVT 6ème</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #fce4ec, #e8eaf6);
+      min-height: 100vh;
+      padding: 20px;
+      color: #333;
+    }
+    header { text-align: center; margin-bottom: 24px; }
+    header h1 { font-size: 1.7em; color: #6a1b9a; }
+    header p { color: #666; margin-top: 6px; }
+    .progress-wrap { background: #e1bee7; border-radius: 10px; height: 12px; max-width: 500px; margin: 14px auto; }
+    .progress-bar { background: #8e24aa; height: 12px; border-radius: 10px; transition: width 0.4s; }
+    #prog-label { text-align: center; color: #7b1fa2; font-size: 0.9em; margin-bottom: 22px; }
+    .card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      max-width: 600px;
+      margin: 0 auto 24px auto;
+      padding: 28px;
+    }
+    .tag {
+      display: inline-block;
+      background: #f3e5f5;
+      color: #7b1fa2;
+      border-radius: 20px;
+      padding: 3px 12px;
+      font-size: 0.8em;
+      margin-bottom: 10px;
+    }
+    .q-num { font-size: 0.8em; color: #9c27b0; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+    .q-text { font-size: 1.15em; font-weight: 600; margin-bottom: 22px; line-height: 1.5; }
+    .vf-btns { display: flex; gap: 16px; justify-content: center; }
+    .vf-btn {
+      flex: 1;
+      max-width: 180px;
+      padding: 16px;
+      border-radius: 12px;
+      border: 2px solid;
+      font-size: 1.1em;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .vrai-btn { background: #e8f5e9; border-color: #66bb6a; color: #2e7d32; }
+    .faux-btn { background: #ffebee; border-color: #ef5350; color: #c62828; }
+    .vrai-btn:hover:not(:disabled) { background: #c8e6c9; }
+    .faux-btn:hover:not(:disabled) { background: #ffcdd2; }
+    .vrai-btn.selected-correct { background: #a5d6a7; border-color: #2e7d32; }
+    .faux-btn.selected-correct { background: #a5d6a7; border-color: #2e7d32; color: #1b5e20; }
+    .vrai-btn.selected-wrong { background: #ef9a9a; border-color: #c62828; }
+    .faux-btn.selected-wrong { background: #ef9a9a; border-color: #c62828; color: #7f0000; }
+    .correct-indicator { border-color: #2e7d32 !important; box-shadow: 0 0 0 3px #a5d6a7; }
+    .feedback {
+      margin-top: 18px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 0.95em;
+      display: none;
+      line-height: 1.5;
+    }
+    .feedback.show { display: block; }
+    .feedback.ok { background: #e8f5e9; color: #2e7d32; border-left: 4px solid #43a047; }
+    .feedback.nok { background: #fff3e0; color: #e65100; border-left: 4px solid #ff9800; }
+    .next-btn {
+      display: none;
+      margin-top: 16px;
+      background: #8e24aa;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 28px;
+      font-size: 1em;
+      cursor: pointer;
+    }
+    .next-btn:hover { background: #6a1b9a; }
+    .next-btn.show { display: inline-block; }
+    #result-card { display: none; text-align: center; }
+    #result-card h2 { font-size: 1.8em; color: #6a1b9a; margin-bottom: 8px; }
+    .score-big { font-size: 3em; font-weight: bold; color: #8e24aa; margin: 14px 0; }
+    #result-card p { color: #555; margin-bottom: 20px; font-size: 1.05em; }
+    .restart-btn { background: #8e24aa; color: white; border: none; border-radius: 10px; padding: 14px 32px; font-size: 1em; cursor: pointer; }
+    .restart-btn:hover { background: #6a1b9a; }
+  </style>
+</head>
+<body>
+<header>
+  <h1>✅ Quiz 2 – Vrai ou Faux ?</h1>
+  <p>SVT 6ème · Respiration &amp; Circulation sanguine</p>
+</header>
+<div class="progress-wrap"><div class="progress-bar" id="pbar" style="width:0%"></div></div>
+<div id="prog-label">Affirmation 1 / 12</div>
+
+<div class="card" id="quiz-card">
+  <div class="q-num" id="qnum">Affirmation 1</div>
+  <div class="tag" id="qtag"></div>
+  <div class="q-text" id="qtext"></div>
+  <div class="vf-btns">
+    <button class="vf-btn vrai-btn" id="btn-vrai" onclick="answer(true)">✔ VRAI</button>
+    <button class="vf-btn faux-btn" id="btn-faux" onclick="answer(false)">✘ FAUX</button>
+  </div>
+  <div class="feedback" id="feedback"></div>
+  <button class="next-btn" id="next-btn" onclick="next()">Suivant →</button>
+</div>
+
+<div class="card" id="result-card">
+  <div style="font-size:3em" id="medal">🏅</div>
+  <h2>Résultat</h2>
+  <div class="score-big" id="score-disp"></div>
+  <p id="score-msg"></p>
+  <button class="restart-btn" onclick="restart()">🔄 Recommencer</button>
+</div>
+
+<script>
+const qs = [
+  { tag:"🫁 Respiration", text:"L'air entre dans le corps directement par la trachée, sans passer par le nez ni la bouche.", answer:false, explain:"Faux ! L'air entre d'abord par le nez et/ou la bouche, puis passe par la trachée." },
+  { tag:"🫁 Respiration", text:"Les alvéoles pulmonaires sont entourées de nombreux vaisseaux sanguins.", answer:true, explain:"Vrai ! C'est là que se font les échanges entre l'air et le sang (O₂ entre dans le sang, CO₂ en sort)." },
+  { tag:"🫁 Respiration", text:"Lors de l'inspiration, le diaphragme se relâche et les poumons se dégonflent.", answer:false, explain:"Faux ! C'est lors de l'EXPIRATION que le diaphragme se relâche et que les poumons se dégonflent. À l'inspiration, le diaphragme se contracte et les poumons se gonflent." },
+  { tag:"🫁 Respiration", text:"L'organisme a besoin de dioxygène (O₂) pour fonctionner.", answer:true, explain:"Vrai ! Le dioxygène est indispensable au fonctionnement de tous les organes." },
+  { tag:"🫁 Respiration", text:"Le dioxyde de carbone (CO₂) est produit par les organes comme déchet gazeux.", answer:true, explain:"Vrai ! Les organes rejettent du CO₂ comme déchet. Ce CO₂ est transporté par le sang jusqu'aux poumons pour être expulsé lors de l'expiration." },
+  { tag:"🫁 Respiration", text:"Quand on fait du sport, la respiration ralentit car les muscles n'ont plus besoin d'oxygène.", answer:false, explain:"Faux ! C'est le contraire : les muscles ont besoin de PLUS de dioxygène, donc la respiration s'ACCÉLÈRE." },
+  { tag:"❤️ Circulation", text:"Les artères transportent le sang DU cœur VERS les organes.", answer:true, explain:"Vrai ! Astuce : A comme Artère = A comme Aller (depuis le cœur)." },
+  { tag:"❤️ Circulation", text:"Les veines transportent le sang du cœur vers les organes.", answer:false, explain:"Faux ! Les veines ramènent le sang DES organes VERS le cœur. C'est l'inverse des artères." },
+  { tag:"❤️ Circulation", text:"Le pouls correspond au rythme des battements du cœur.", answer:true, explain:"Vrai ! En sentant son pouls, on sent le sang poussé par chaque battement du cœur dans les vaisseaux." },
+  { tag:"❤️ Circulation", text:"Le cœur fonctionne comme un filtre qui nettoie le sang.", answer:false, explain:"Faux ! Le cœur fonctionne comme une POMPE : il propulse le sang dans les artères. C'est le rein qui filtre le sang." },
+  { tag:"❤️ Circulation", text:"Dans la circulation pulmonaire, le sang va du cœur vers les poumons par les artères pulmonaires.", answer:true, explain:"Vrai ! Circulation pulmonaire : cœur → artères pulmonaires → poumons → veines pulmonaires → cœur." },
+  { tag:"❤️ Circulation", text:"Le sang transporte à la fois le dioxygène, le dioxyde de carbone et les nutriments.", answer:true, explain:"Vrai ! Le sang a plusieurs rôles : apporter l'O₂ et les nutriments aux organes, et ramener le CO₂ aux poumons." }
+];
+
+let cur = 0, score = 0, answered = false;
+
+function load() {
+  answered = false;
+  const q = qs[cur];
+  document.getElementById('qnum').textContent = `Affirmation ${cur+1}`;
+  document.getElementById('qtag').textContent = q.tag;
+  document.getElementById('qtext').textContent = q.text;
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback'; fb.textContent = '';
+  document.getElementById('next-btn').className = 'next-btn';
+  document.getElementById('btn-vrai').className = 'vf-btn vrai-btn';
+  document.getElementById('btn-vrai').disabled = false;
+  document.getElementById('btn-faux').className = 'vf-btn faux-btn';
+  document.getElementById('btn-faux').disabled = false;
+  document.getElementById('pbar').style.width = (cur/qs.length*100)+'%';
+  document.getElementById('prog-label').textContent = `Affirmation ${cur+1} / ${qs.length}`;
+}
+
+function answer(val) {
+  if (answered) return;
+  answered = true;
+  const q = qs[cur];
+  const correct = val === q.answer;
+  if (correct) score++;
+  const btnV = document.getElementById('btn-vrai');
+  const btnF = document.getElementById('btn-faux');
+  btnV.disabled = true; btnF.disabled = true;
+  if (val === true) btnV.classList.add(correct ? 'selected-correct' : 'selected-wrong');
+  else btnF.classList.add(correct ? 'selected-correct' : 'selected-wrong');
+  if (!correct) {
+    if (q.answer === true) btnV.classList.add('correct-indicator');
+    else btnF.classList.add('correct-indicator');
+  }
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback show ' + (correct ? 'ok' : 'nok');
+  fb.innerHTML = (correct ? '✅ <strong>Bonne réponse !</strong> ' : '❌ <strong>Pas tout à fait.</strong> ') + q.explain;
+  const nb = document.getElementById('next-btn');
+  nb.className = 'next-btn show';
+  if (cur === qs.length-1) nb.textContent = 'Voir mon résultat 🎉';
+}
+
+function next() {
+  cur++;
+  if (cur >= qs.length) showResult();
+  else load();
+}
+
+function showResult() {
+  document.getElementById('quiz-card').style.display = 'none';
+  const rc = document.getElementById('result-card');
+  rc.style.display = 'block';
+  document.getElementById('score-disp').textContent = score + ' / ' + qs.length;
+  const pct = score/qs.length;
+  let medal='', msg='';
+  if (pct >= 0.9) { medal='🏆'; msg='Parfait ! Tu as tout compris. Bonne chance demain ! 🎉'; }
+  else if (pct >= 0.7) { medal='😊'; msg='Très bien ! Relis les affirmations que tu as ratées et tu seras au top.'; }
+  else if (pct >= 0.5) { medal='💪'; msg='Pas mal, continue ! Relis la fiche résumé ce soir.'; }
+  else { medal='📚'; msg='Courage ! Relis la fiche résumé et recommence le quiz.'; }
+  document.getElementById('medal').textContent = medal;
+  document.getElementById('score-msg').textContent = msg;
+  document.getElementById('pbar').style.width = '100%';
+  document.getElementById('prog-label').textContent = 'Terminé !';
+}
+
+function restart() {
+  cur=0; score=0;
+  document.getElementById('result-card').style.display='none';
+  document.getElementById('quiz-card').style.display='block';
+  load();
+}
+
+load();
+</script>
+</body>
+</html>

@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quiz 3 – Complète les phrases ! SVT 6ème</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #fff8e1, #e3f2fd);
+      min-height: 100vh;
+      padding: 20px;
+      color: #333;
+    }
+    header { text-align: center; margin-bottom: 24px; }
+    header h1 { font-size: 1.7em; color: #e65100; }
+    header p { color: #666; margin-top: 6px; }
+    .progress-wrap { background: #ffe0b2; border-radius: 10px; height: 12px; max-width: 500px; margin: 14px auto; }
+    .progress-bar { background: #fb8c00; height: 12px; border-radius: 10px; transition: width 0.4s; }
+    #prog-label { text-align: center; color: #e65100; font-size: 0.9em; margin-bottom: 22px; }
+    .card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      max-width: 640px;
+      margin: 0 auto 24px auto;
+      padding: 28px;
+    }
+    .tag {
+      display: inline-block;
+      background: #fff3e0;
+      color: #e65100;
+      border-radius: 20px;
+      padding: 3px 12px;
+      font-size: 0.8em;
+      margin-bottom: 10px;
+    }
+    .q-num { font-size: 0.8em; color: #ef6c00; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+    .sentence {
+      font-size: 1.1em;
+      line-height: 2;
+      margin-bottom: 18px;
+      font-weight: 500;
+    }
+    .blank {
+      display: inline-block;
+      min-width: 120px;
+      border-bottom: 3px solid #fb8c00;
+      margin: 0 6px;
+      padding: 0 4px;
+      color: #1565c0;
+      font-weight: bold;
+      font-style: italic;
+    }
+    .choices { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; }
+    .choice-btn {
+      background: #fff8e1;
+      border: 2px solid #ffe082;
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-size: 0.95em;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .choice-btn:hover:not(:disabled) { background: #ffe082; border-color: #ffc107; }
+    .choice-btn.correct { background: #c8e6c9; border-color: #43a047; color: #2e7d32; font-weight: bold; }
+    .choice-btn.wrong { background: #ffcdd2; border-color: #e53935; color: #b71c1c; }
+    .feedback {
+      margin-top: 14px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 0.95em;
+      display: none;
+      line-height: 1.5;
+    }
+    .feedback.show { display: block; }
+    .feedback.ok { background: #e8f5e9; color: #2e7d32; border-left: 4px solid #43a047; }
+    .feedback.nok { background: #fff3e0; color: #e65100; border-left: 4px solid #ff9800; }
+    .next-btn {
+      display: none;
+      margin-top: 16px;
+      background: #fb8c00;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 28px;
+      font-size: 1em;
+      cursor: pointer;
+    }
+    .next-btn:hover { background: #e65100; }
+    .next-btn.show { display: inline-block; }
+    #result-card { display: none; text-align: center; }
+    #result-card h2 { font-size: 1.8em; color: #e65100; margin-bottom: 8px; }
+    .score-big { font-size: 3em; font-weight: bold; color: #fb8c00; margin: 14px 0; }
+    #result-card p { color: #555; margin-bottom: 20px; font-size: 1.05em; }
+    .restart-btn { background: #fb8c00; color: white; border: none; border-radius: 10px; padding: 14px 32px; font-size: 1em; cursor: pointer; }
+    .restart-btn:hover { background: #e65100; }
+  </style>
+</head>
+<body>
+<header>
+  <h1>✏️ Quiz 3 – Complète les phrases !</h1>
+  <p>SVT 6ème · Respiration &amp; Circulation sanguine</p>
+</header>
+<div class="progress-wrap"><div class="progress-bar" id="pbar" style="width:0%"></div></div>
+<div id="prog-label">Question 1 / 12</div>
+
+<div class="card" id="quiz-card">
+  <div class="q-num" id="qnum">Question 1</div>
+  <div class="tag" id="qtag"></div>
+  <div class="sentence" id="sentence"></div>
+  <div class="choices" id="choices"></div>
+  <div class="feedback" id="feedback"></div>
+  <button class="next-btn" id="next-btn" onclick="next()">Suivant →</button>
+</div>
+
+<div class="card" id="result-card">
+  <div style="font-size:3em" id="medal">🏅</div>
+  <h2>Résultat final</h2>
+  <div class="score-big" id="score-disp"></div>
+  <p id="score-msg"></p>
+  <button class="restart-btn" onclick="restart()">🔄 Recommencer</button>
+</div>
+
+<script>
+// sentence uses ___ as placeholder for the blank
+const qs = [
+  {
+    tag: "🫁 Respiration",
+    sentence: "L'air passe par le nez, puis par la ___, ensuite par les bronches et les bronchioles, jusqu'aux ___.",
+    blanks: ["trachée", "alvéoles pulmonaires"],
+    choices: ["trachée", "alvéoles pulmonaires", "artères", "veines", "diaphragme", "estomac"],
+    explain: "Trajet complet : nez/bouche → trachée → bronches → bronchioles → alvéoles pulmonaires."
+  },
+  {
+    tag: "🫁 Respiration",
+    sentence: "Le ___ est un muscle situé sous les poumons. Quand il se contracte, les poumons se ___.",
+    blanks: ["diaphragme", "gonflent"],
+    choices: ["diaphragme", "gonflent", "dégonflent", "cœur", "poumon", "rétrécissent"],
+    explain: "Quand le diaphragme se contracte (s'abaisse), les poumons se gonflent : c'est l'inspiration."
+  },
+  {
+    tag: "🫁 Respiration",
+    sentence: "Lors de l'___, le diaphragme se relâche et les poumons se dégonflent : l'air ___.",
+    blanks: ["expiration", "sort"],
+    choices: ["expiration", "sort", "inspiration", "entre", "circulation", "reste"],
+    explain: "Expiration = diaphragme se relâche → poumons se dégonflent → l'air sort."
+  },
+  {
+    tag: "🫁 Respiration",
+    sentence: "L'organisme a besoin de ___ pour fonctionner. Les organes rejettent comme déchet du ___.",
+    blanks: ["dioxygène (O₂)", "dioxyde de carbone (CO₂)"],
+    choices: ["dioxygène (O₂)", "dioxyde de carbone (CO₂)", "diazote", "vapeur d'eau", "nutriments", "glucose"],
+    explain: "O₂ est indispensable à la vie des cellules. Le CO₂ est leur déchet gazeux, rejeté lors de l'expiration."
+  },
+  {
+    tag: "🫁 Respiration",
+    sentence: "Plus les organes ___, plus ils ont besoin de dioxygène, et plus la respiration ___.",
+    blanks: ["travaillent", "s'accélère"],
+    choices: ["travaillent", "s'accélère", "se reposent", "ralentit", "grossissent", "disparaît"],
+    explain: "C'est pourquoi on respire plus vite quand on fait du sport : les muscles ont besoin de plus d'O₂."
+  },
+  {
+    tag: "❤️ Circulation",
+    sentence: "Le sang transporte le ___, le dioxyde de carbone et les ___ dans tout l'organisme.",
+    blanks: ["dioxygène", "nutriments"],
+    choices: ["dioxygène", "nutriments", "diazote", "hormones", "minéraux", "sucre uniquement"],
+    explain: "Le sang a trois grandes fonctions de transport : O₂, CO₂ et nutriments."
+  },
+  {
+    tag: "❤️ Circulation",
+    sentence: "Le ___ est un muscle qui fonctionne comme une ___. En se contractant, il envoie le sang dans les artères.",
+    blanks: ["cœur", "pompe"],
+    choices: ["cœur", "pompe", "poumon", "filtre", "rein", "éponge"],
+    explain: "Le cœur = une pompe musculaire. Il propulse le sang à chaque battement."
+  },
+  {
+    tag: "❤️ Circulation",
+    sentence: "Le pouls a le même rythme que les ___ du cœur. Il s'___ quand on court ou quand on a peur.",
+    blanks: ["battements", "accélère"],
+    choices: ["battements", "accélère", "respirations", "ralentit", "contractions pulmonaires", "bloque"],
+    explain: "Le pouls = battements du cœur perçus dans les vaisseaux. L'effort ou le stress l'accélèrent."
+  },
+  {
+    tag: "❤️ Circulation",
+    sentence: "Les ___ portent le sang du cœur vers les organes. Les ___ ramènent le sang des organes vers le cœur.",
+    blanks: ["artères", "veines"],
+    choices: ["artères", "veines", "alvéoles", "bronches", "trachées", "nerfs"],
+    explain: "Artères = départ du cœur. Veines = retour au cœur. Astuce : Artère = Aller, Veine = reVenir."
+  },
+  {
+    tag: "❤️ Circulation",
+    sentence: "Dans la circulation ___, le sang va du cœur vers tous les organes du corps puis revient au cœur.",
+    blanks: ["générale"],
+    choices: ["générale", "pulmonaire", "veineuse", "artérielle", "rapide", "lente"],
+    explain: "Circulation générale = cœur → artères → organes → veines → cœur."
+  },
+  {
+    tag: "❤️ Circulation",
+    sentence: "Dans la circulation ___, le sang part du cœur vers les poumons par les artères ___, puis revient au cœur par les veines pulmonaires.",
+    blanks: ["pulmonaire", "pulmonaires"],
+    choices: ["pulmonaire", "pulmonaires", "générale", "cardiaques", "bronchiques", "nasales"],
+    explain: "Circulation pulmonaire : cœur → artères pulmonaires → poumons → veines pulmonaires → cœur."
+  },
+  {
+    tag: "❤️ Circulation",
+    sentence: "Les alvéoles pulmonaires sont entourées de nombreux ___. C'est là que le sang s'enrichit en ___ et se débarrasse du CO₂.",
+    blanks: ["vaisseaux sanguins", "dioxygène"],
+    choices: ["vaisseaux sanguins", "dioxygène", "nerfs", "dioxyde de carbone", "muscles", "os"],
+    explain: "Les échanges gazeux se font au niveau des alvéoles : O₂ passe dans le sang, CO₂ en sort."
+  }
+];
+
+let cur = 0, score = 0, answered = false;
+let blanksFilled = [];
+
+function load() {
+  answered = false;
+  const q = qs[cur];
+  blanksFilled = new Array(q.blanks.length).fill('');
+
+  document.getElementById('qnum').textContent = `Question ${cur+1}`;
+  document.getElementById('qtag').textContent = q.tag;
+
+  // Build sentence with blanks
+  let parts = q.sentence.split('___');
+  let html = '';
+  parts.forEach((part, i) => {
+    html += part;
+    if (i < q.blanks.length) {
+      html += `<span class="blank" id="blank-${i}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>`;
+    }
+  });
+  document.getElementById('sentence').innerHTML = html;
+
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback'; fb.textContent = '';
+  document.getElementById('next-btn').className = 'next-btn';
+
+  // Shuffle choices
+  const shuffled = [...q.choices].sort(() => Math.random() - 0.5);
+  const choicesDiv = document.getElementById('choices');
+  choicesDiv.innerHTML = '';
+  shuffled.forEach(c => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.textContent = c;
+    btn.dataset.value = c;
+    btn.onclick = () => pickAnswer(btn, c, q);
+    choicesDiv.appendChild(btn);
+  });
+
+  document.getElementById('pbar').style.width = (cur/qs.length*100)+'%';
+  document.getElementById('prog-label').textContent = `Question ${cur+1} / ${qs.length}`;
+}
+
+let nextBlank = 0;
+
+function pickAnswer(btn, val, q) {
+  if (answered) return;
+  // Find first unfilled blank
+  let idx = blanksFilled.indexOf('');
+  if (idx === -1) return;
+
+  blanksFilled[idx] = val;
+  document.getElementById(`blank-${idx}`).textContent = val;
+  btn.disabled = true;
+  btn.style.opacity = '0.5';
+
+  // Check if all blanks filled
+  if (!blanksFilled.includes('')) {
+    checkAll(q);
+  }
+}
+
+function checkAll(q) {
+  answered = true;
+  let allCorrect = true;
+  q.blanks.forEach((correct, i) => {
+    const filled = blanksFilled[i];
+    const isCorrect = filled.toLowerCase() === correct.toLowerCase();
+    if (!isCorrect) allCorrect = false;
+    document.getElementById(`blank-${i}`).style.color = isCorrect ? '#2e7d32' : '#c62828';
+    // Highlight the buttons
+    const btns = document.querySelectorAll('.choice-btn');
+    btns.forEach(btn => {
+      if (btn.dataset.value.toLowerCase() === correct.toLowerCase()) {
+        btn.classList.add('correct');
+      } else if (btn.dataset.value.toLowerCase() === filled.toLowerCase() && !isCorrect) {
+        btn.classList.add('wrong');
+      }
+    });
+  });
+
+  if (allCorrect) score++;
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback show ' + (allCorrect ? 'ok' : 'nok');
+  fb.innerHTML = (allCorrect ? '✅ <strong>Parfait !</strong> ' : '❌ <strong>Pas tout à fait.</strong> ') + q.explain;
+  const nb = document.getElementById('next-btn');
+  nb.className = 'next-btn show';
+  if (cur === qs.length-1) nb.textContent = 'Voir mon résultat 🎉';
+}
+
+function next() {
+  cur++;
+  if (cur >= qs.length) showResult();
+  else load();
+}
+
+function showResult() {
+  document.getElementById('quiz-card').style.display = 'none';
+  const rc = document.getElementById('result-card');
+  rc.style.display = 'block';
+  document.getElementById('score-disp').textContent = score + ' / ' + qs.length;
+  const pct = score/qs.length;
+  let medal='', msg='';
+  if (pct >= 0.9) { medal='🏆'; msg='Excellent ! Tu connais les mots clés par cœur. Bravo ! 🎉'; }
+  else if (pct >= 0.7) { medal='😊'; msg='Très bien ! Relis juste les phrases où tu as hésité.'; }
+  else if (pct >= 0.5) { medal='💪'; msg='Pas mal ! Relis la fiche résumé ce soir et recommence.'; }
+  else { medal='📚'; msg='Continue à travailler ! Relis le cours et refais ce quiz.'; }
+  document.getElementById('medal').textContent = medal;
+  document.getElementById('score-msg').textContent = msg;
+  document.getElementById('pbar').style.width = '100%';
+}
+
+function restart() {
+  cur=0; score=0;
+  document.getElementById('result-card').style.display='none';
+  document.getElementById('quiz-card').style.display='block';
+  load();
+}
+
+load();
+</script>
+</body>
+</html>
