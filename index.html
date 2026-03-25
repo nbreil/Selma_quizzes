@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Website</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f8f8f6;
+      color: #1a1a1a;
+      min-height: 100vh;
+    }
+
+    .shell {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem;
+    }
+
+    header {
+      margin-bottom: 2.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid #e5e5e2;
+    }
+
+    header h1 {
+      font-size: 26px;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+
+    header p {
+      font-size: 15px;
+      color: #666;
+    }
+
+    .search-row {
+      margin-bottom: 1.2rem;
+    }
+
+    .search-row input {
+      width: 100%;
+      font-size: 15px;
+      padding: 10px 14px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      background: #fff;
+      color: #1a1a1a;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .search-row input:focus {
+      border-color: #aaa;
+    }
+
+    .count {
+      font-size: 13px;
+      color: #999;
+      margin-bottom: 1rem;
+    }
+
+    .page-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      background: #fff;
+      border: 1px solid #e8e8e5;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .page-card:hover {
+      border-color: #bbb;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .page-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      background: #eef4fd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .page-icon svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .page-name {
+      font-size: 15px;
+      font-weight: 500;
+      color: #1a1a1a;
+    }
+
+    .page-path {
+      font-size: 12px;
+      color: #999;
+      margin-top: 2px;
+    }
+
+    .page-arrow {
+      margin-left: auto;
+      color: #ccc;
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .status {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: #999;
+      font-size: 14px;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border: 2px solid #ddd;
+      border-top-color: #888;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (prefers-color-scheme: dark) {
+      body { background: #1a1a1a; color: #e8e8e5; }
+      header { border-bottom-color: #333; }
+      header p { color: #999; }
+      .search-row input { background: #252525; border-color: #383838; color: #e8e8e5; }
+      .search-row input:focus { border-color: #555; }
+      .page-card { background: #222; border-color: #333; }
+      .page-card:hover { border-color: #555; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+      .page-icon { background: #1b2d45; }
+      .page-name { color: #e8e8e5; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <h1>My website</h1>
+      <p>Browse all available pages below</p>
+    </header>
+
+    <div class="search-row">
+      <input type="text" id="search" placeholder="Search pages..." />
+    </div>
+
+    <div class="count" id="count"></div>
+    <div id="list"><div class="status"><span class="spinner"></span>Loading pages…</div></div>
+  </div>
+
+  <script>
+    // ─── CONFIGURATION ──────────────────────────────────────────
+    // Replace with your GitHub username and repository name
+    const GITHUB_USER = "nbreil";
+    const GITHUB_REPO = "Selma_quizzes";
+    // ────────────────────────────────────────────────────────────
+
+    const API = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/`;
+
+    function toLabel(filename) {
+      return filename
+        .replace(/\.html$/i, "")
+        .replace(/[-_]/g, " ")
+        .replace(/\b\w/g, c => c.toUpperCase());
+    }
+
+    function renderList(pages) {
+      const list = document.getElementById("list");
+      const count = document.getElementById("count");
+
+      count.textContent = pages.length + " page" + (pages.length !== 1 ? "s" : "");
+
+      if (!pages.length) {
+        list.innerHTML = '<div class="status">No pages found</div>';
+        return;
+      }
+
+      list.innerHTML = pages.map(p => `
+        <a class="page-card" href="${p.name}">
+          <div class="page-icon">
+            <svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="2.5" y="1.5" width="11" height="14" rx="2" stroke="#3b7dd8" stroke-width="1.3" fill="none"/>
+              <line x1="5" y1="6" x2="11" y2="6" stroke="#3b7dd8" stroke-width="1"/>
+              <line x1="5" y1="8.5" x2="11" y2="8.5" stroke="#3b7dd8" stroke-width="1"/>
+              <line x1="5" y1="11" x2="8.5" y2="11" stroke="#3b7dd8" stroke-width="1"/>
+            </svg>
+          </div>
+          <div>
+            <div class="page-name">${toLabel(p.name)}</div>
+            <div class="page-path">${p.name}</div>
+          </div>
+          <span class="page-arrow">›</span>
+        </a>
+      `).join("");
+    }
+
+    let allPages = [];
+
+    async function loadPages() {
+      try {
+        const res = await fetch(API);
+        if (!res.ok) throw new Error("API error " + res.status);
+        const files = await res.json();
+
+        allPages = files
+          .filter(f => f.type === "file" && f.name.endsWith(".html") && f.name !== "index.html")
+          .sort((a, b) => a.name.localeCompare(b.name));
+
+        renderList(allPages);
+      } catch (e) {
+        document.getElementById("list").innerHTML =
+          '<div class="status">Could not load pages. Check your GITHUB_USER and GITHUB_REPO settings.</div>';
+        console.error(e);
+      }
+    }
+
+    document.getElementById("search").addEventListener("input", e => {
+      const q = e.target.value.toLowerCase();
+      renderList(allPages.filter(p => p.name.toLowerCase().includes(q)));
+    });
+
+    loadPages();
+  </script>
+</body>
+</html>
