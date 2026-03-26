@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz – Les Muscles du Corps</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --pink-deep:  #e8628a;
+      --pink-mid:   #f093b0;
+      --pink-light: #fcd9e7;
+      --pink-blush: #fff0f5;
+      --rose:       #f7c5d5;
+      --text-dark:  #3d1a2b;
+      --text-mid:   #7a4460;
+      --text-soft:  #c48aa8;
+      --white:      #fffbfc;
+      --correct:    #5cb85c;
+      --wrong:      #e8628a;
+      --correct-bg: #edfaf0;
+      --wrong-bg:   #ffeef4;
+    }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--pink-blush);
+      color: var(--text-dark);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem 5rem;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 55% 45% at 10% 15%, rgba(248,180,210,0.4) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 60% at 90% 80%, rgba(244,155,195,0.3) 0%, transparent 55%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .petal {
+      position: fixed;
+      font-size: 18px;
+      opacity: 0.2;
+      pointer-events: none;
+      animation: floatPetal linear infinite;
+      z-index: 0;
+    }
+    @keyframes floatPetal {
+      0%   { transform: translateY(-30px) rotate(0deg); opacity:0; }
+      10%  { opacity: 0.2; }
+      90%  { opacity: 0.15; }
+      100% { transform: translateY(110vh) rotate(360deg); opacity:0; }
+    }
+
+    /* ── Card wrapper ── */
+    .card {
+      position: relative;
+      z-index: 1;
+      background: var(--white);
+      border: 1.5px solid var(--rose);
+      border-radius: 24px;
+      padding: 2rem 2rem 2.5rem;
+      max-width: 680px;
+      width: 100%;
+      box-shadow: 0 8px 32px rgba(232,98,138,0.1);
+    }
+
+    /* ── Header ── */
+    .quiz-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .quiz-header .flowers { font-size: 26px; letter-spacing: 8px; display:block; margin-bottom:4px; animation: sway 4s ease-in-out infinite; }
+    @keyframes sway { 0%,100%{transform:rotate(-2deg)} 50%{transform:rotate(2deg)} }
+    .quiz-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 32px;
+      color: var(--pink-deep);
+      line-height: 1.2;
+    }
+    .quiz-header h1 em { font-style:italic; font-weight:400; color:var(--text-mid); }
+    .quiz-header p { margin-top:6px; font-size:14px; color:var(--text-soft); font-weight:600; }
+
+    /* ── Progress ── */
+    .progress-wrap { margin-bottom: 1.6rem; }
+    .progress-info { display:flex; justify-content:space-between; font-size:13px; color:var(--text-soft); font-weight:700; margin-bottom:6px; }
+    .progress-bar { height: 8px; background: var(--pink-light); border-radius: 99px; overflow:hidden; }
+    .progress-fill { height:100%; background: linear-gradient(90deg, var(--pink-deep), var(--pink-mid)); border-radius:99px; transition: width 0.4s ease; }
+
+    /* ── Question ── */
+    .question-num { font-size:12px; font-weight:800; color:var(--pink-mid); letter-spacing:1px; text-transform:uppercase; margin-bottom:8px; }
+    .question-text { font-size:18px; font-weight:700; color:var(--text-dark); line-height:1.4; margin-bottom:1.4rem; min-height: 54px; }
+
+    /* ── Options ── */
+    .options { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:1.4rem; }
+
+    .option-btn {
+      font-family:'Nunito',sans-serif;
+      font-size:15px;
+      font-weight:600;
+      padding:13px 16px;
+      border: 1.5px solid var(--rose);
+      border-radius: 14px;
+      background: var(--white);
+      color: var(--text-dark);
+      cursor: pointer;
+      text-align:left;
+      transition: border-color 0.15s, background 0.15s, transform 0.1s, box-shadow 0.15s;
+      display:flex; align-items:center; gap:10px;
+    }
+    .option-btn .opt-letter {
+      width:26px; height:26px; border-radius:50%;
+      background: var(--pink-light);
+      color: var(--pink-deep);
+      font-size:13px; font-weight:800;
+      display:flex; align-items:center; justify-content:center;
+      flex-shrink:0;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .option-btn:hover:not(:disabled) {
+      border-color: var(--pink-mid);
+      background: #fff5f8;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 14px rgba(232,98,138,0.13);
+    }
+    .option-btn:hover:not(:disabled) .opt-letter {
+      background: var(--pink-deep);
+      color: #fff;
+    }
+
+    .option-btn.correct {
+      border-color: var(--correct);
+      background: var(--correct-bg);
+      color: #2d6a30;
+    }
+    .option-btn.correct .opt-letter { background: var(--correct); color:#fff; }
+
+    .option-btn.wrong {
+      border-color: var(--wrong);
+      background: var(--wrong-bg);
+      color: #8b1a3a;
+    }
+    .option-btn.wrong .opt-letter { background: var(--wrong); color:#fff; }
+
+    .option-btn:disabled { cursor:default; transform:none; box-shadow:none; }
+
+    /* ── Feedback ── */
+    .feedback {
+      min-height: 38px;
+      font-size:14px;
+      font-weight:700;
+      padding: 10px 16px;
+      border-radius: 12px;
+      margin-bottom:1.2rem;
+      display:none;
+      align-items:center;
+      gap:8px;
+    }
+    .feedback.show { display:flex; }
+    .feedback.correct-fb { background:var(--correct-bg); color:#2d6a30; border:1px solid #b6e2bb; }
+    .feedback.wrong-fb   { background:var(--wrong-bg);   color:#8b1a3a; border:1px solid var(--rose); }
+
+    /* ── Next btn ── */
+    .next-btn {
+      font-family:'Nunito',sans-serif;
+      font-size:15px;
+      font-weight:800;
+      padding:12px 28px;
+      border:none;
+      border-radius:50px;
+      background: linear-gradient(135deg, var(--pink-deep), var(--pink-mid));
+      color:#fff;
+      cursor:pointer;
+      display:block;
+      margin-left:auto;
+      box-shadow: 0 4px 16px rgba(232,98,138,0.3);
+      transition: transform 0.15s, box-shadow 0.15s;
+      display:none;
+    }
+    .next-btn:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(232,98,138,0.4); }
+    .next-btn.show { display:block; }
+
+    /* ── Score screen ── */
+    .score-screen { display:none; text-align:center; }
+    .score-screen.show { display:block; }
+    .score-screen .trophy { font-size:64px; margin-bottom:10px; display:block; }
+    .score-screen h2 {
+      font-family:'Playfair Display',serif;
+      font-size:28px; color:var(--pink-deep); margin-bottom:8px;
+    }
+    .score-screen .score-num {
+      font-size:52px; font-weight:800; color:var(--pink-deep); line-height:1;
+      margin:10px 0 4px;
+    }
+    .score-screen .score-label { font-size:14px; color:var(--text-soft); font-weight:600; margin-bottom:1.4rem; }
+    .score-screen .msg { font-size:16px; color:var(--text-mid); font-weight:600; margin-bottom:1.8rem; }
+
+    .restart-btn {
+      font-family:'Nunito',sans-serif;
+      font-size:15px; font-weight:800;
+      padding:13px 36px;
+      border:none; border-radius:50px;
+      background: linear-gradient(135deg, var(--pink-deep), var(--pink-mid));
+      color:#fff; cursor:pointer;
+      box-shadow: 0 4px 16px rgba(232,98,138,0.3);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .restart-btn:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(232,98,138,0.4); }
+
+    .quiz-body { }
+    @media(max-width:500px){
+      .options { grid-template-columns:1fr; }
+      .card { padding:1.4rem 1.2rem 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <span class="petal" style="left:5%;  animation-duration:13s; animation-delay:0s;">🌸</span>
+  <span class="petal" style="left:20%; animation-duration:16s; animation-delay:4s;">🌺</span>
+  <span class="petal" style="left:45%; animation-duration:11s; animation-delay:2s;">🌸</span>
+  <span class="petal" style="left:65%; animation-duration:14s; animation-delay:6s;">🌷</span>
+  <span class="petal" style="left:85%; animation-duration:12s; animation-delay:1s;">🌸</span>
+
+  <div class="card">
+    <div class="quiz-header">
+      <span class="flowers">🌸 🌷 🌸</span>
+      <h1>Les Muscles<br><em>du Corps</em></h1>
+      <p>Quiz de Selma ✨</p>
+    </div>
+
+    <!-- Quiz body -->
+    <div class="quiz-body" id="quizBody">
+      <div class="progress-wrap">
+        <div class="progress-info">
+          <span id="progressText">Question 1 / 14</span>
+          <span id="scoreText">Score : 0</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+      </div>
+
+      <div class="question-num" id="questionNum">QUESTION 1</div>
+      <div class="question-text" id="questionText"></div>
+
+      <div class="options" id="options"></div>
+
+      <div class="feedback" id="feedback"></div>
+
+      <button class="next-btn" id="nextBtn">Suivant →</button>
+    </div>
+
+    <!-- Score screen -->
+    <div class="score-screen" id="scoreScreen">
+      <span class="trophy" id="trophy">🏆</span>
+      <h2>Quiz terminé !</h2>
+      <div class="score-num" id="finalScore"></div>
+      <div class="score-label">bonne(s) réponse(s) sur 14</div>
+      <div class="msg" id="finalMsg"></div>
+      <button class="restart-btn" onclick="startQuiz()">🌸 Recommencer</button>
+    </div>
+  </div>
+
+  <script>
+    const ALL_QUESTIONS = [
+      {
+        q: "Quel muscle se trouve au niveau des épaules et permet de lever le bras sur le côté ?",
+        opts: ["Trapèzes", "Deltoïdes", "Biceps", "Pectoraux"],
+        a: 1
+      },
+      {
+        q: "Quel muscle recouvre la poitrine et intervient dans les mouvements du bras vers l'avant ?",
+        opts: ["Dorsaux", "Abdomen", "Pectoraux", "Triceps"],
+        a: 2
+      },
+      {
+        q: "Quel muscle se situe à l'arrière du bras et permet d'étendre le coude ?",
+        opts: ["Biceps", "Triceps", "Avant-bras", "Deltoïdes"],
+        a: 1
+      },
+      {
+        q: "Quel muscle est responsable de la flexion du coude et se trouve à l'avant du bras ?",
+        opts: ["Triceps", "Dorsaux", "Biceps", "Lombaires"],
+        a: 2
+      },
+      {
+        q: "Comment appelle-t-on les muscles situés entre l'épaule et le cou, visibles de dos ?",
+        opts: ["Pectoraux", "Dorsaux", "Trapèzes", "Deltoïdes"],
+        a: 2
+      },
+      {
+        q: "Quels muscles forment le 'dos large' et permettent de ramener les bras le long du corps ?",
+        opts: ["Trapèzes", "Lombaires", "Dorsaux", "Fessiers"],
+        a: 2
+      },
+      {
+        q: "Quels muscles se trouvent dans la région abdominale et protègent les organes internes ?",
+        opts: ["Lombaires", "Fessiers", "Adducteurs", "Abdomen"],
+        a: 3
+      },
+      {
+        q: "Quels muscles sont situés dans le bas du dos, de part et d'autre de la colonne vertébrale ?",
+        opts: ["Abdomen", "Lombaires", "Fessiers", "Trapèzes"],
+        a: 1
+      },
+      {
+        q: "Quel muscle forme la fesse et intervient dans l'extension de la hanche ?",
+        opts: ["Quadriceps", "Ischios-jambiers", "Fessiers", "Adducteurs"],
+        a: 2
+      },
+      {
+        q: "Quel groupe musculaire se trouve à l'avant de la cuisse et permet d'étendre le genou ?",
+        opts: ["Ischios-jambiers", "Adducteurs", "Mollets", "Quadriceps"],
+        a: 3
+      },
+      {
+        q: "Quel groupe musculaire se trouve à l'arrière de la cuisse et permet de fléchir le genou ?",
+        opts: ["Quadriceps", "Ischios-jambiers", "Mollets", "Fessiers"],
+        a: 1
+      },
+      {
+        q: "Quels muscles se situent à l'intérieur de la cuisse et permettent de rapprocher les jambes ?",
+        opts: ["Ischios-jambiers", "Adducteurs", "Fessiers", "Lombaires"],
+        a: 1
+      },
+      {
+        q: "Quels muscles se trouvent dans la partie inférieure de la jambe, à l'arrière, et permettent de se mettre sur la pointe des pieds ?",
+        opts: ["Quadriceps", "Adducteurs", "Ischios-jambiers", "Mollets"],
+        a: 3
+      },
+      {
+        q: "Quels muscles se trouvent entre le poignet et le coude ?",
+        opts: ["Biceps", "Avant-bras", "Triceps", "Deltoïdes"],
+        a: 1
+      },
+    ];
+
+    const LETTERS = ["A", "B", "C", "D"];
+
+    let questions = [];
+    let current = 0;
+    let score = 0;
+    let answered = false;
+
+    function shuffle(arr) {
+      return [...arr].sort(() => Math.random() - 0.5);
+    }
+
+    function startQuiz() {
+      questions = shuffle(ALL_QUESTIONS);
+      current = 0;
+      score = 0;
+      answered = false;
+      document.getElementById('scoreScreen').classList.remove('show');
+      document.getElementById('quizBody').style.display = '';
+      renderQuestion();
+    }
+
+    function renderQuestion() {
+      answered = false;
+      const q = questions[current];
+      const total = questions.length;
+
+      document.getElementById('progressText').textContent = `Question ${current+1} / ${total}`;
+      document.getElementById('scoreText').textContent = `Score : ${score}`;
+      document.getElementById('progressFill').style.width = `${(current / total) * 100}%`;
+      document.getElementById('questionNum').textContent = `QUESTION ${current+1}`;
+      document.getElementById('questionText').textContent = q.q;
+
+      const fb = document.getElementById('feedback');
+      fb.className = 'feedback';
+      fb.textContent = '';
+
+      document.getElementById('nextBtn').classList.remove('show');
+
+      const optDiv = document.getElementById('options');
+      optDiv.innerHTML = '';
+      q.opts.forEach((opt, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerHTML = `<span class="opt-letter">${LETTERS[i]}</span> ${opt}`;
+        btn.addEventListener('click', () => selectAnswer(i));
+        optDiv.appendChild(btn);
+      });
+    }
+
+    function selectAnswer(idx) {
+      if (answered) return;
+      answered = true;
+
+      const q = questions[current];
+      const btns = document.querySelectorAll('.option-btn');
+      btns.forEach(b => b.disabled = true);
+
+      const fb = document.getElementById('feedback');
+
+      if (idx === q.a) {
+        score++;
+        btns[idx].classList.add('correct');
+        fb.className = 'feedback correct-fb show';
+        fb.innerHTML = '✅ Bonne réponse ! Bravo Selma 🌸';
+      } else {
+        btns[idx].classList.add('wrong');
+        btns[q.a].classList.add('correct');
+        fb.className = 'feedback wrong-fb show';
+        fb.innerHTML = `❌ Pas tout à fait… La bonne réponse était <strong>${q.opts[q.a]}</strong> 🌷`;
+      }
+
+      document.getElementById('scoreText').textContent = `Score : ${score}`;
+      document.getElementById('nextBtn').classList.add('show');
+    }
+
+    document.getElementById('nextBtn').addEventListener('click', () => {
+      current++;
+      if (current >= questions.length) {
+        showScore();
+      } else {
+        renderQuestion();
+      }
+    });
+
+    function showScore() {
+      document.getElementById('quizBody').style.display = 'none';
+      const ss = document.getElementById('scoreScreen');
+      ss.classList.add('show');
+
+      document.getElementById('finalScore').textContent = score;
+
+      const pct = score / questions.length;
+      let trophy = '🌸', msg = '';
+      if (pct === 1)        { trophy = '🏆'; msg = 'Parfait ! Tu connais tous les muscles ! 🌺'; }
+      else if (pct >= 0.8)  { trophy = '🌟'; msg = 'Excellent ! Très bonne maîtrise ! 🌸'; }
+      else if (pct >= 0.6)  { trophy = '🌷'; msg = 'Bien joué ! Encore un peu de révisions ! 💪'; }
+      else if (pct >= 0.4)  { trophy = '💪'; msg = 'Continue tes efforts, tu y arriveras ! 🌸'; }
+      else                  { trophy = '📚'; msg = 'Il faut réviser encore un peu… Courage ! 🌷'; }
+
+      document.getElementById('trophy').textContent = trophy;
+      document.getElementById('finalMsg').textContent = msg;
+    }
+
+    startQuiz();
+  </script>
+</body>
+</html>
