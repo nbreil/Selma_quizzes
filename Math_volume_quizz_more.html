@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🌸 Quiz Conversions de Volumes – Selma 🌸</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Pacifico&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background: linear-gradient(135deg, #fff0f5 0%, #ffe4f0 50%, #fce4ff 100%);
+      min-height: 100vh;
+      padding: 30px 16px 60px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "🌸🌷🌺🌸🌷🌺🌸🌷🌺🌸🌷🌺🌸";
+      display: block;
+      text-align: center;
+      font-size: 22px;
+      letter-spacing: 4px;
+      margin-bottom: 10px;
+    }
+    body::after {
+      content: "🌺🌷🌸🌺🌷🌸🌺🌷🌸🌺🌷🌸🌺";
+      display: block;
+      text-align: center;
+      font-size: 22px;
+      letter-spacing: 4px;
+      margin-top: 30px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+
+    header h1 {
+      font-family: 'Pacifico', cursive;
+      color: #c2185b;
+      font-size: 2.4em;
+      text-shadow: 2px 2px 0 #f8bbd0;
+      margin-bottom: 6px;
+    }
+
+    header p {
+      color: #ad1457;
+      font-size: 1.1em;
+      font-weight: 600;
+    }
+
+    .reminder-box {
+      background: linear-gradient(135deg, #fff, #fff0fb);
+      border: 2.5px solid #f48fb1;
+      border-radius: 20px;
+      padding: 20px 24px;
+      max-width: 700px;
+      margin: 0 auto 36px;
+      box-shadow: 0 4px 18px #f8bbd055;
+    }
+
+    .reminder-box h2 {
+      font-family: 'Pacifico', cursive;
+      color: #e91e8c;
+      font-size: 1.15em;
+      margin-bottom: 12px;
+    }
+
+    .reminder-box ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .reminder-box ul li {
+      padding: 5px 0;
+      color: #6a1140;
+      font-size: 1em;
+      font-weight: 600;
+    }
+
+    .reminder-box ul li::before {
+      content: "🌷 ";
+    }
+
+    .conversion-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0 6px;
+      font-size: 0.92em;
+    }
+
+    .conversion-table th {
+      background: linear-gradient(135deg, #f06292, #ce93d8);
+      color: #fff;
+      padding: 8px 6px;
+      font-weight: 700;
+      border: 1.5px solid #f48fb1;
+    }
+
+    .conversion-table td {
+      padding: 7px 6px;
+      text-align: center;
+      border: 1.5px solid #f48fb1;
+      color: #6a1140;
+      font-weight: 600;
+      background: #fff8fc;
+    }
+
+    .section-label {
+      text-align: center;
+      font-family: 'Pacifico', cursive;
+      color: #fff;
+      background: linear-gradient(90deg, #f06292, #ce93d8);
+      border-radius: 30px;
+      padding: 10px 28px;
+      display: inline-block;
+      margin: 0 auto 24px;
+      font-size: 1.1em;
+      box-shadow: 0 3px 12px #ce93d855;
+    }
+
+    .section-wrapper {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .quiz-container {
+      max-width: 700px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 22px;
+      padding: 24px 26px;
+      border: 2.5px solid #f48fb1;
+      box-shadow: 0 6px 20px #f8bbd044;
+      position: relative;
+    }
+
+    .card .q-number {
+      position: absolute;
+      top: -16px;
+      left: 20px;
+      background: linear-gradient(135deg, #f06292, #ce93d8);
+      color: #fff;
+      font-family: 'Pacifico', cursive;
+      font-size: 0.9em;
+      padding: 4px 14px;
+      border-radius: 20px;
+      box-shadow: 0 2px 8px #ce93d855;
+    }
+
+    .card .question {
+      color: #880e4f;
+      font-size: 1.05em;
+      font-weight: 700;
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .choice-btn {
+      display: block;
+      width: 100%;
+      text-align: left;
+      padding: 11px 18px;
+      border-radius: 14px;
+      border: 2px solid #f48fb1;
+      background: #fff0f8;
+      color: #6a1140;
+      font-family: 'Quicksand', sans-serif;
+      font-size: 0.98em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, transform 0.1s;
+    }
+
+    .choice-btn:hover {
+      background: #fce4f0;
+      border-color: #e91e8c;
+      transform: scale(1.015);
+    }
+
+    .choice-btn.correct {
+      background: #e8f5e9;
+      border-color: #66bb6a;
+      color: #2e7d32;
+    }
+
+    .choice-btn.wrong {
+      background: #fce4e4;
+      border-color: #ef9a9a;
+      color: #b71c1c;
+    }
+
+    .choice-btn:disabled { cursor: default; }
+
+    .feedback {
+      margin-top: 12px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 0.95em;
+      font-weight: 700;
+      display: none;
+    }
+
+    .feedback.show { display: block; }
+    .feedback.correct { background: #e8f5e9; color: #2e7d32; }
+    .feedback.wrong   { background: #fce4e4; color: #c62828; }
+
+    .fill-group {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .fill-group label {
+      color: #880e4f;
+      font-weight: 700;
+      font-size: 0.97em;
+    }
+
+    .fill-input {
+      border: 2px solid #f48fb1;
+      border-radius: 10px;
+      padding: 8px 12px;
+      font-family: 'Quicksand', sans-serif;
+      font-size: 1em;
+      font-weight: 700;
+      color: #880e4f;
+      background: #fff0f8;
+      width: 130px;
+      text-align: center;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .fill-input:focus { border-color: #e91e8c; }
+    .fill-input.correct { border-color: #66bb6a; background: #e8f5e9; color: #2e7d32; }
+    .fill-input.wrong   { border-color: #ef9a9a; background: #fce4e4; color: #c62828; }
+
+    .check-btn {
+      padding: 10px 22px;
+      border-radius: 20px;
+      border: none;
+      background: linear-gradient(135deg, #f06292, #ce93d8);
+      color: #fff;
+      font-family: 'Quicksand', sans-serif;
+      font-size: 0.95em;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 3px 10px #f0629255;
+      transition: transform 0.1s;
+      margin-top: 6px;
+    }
+
+    .check-btn:hover { transform: scale(1.04); }
+
+    .paper-card {
+      background: linear-gradient(135deg, #fff8fd, #fff0f5);
+      border: 2.5px dashed #f48fb1;
+      border-radius: 22px;
+      padding: 24px 26px;
+      position: relative;
+    }
+
+    .paper-card .q-number {
+      position: absolute;
+      top: -16px;
+      left: 20px;
+      background: linear-gradient(135deg, #ce93d8, #f06292);
+      color: #fff;
+      font-family: 'Pacifico', cursive;
+      font-size: 0.9em;
+      padding: 4px 14px;
+      border-radius: 20px;
+    }
+
+    .paper-card .question {
+      color: #880e4f;
+      font-size: 1.05em;
+      font-weight: 700;
+      margin-bottom: 14px;
+      line-height: 1.6;
+    }
+
+    .paper-lines {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 10px;
+    }
+
+    .paper-line {
+      border-bottom: 2px dotted #f48fb1;
+      height: 28px;
+    }
+
+    .hint-badge {
+      display: inline-block;
+      background: #fce4f0;
+      color: #c2185b;
+      border-radius: 10px;
+      padding: 4px 12px;
+      font-size: 0.85em;
+      font-weight: 700;
+      margin-bottom: 10px;
+      border: 1.5px solid #f48fb1;
+    }
+
+    #score-banner {
+      display: none;
+      text-align: center;
+      margin: 10px auto 0;
+      max-width: 700px;
+      background: linear-gradient(135deg, #f06292, #ce93d8);
+      color: #fff;
+      border-radius: 22px;
+      padding: 22px 30px;
+      font-family: 'Pacifico', cursive;
+      font-size: 1.4em;
+      box-shadow: 0 6px 20px #f0629255;
+    }
+
+    sup { font-size: 0.75em; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🌸 Conversions de Volumes 🌸</h1>
+  <p>Quiz spécial conversions pour Selma 🌺</p>
+</header>
+
+<!-- ───── Reminder ───── -->
+<div class="reminder-box">
+  <h2>💖 Mémo : le tableau de conversion des volumes</h2>
+  <ul>
+    <li>Chaque unité de volume vaut <strong>1 000 fois</strong> l'unité juste en-dessous</li>
+    <li>km³ → hm³ → dam³ → m³ → dm³ → cm³ → mm³</li>
+    <li>1 L = 1 dm³ &nbsp;|&nbsp; 1 mL = 1 cm³ &nbsp;|&nbsp; 1 kL = 1 m³</li>
+    <li>1 cL = 10 mL = 10 cm³ &nbsp;|&nbsp; 1 dL = 100 mL = 100 cm³</li>
+    <li>Pour convertir : on décale la virgule de <strong>3 chiffres</strong> par unité</li>
+  </ul>
+  <table class="conversion-table">
+    <tr>
+      <th>km³</th><th>hm³</th><th>dam³</th><th>m³</th><th>dm³ (= L)</th><th>cm³ (= mL)</th><th>mm³</th>
+    </tr>
+    <tr>
+      <td></td><td></td><td></td><td>1</td><td>000</td><td>000</td><td>000</td>
+    </tr>
+  </table>
+</div>
+
+<!-- ══════════════════════════════ SECTION 1 : QCM ══════════════════════════════ -->
+<div class="section-wrapper">
+  <div class="section-label">🌷 Partie 1 — Choix multiple 🌷</div>
+</div>
+
+<div class="quiz-container">
+
+  <!-- Q1 -->
+  <div class="card">
+    <span class="q-number">Question 1</span>
+    <p class="question">🌸 3,5 m³ = ? dm³</p>
+    <div class="choices">
+      <button class="choice-btn" onclick="checkMC(this, false)">35 dm³</button>
+      <button class="choice-btn" onclick="checkMC(this, false)">350 dm³</button>
+      <button class="choice-btn" onclick="checkMC(this, true)">3 500 dm³</button>
+      <button class="choice-btn" onclick="checkMC(this, false)">35 000 dm³</button>
+    </div>
+    <p class="hint">💡 m³ → dm³ : on multiplie par 1 000</p>
+    <div class="feedback"></div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="card">
+    <span class="q-number">Question 2</span>
+    <p class="question">🌷 250 cm³ = ? dm³</p>
+    <div class="choices">
+      <button class="choice-btn" onclick="checkMC(this, false)">2,5 dm³</button>
+      <button class="choice-btn" onclick="checkMC(this, true)">0,25 dm³</button>
+      <button class="choice-btn" onclick="checkMC(this, false)">0,025 dm³</button>
+      <button class="choice-btn" onclick="checkMC(this, false)">25 dm³</button>
+    </div>
+    <p class="hint">💡 cm³ → dm³ : on divise par 1 000</p>
+    <div class="feedback"></div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="card">
+    <span class="q-number">Question 3</span>
+    <p class="question">🌺 7,2 L = ? cm³</p>
+    <div class="choices">
+      <button class="choice-btn" onclick="checkMC(this, false)">72 cm³</button>
+      <button class="choice-btn" onclick="checkMC(this, false)">720 cm³</button>
+      <button class="choice-btn" onclick="checkMC(this, true)">7 200 cm³</button>
+      <button class="choice-btn" onclick="checkMC(this, false)">72 000 cm³</button>
+    </div>
+    <p class="hint">💡 1 L = 1 dm³ = 1 000 cm³</p>
+    <div class="feedback"></div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="card">
+    <span class="q-number">Question 4</span>
+    <p class="question">🌸 0,045 m³ = ? L</p>
+    <div class="choices">
+      <button class="choice-btn" onclick="checkMC(this, false)">4,5 L</button>
+      <button class="choice-btn" onclick="checkMC(this, true)">45 L</button>
+      <button class="choice-btn" onclick="checkMC(this, false)">450 L</button>
+      <button class="choice-btn" onclick="checkMC(this, false)">0,45 L</button>
+    </div>
+    <p class="hint">💡 m³ → dm³ (=L) : × 1 000 → 0,045 × 1 000</p>
+    <div class="feedback"></div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="card">
+    <span class="q-number">Question 5</span>
+    <p class="question">🌷 68 000 mm³ = ? cm³</p>
+    <div class="choices">
+      <button class="choice-btn" onclick="checkMC(this, true)">68 cm³</button>
+      <button class="choice-btn" onclick="checkMC(this, false)">6,8 cm³</button>
+      <button class="choice-btn" onclick="checkMC(this, false)">680 cm³</button>
+      <button class="choice-btn" onclick="checkMC(this, false)">6 800 cm³</button>
+    </div>
+    <p class="hint">💡 mm³ → cm³ : on divise par 1 000</p>
+    <div class="feedback"></div>
+  </div>
+
+  <!-- Q6 -->
+  <div class="card">
+    <span class="q-number">Question 6</span>
+    <p class="question">🌺 2,5 cL = ? cm³</p>
+    <div class="choices">
+      <button class="choice-btn" onclick="checkMC(this, false)">2,5 cm³</button>
+      <button class="choice-btn" onclick="checkMC(this, true)">25 cm³</button>
+      <button class="choice-btn" onclick="checkMC(this, false)">250 cm³</button>
+      <button class="choice-btn" onclick="checkMC(this, false)">0,25 cm³</button>
+    </div>
+    <p class="hint">💡 1 cL = 10 mL = 10 cm³</p>
+    <div class="feedback"></div>
+  </div>
+
+  <!-- Q7 -->
+  <div class="card">
+    <span class="q-number">Question 7</span>
+    <p class="question">🌸 4 dam³ = ? m³</p>
+    <div class="choices">
+      <button class="choice-btn" onclick="checkMC(this, false)">40 m³</button>
+      <button class="choice-btn" onclick="checkMC(this, false)">400 m³</button>
+      <button class="choice-btn" onclick="checkMC(this, true)">4 000 m³</button>
+      <button class="choice-btn" onclick="checkMC(this, false)">40 000 m³</button>
+    </div>
+    <p class="hint">💡 dam³ → m³ : × 1 000</p>
+    <div class="feedback"></div>
+  </div>
+
+  <!-- Q8 -->
+  <div class="card">
+    <span class="q-number">Question 8</span>
+    <p class="question">🌷 500 mL = ? dm³</p>
+    <div class="choices">
+      <button class="choice-btn" onclick="checkMC(this, false)">5 dm³</button>
+      <button class="choice-btn" onclick="checkMC(this, false)">50 dm³</button>
+      <button class="choice-btn" onclick="checkMC(this, true)">0,5 dm³</button>
+      <button class="choice-btn" onclick="checkMC(this, false)">0,05 dm³</button>
+    </div>
+    <p class="hint">💡 500 mL = 500 cm³, puis cm³ → dm³ : ÷ 1 000</p>
+    <div class="feedback"></div>
+  </div>
+
+  <!-- Q9 -->
+  <div class="card">
+    <span class="q-number">Question 9</span>
+    <p class="question">🌺 0,006 dm³ = ? mm³</p>
+    <div class="choices">
+      <button class="choice-btn" onclick="checkMC(this, false)">60 mm³</button>
+      <button class="choice-btn" onclick="checkMC(this, false)">600 mm³</button>
+      <button class="choice-btn" onclick="checkMC(this, true)">6 000 mm³</button>
+      <button class="choice-btn" onclick="checkMC(this, false)">60 000 mm³</button>
+    </div>
+    <p class="hint">💡 dm³ → cm³ (× 1 000) → mm³ (× 1 000) = × 1 000 000</p>
+    <div class="feedback"></div>
+  </div>
+
+  <!-- Q10 -->
+  <div class="card">
+    <span class="q-number">Question 10</span>
+    <p class="question">🌸 1,2 hm³ = ? dam³</p>
+    <div class="choices">
+      <button class="choice-btn" onclick="checkMC(this, false)">12 dam³</button>
+      <button class="choice-btn" onclick="checkMC(this, false)">120 dam³</button>
+      <button class="choice-btn" onclick="checkMC(this, true)">1 200 dam³</button>
+      <button class="choice-btn" onclick="checkMC(this, false)">12 000 dam³</button>
+    </div>
+    <p class="hint">💡 hm³ → dam³ : × 1 000</p>
+    <div class="feedback"></div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════ SECTION 2 : FILL-IN ══════════════════════════════ -->
+<div class="section-wrapper" style="margin-top:40px;">
+  <div class="section-label">🌺 Partie 2 — Complète les conversions 🌺</div>
+</div>
+
+<div class="quiz-container">
+
+  <!-- Bloc A : unités de volume -->
+  <div class="card">
+    <span class="q-number">Bloc A</span>
+    <p class="question">🌸 Convertis les unités de volume !</p>
+
+    <div class="fill-group">
+      <label>6,7 m³ =</label>
+      <input class="fill-input" id="a1" type="text" placeholder="?" />
+      <label>dm³</label>
+    </div>
+    <div class="fill-group">
+      <label>430 cm³ =</label>
+      <input class="fill-input" id="a2" type="text" placeholder="?" />
+      <label>dm³</label>
+    </div>
+    <div class="fill-group">
+      <label>0,52 dm³ =</label>
+      <input class="fill-input" id="a3" type="text" placeholder="?" />
+      <label>cm³</label>
+    </div>
+    <div class="fill-group">
+      <label>9 100 mm³ =</label>
+      <input class="fill-input" id="a4" type="text" placeholder="?" />
+      <label>cm³</label>
+    </div>
+    <div class="fill-group">
+      <label>0,003 m³ =</label>
+      <input class="fill-input" id="a5" type="text" placeholder="?" />
+      <label>cm³</label>
+    </div>
+    <div class="fill-group">
+      <label>15 dam³ =</label>
+      <input class="fill-input" id="a6" type="text" placeholder="?" />
+      <label>m³</label>
+    </div>
+
+    <button class="check-btn" onclick="checkFill('a')">🌷 Vérifier le bloc A</button>
+    <div class="feedback" id="fill-feedback-a"></div>
+  </div>
+
+  <!-- Bloc B : volumes ↔ contenances -->
+  <div class="card">
+    <span class="q-number">Bloc B</span>
+    <p class="question">🌷 Volumes et contenances (L, cL, mL) !</p>
+
+    <div class="fill-group">
+      <label>3,4 L =</label>
+      <input class="fill-input" id="b1" type="text" placeholder="?" />
+      <label>cm³</label>
+    </div>
+    <div class="fill-group">
+      <label>750 mL =</label>
+      <input class="fill-input" id="b2" type="text" placeholder="?" />
+      <label>dm³</label>
+    </div>
+    <div class="fill-group">
+      <label>0,8 m³ =</label>
+      <input class="fill-input" id="b3" type="text" placeholder="?" />
+      <label>L</label>
+    </div>
+    <div class="fill-group">
+      <label>45 cL =</label>
+      <input class="fill-input" id="b4" type="text" placeholder="?" />
+      <label>cm³</label>
+    </div>
+    <div class="fill-group">
+      <label>2 500 cm³ =</label>
+      <input class="fill-input" id="b5" type="text" placeholder="?" />
+      <label>L</label>
+    </div>
+    <div class="fill-group">
+      <label>6 dL =</label>
+      <input class="fill-input" id="b6" type="text" placeholder="?" />
+      <label>cm³</label>
+    </div>
+
+    <button class="check-btn" onclick="checkFill('b')">🌷 Vérifier le bloc B</button>
+    <div class="feedback" id="fill-feedback-b"></div>
+  </div>
+
+  <!-- Bloc C : conversions difficiles (plusieurs sauts) -->
+  <div class="card">
+    <span class="q-number">Bloc C</span>
+    <p class="question">🌺 Conversions à plusieurs étapes — niveau expert ! 💪</p>
+
+    <div class="fill-group">
+      <label>0,0025 m³ =</label>
+      <input class="fill-input" id="d1" type="text" placeholder="?" />
+      <label>mL</label>
+    </div>
+    <div class="fill-group">
+      <label>87 000 cm³ =</label>
+      <input class="fill-input" id="d2" type="text" placeholder="?" />
+      <label>m³</label>
+    </div>
+    <div class="fill-group">
+      <label>0,4 dam³ =</label>
+      <input class="fill-input" id="d3" type="text" placeholder="?" />
+      <label>dm³</label>
+    </div>
+    <div class="fill-group">
+      <label>15 000 mL =</label>
+      <input class="fill-input" id="d4" type="text" placeholder="?" />
+      <label>m³</label>
+    </div>
+    <div class="fill-group">
+      <label>3,6 hm³ =</label>
+      <input class="fill-input" id="d5" type="text" placeholder="?" />
+      <label>m³</label>
+    </div>
+    <div class="fill-group">
+      <label>920 mm³ =</label>
+      <input class="fill-input" id="d6" type="text" placeholder="?" />
+      <label>mL</label>
+    </div>
+
+    <button class="check-btn" onclick="checkFill('d')">🌷 Vérifier le bloc C</button>
+    <div class="feedback" id="fill-feedback-d"></div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════ SECTION 3 : PAPER ══════════════════════════════ -->
+<div class="section-wrapper" style="margin-top:40px;">
+  <div class="section-label">✏️ Partie 3 — Exercices sur papier ✏️</div>
+</div>
+
+<div class="quiz-container">
+
+  <div class="paper-card">
+    <span class="q-number">Exercice A</span>
+    <p class="question">🌸 <strong>Le tableau de conversion</strong><br><br>
+      Recopie le tableau de conversion sur ton cahier, puis place chacune de ces valeurs dans le tableau pour les convertir :<br><br>
+      a) 5,3 m³ → en dm³<br>
+      b) 0,72 dm³ → en mm³<br>
+      c) 48 500 cm³ → en m³<br>
+      d) 0,0019 km³ → en dam³
+    </p>
+    <div class="hint-badge">💡 Place le chiffre des unités dans la colonne de l'unité de départ, puis lis dans la colonne d'arrivée !</div>
+    <div class="paper-lines">
+      <div class="paper-line"></div>
+      <div class="paper-line"></div>
+      <div class="paper-line"></div>
+      <div class="paper-line"></div>
+      <div class="paper-line"></div>
+      <div class="paper-line"></div>
+      <div class="paper-line"></div>
+      <div class="paper-line"></div>
+    </div>
+  </div>
+
+  <div class="paper-card">
+    <span class="q-number">Exercice B</span>
+    <p class="question">🌷 <strong>Range dans l'ordre croissant</strong><br><br>
+      Place ces volumes du plus petit au plus grand :<br><br>
+      3,2 dm³ &nbsp;—&nbsp; 450 cm³ &nbsp;—&nbsp; 0,005 m³ &nbsp;—&nbsp; 2 800 mL &nbsp;—&nbsp; 35 cL &nbsp;—&nbsp; 4 100 000 mm³
+    </p>
+    <div class="hint-badge">💡 Convertis tout dans la même unité (par ex. en cm³) pour comparer facilement !</div>
+    <div class="paper-lines">
+      <div class="paper-line"></div>
+      <div class="paper-line"></div>
+      <div class="paper-line"></div>
+      <div class="paper-line"></div>
+      <div class="paper-line"></div>
+      <div class="paper-line"></div>
+    </div>
+  </div>
+
+  <div class="paper-card">
+    <span class="q-number">Exercice C</span>
+    <p class="question">🌺 <strong>Vrai ou faux ?</strong><br><br>
+      Pour chaque affirmation, écris si c'est <strong>VRAI</strong> ou <strong>FAUX</strong>, puis corrige si c'est faux :<br><br>
+      a) 1 m³ = 100 dm³<br>
+      b) 3 L = 3 000 cm³<br>
+      c) 50 cL = 0,5 L<br>
+      d) 1 cm³ = 1 000 mm³<br>
+      e) 0,1 dm³ = 1 L<br>
+      f) 2 500 mL = 2,5 dm³
+    </p>
+    <div class="hint-badge">💡 Attention aux pièges — utilise le tableau pour vérifier chaque conversion !</div>
+    <div class="paper-lines">
+      <div class="paper-line"></div>
+      <div class="paper-line"></div>
+      <div class="paper-line"></div>
+      <div class="paper-line"></div>
+      <div class="paper-line"></div>
+      <div class="paper-line"></div>
+    </div>
+  </div>
+
+</div>
+
+<br>
+<div id="score-banner"></div>
+
+<script>
+  // ── Multiple Choice ──
+  function checkMC(btn, isCorrect) {
+    const card = btn.closest('.card');
+    const allBtns = card.querySelectorAll('.choice-btn');
+    const feedback = card.querySelector('.feedback');
+
+    allBtns.forEach(b => b.disabled = true);
+
+    if (isCorrect) {
+      btn.classList.add('correct');
+      feedback.className = 'feedback show correct';
+      feedback.textContent = '✅ Bravo Selma, c\'est la bonne réponse ! 🌸';
+    } else {
+      btn.classList.add('wrong');
+      allBtns.forEach(b => {
+        if (b.onclick.toString().includes('true')) b.classList.add('correct');
+      });
+      feedback.className = 'feedback show wrong';
+      feedback.textContent = '❌ Pas tout à fait… regarde la bonne réponse en vert 🌷';
+    }
+  }
+
+  // ── Fill-in Conversions ──
+  const fillAnswers = {
+    // Bloc A
+    a1: ['6700'],           // 6,7 m³ → dm³
+    a2: ['0.43','0,43'],    // 430 cm³ → dm³
+    a3: ['520'],            // 0,52 dm³ → cm³
+    a4: ['9.1','9,1'],      // 9 100 mm³ → cm³
+    a5: ['3000'],           // 0,003 m³ → cm³
+    a6: ['15000'],          // 15 dam³ → m³
+    // Bloc B
+    b1: ['3400'],           // 3,4 L → cm³
+    b2: ['0.75','0,75'],    // 750 mL → dm³
+    b3: ['800'],            // 0,8 m³ → L
+    b4: ['450'],            // 45 cL → cm³
+    b5: ['2.5','2,5'],      // 2 500 cm³ → L
+    b6: ['600'],            // 6 dL → cm³
+    // Bloc C (expert)
+    d1: ['2500'],           // 0,0025 m³ → mL
+    d2: ['0.087','0,087'],  // 87 000 cm³ → m³
+    d3: ['400000'],         // 0,4 dam³ → dm³
+    d4: ['0.015','0,015'],  // 15 000 mL → m³
+    d5: ['3600000'],        // 3,6 hm³ → m³
+    d6: ['0.92','0,92'],    // 920 mm³ → mL
+  };
+
+  function checkFill(group) {
+    const keys = Object.keys(fillAnswers).filter(k => k.startsWith(group));
+    let correct = 0;
+
+    keys.forEach(id => {
+      const input = document.getElementById(id);
+      const val = input.value.trim().replace(/\s/g, '').replace(',', '.');
+      const accepted = fillAnswers[id].map(a => a.replace(',', '.').replace(/\s/g, ''));
+      const isOk = accepted.includes(val);
+      input.className = 'fill-input ' + (isOk ? 'correct' : 'wrong');
+      if (isOk) correct++;
+    });
+
+    const fb = document.getElementById('fill-feedback-' + group);
+    fb.className = 'feedback show ' + (correct === keys.length ? 'correct' : 'wrong');
+    fb.textContent = correct === keys.length
+      ? `🌸 Parfait ! Tout est juste ! (${correct}/${keys.length}) 🎉`
+      : `🌷 Tu as ${correct}/${keys.length} bonnes réponses. Les cases roses sont à corriger !`;
+  }
+</script>
+
+</body>
+</html>
