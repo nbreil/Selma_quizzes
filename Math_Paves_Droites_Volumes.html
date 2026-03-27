@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🌸 Quiz Volumes – Selma 🌸</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Pacifico&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background: linear-gradient(135deg, #fff0f5 0%, #ffe4f0 50%, #fce4ff 100%);
+      min-height: 100vh;
+      padding: 30px 16px 60px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Decorative flowers */
+    body::before {
+      content: "🌸🌷🌺🌸🌷🌺🌸🌷🌺🌸🌷🌺🌸";
+      display: block;
+      text-align: center;
+      font-size: 22px;
+      letter-spacing: 4px;
+      margin-bottom: 10px;
+    }
+    body::after {
+      content: "🌺🌷🌸🌺🌷🌸🌺🌷🌸🌺🌷🌸🌺";
+      display: block;
+      text-align: center;
+      font-size: 22px;
+      letter-spacing: 4px;
+      margin-top: 30px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+
+    header h1 {
+      font-family: 'Pacifico', cursive;
+      color: #c2185b;
+      font-size: 2.4em;
+      text-shadow: 2px 2px 0 #f8bbd0;
+      margin-bottom: 6px;
+    }
+
+    header p {
+      color: #ad1457;
+      font-size: 1.1em;
+      font-weight: 600;
+    }
+
+    .reminder-box {
+      background: linear-gradient(135deg, #fff, #fff0fb);
+      border: 2.5px solid #f48fb1;
+      border-radius: 20px;
+      padding: 20px 24px;
+      max-width: 700px;
+      margin: 0 auto 36px;
+      box-shadow: 0 4px 18px #f8bbd055;
+    }
+
+    .reminder-box h2 {
+      font-family: 'Pacifico', cursive;
+      color: #e91e8c;
+      font-size: 1.15em;
+      margin-bottom: 12px;
+    }
+
+    .reminder-box ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .reminder-box ul li {
+      padding: 5px 0;
+      color: #6a1140;
+      font-size: 1em;
+      font-weight: 600;
+    }
+
+    .reminder-box ul li::before {
+      content: "🌷 ";
+    }
+
+    .section-label {
+      text-align: center;
+      font-family: 'Pacifico', cursive;
+      color: #fff;
+      background: linear-gradient(90deg, #f06292, #ce93d8);
+      border-radius: 30px;
+      padding: 10px 28px;
+      display: inline-block;
+      margin: 0 auto 24px;
+      font-size: 1.1em;
+      box-shadow: 0 3px 12px #ce93d855;
+    }
+
+    .section-wrapper {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .quiz-container {
+      max-width: 700px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* ── Question Card ── */
+    .card {
+      background: #fff;
+      border-radius: 22px;
+      padding: 24px 26px;
+      border: 2.5px solid #f48fb1;
+      box-shadow: 0 6px 20px #f8bbd044;
+      position: relative;
+    }
+
+    .card .q-number {
+      position: absolute;
+      top: -16px;
+      left: 20px;
+      background: linear-gradient(135deg, #f06292, #ce93d8);
+      color: #fff;
+      font-family: 'Pacifico', cursive;
+      font-size: 0.9em;
+      padding: 4px 14px;
+      border-radius: 20px;
+      box-shadow: 0 2px 8px #ce93d855;
+    }
+
+    .card .question {
+      color: #880e4f;
+      font-size: 1.05em;
+      font-weight: 700;
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    /* Multiple choice */
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .choice-btn {
+      display: block;
+      width: 100%;
+      text-align: left;
+      padding: 11px 18px;
+      border-radius: 14px;
+      border: 2px solid #f48fb1;
+      background: #fff0f8;
+      color: #6a1140;
+      font-family: 'Quicksand', sans-serif;
+      font-size: 0.98em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, transform 0.1s;
+    }
+
+    .choice-btn:hover {
+      background: #fce4f0;
+      border-color: #e91e8c;
+      transform: scale(1.015);
+    }
+
+    .choice-btn.correct {
+      background: #e8f5e9;
+      border-color: #66bb6a;
+      color: #2e7d32;
+    }
+
+    .choice-btn.wrong {
+      background: #fce4e4;
+      border-color: #ef9a9a;
+      color: #b71c1c;
+    }
+
+    .choice-btn:disabled {
+      cursor: default;
+    }
+
+    .feedback {
+      margin-top: 12px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 0.95em;
+      font-weight: 700;
+      display: none;
+    }
+
+    .feedback.show { display: block; }
+    .feedback.correct { background: #e8f5e9; color: #2e7d32; }
+    .feedback.wrong   { background: #fce4e4; color: #c62828; }
+
+    /* Fill-in-blank */
+    .fill-group {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .fill-group label {
+      color: #880e4f;
+      font-weight: 700;
+      font-size: 0.97em;
+    }
+
+    .fill-input {
+      border: 2px solid #f48fb1;
+      border-radius: 10px;
+      padding: 8px 12px;
+      font-family: 'Quicksand', sans-serif;
+      font-size: 1em;
+      font-weight: 700;
+      color: #880e4f;
+      background: #fff0f8;
+      width: 110px;
+      text-align: center;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .fill-input:focus { border-color: #e91e8c; }
+    .fill-input.correct { border-color: #66bb6a; background: #e8f5e9; color: #2e7d32; }
+    .fill-input.wrong   { border-color: #ef9a9a; background: #fce4e4; color: #c62828; }
+
+    .check-btn {
+      padding: 10px 22px;
+      border-radius: 20px;
+      border: none;
+      background: linear-gradient(135deg, #f06292, #ce93d8);
+      color: #fff;
+      font-family: 'Quicksand', sans-serif;
+      font-size: 0.95em;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 3px 10px #f0629255;
+      transition: transform 0.1s;
+      margin-top: 6px;
+    }
+
+    .check-btn:hover { transform: scale(1.04); }
+
+    /* Paper exercise card */
+    .paper-card {
+      background: linear-gradient(135deg, #fff8fd, #fff0f5);
+      border: 2.5px dashed #f48fb1;
+      border-radius: 22px;
+      padding: 24px 26px;
+      position: relative;
+    }
+
+    .paper-card .q-number {
+      position: absolute;
+      top: -16px;
+      left: 20px;
+      background: linear-gradient(135deg, #ce93d8, #f06292);
+      color: #fff;
+      font-family: 'Pacifico', cursive;
+      font-size: 0.9em;
+      padding: 4px 14px;
+      border-radius: 20px;
+    }
+
+    .paper-card .question {
+      color: #880e4f;
+      font-size: 1.05em;
+      font-weight: 700;
+      margin-bottom: 14px;
+      line-height: 1.6;
+    }
+
+    .paper-lines {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 10px;
+    }
+
+    .paper-line {
+      border-bottom: 2px dotted #f48fb1;
+      height: 28px;
+    }
+
+    .hint-badge {
+      display: inline-block;
+      background: #fce4f0;
+      color: #c2185b;
+      border-radius: 10px;
+      padding: 4px 12px;
+      font-size: 0.85em;
+      font-weight: 700;
+      margin-bottom: 10px;
+      border: 1.5px solid #f48fb1;
+    }
+
+    /* Score banner */
+    #score-banner {
+      display: none;
+      text-align: center;
+      margin: 10px auto 0;
+      max-width: 700px;
+      background: linear-gradient(135deg, #f06292, #ce93d8);
+      color: #fff;
+      border-radius: 22px;
+      padding: 22px 30px;
+      font-family: 'Pacifico', cursive;
+      font-size: 1.4em;
+      box-shadow: 0 6px 20px #f0629255;
+    }
+
+    .submit-area {
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .submit-btn {
+      padding: 14px 40px;
+      border-radius: 30px;
+      border: none;
+      background: linear-gradient(135deg, #e91e8c, #9c27b0);
+      color: #fff;
+      font-family: 'Pacifico', cursive;
+      font-size: 1.15em;
+      cursor: pointer;
+      box-shadow: 0 5px 18px #e91e8c44;
+      transition: transform 0.15s;
+    }
+
+    .submit-btn:hover { transform: scale(1.05); }
+
+    sup { font-size: 0.75em; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🌸 Le Volume du Pavé Droit 🌸</h1>
+  <p>Quiz pour Selma — Chapitre 12 🌺</p>
+</header>
+
+<!-- ───── Reminder ───── -->
+<div class="reminder-box">
+  <h2>💖 Ce qu'il faut retenir</h2>
+  <ul>
+    <li>Volume = l × L × h &nbsp;(toutes les dimensions dans la même unité !)</li>
+    <li>1 cm³ = 1 000 mm³ &nbsp;|&nbsp; 1 dm³ = 1 000 cm³ &nbsp;|&nbsp; 1 m³ = 1 000 dm³</li>
+    <li>1 L = 1 dm³ &nbsp;(correspondance volume ↔ contenance)</li>
+    <li>Pour convertir vers une unité plus petite : × 1 000</li>
+    <li>Pour convertir vers une unité plus grande : ÷ 1 000</li>
+  </ul>
+</div>
+
+<!-- ══════════════════════════════ SECTION 1 : QCM ══════════════════════════════ -->
+<div class="section-wrapper">
+  <div class="section-label">🌷 Partie 1 — Choix multiple 🌷</div>
+</div>
+
+<div class="quiz-container">
+
+  <!-- Q1 -->
+  <div class="card">
+    <span class="q-number">Question 1</span>
+    <p class="question">🌸 Quelle est la formule du volume d'un pavé droit ?</p>
+    <div class="choices">
+      <button class="choice-btn" onclick="checkMC(this, false)">V = l + L + h</button>
+      <button class="choice-btn" onclick="checkMC(this, true)">V = l × L × h</button>
+      <button class="choice-btn" onclick="checkMC(this, false)">V = l × L</button>
+      <button class="choice-btn" onclick="checkMC(this, false)">V = l² × h</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="card">
+    <span class="q-number">Question 2</span>
+    <p class="question">🌷 Un pavé droit a pour dimensions : l = 3 cm, L = 5 cm, h = 2 cm. Quel est son volume ?</p>
+    <div class="choices">
+      <button class="choice-btn" onclick="checkMC(this, false)">10 cm³</button>
+      <button class="choice-btn" onclick="checkMC(this, false)">25 cm³</button>
+      <button class="choice-btn" onclick="checkMC(this, true)">30 cm³</button>
+      <button class="choice-btn" onclick="checkMC(this, false)">16 cm³</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="card">
+    <span class="q-number">Question 3</span>
+    <p class="question">🌺 Combien de cm³ y a-t-il dans 1 dm³ ?</p>
+    <div class="choices">
+      <button class="choice-btn" onclick="checkMC(this, false)">10 cm³</button>
+      <button class="choice-btn" onclick="checkMC(this, false)">100 cm³</button>
+      <button class="choice-btn" onclick="checkMC(this, true)">1 000 cm³</button>
+      <button class="choice-btn" onclick="checkMC(this, false)">10 000 cm³</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="card">
+    <span class="q-number">Question 4</span>
+    <p class="question">🌸 Quelle est la correspondance entre volume et contenance ?</p>
+    <div class="choices">
+      <button class="choice-btn" onclick="checkMC(this, false)">1 L = 1 cm³</button>
+      <button class="choice-btn" onclick="checkMC(this, true)">1 L = 1 dm³</button>
+      <button class="choice-btn" onclick="checkMC(this, false)">1 L = 1 m³</button>
+      <button class="choice-btn" onclick="checkMC(this, false)">1 L = 1 000 m³</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="card">
+    <span class="q-number">Question 5</span>
+    <p class="question">🌷 Converts : 0,09 m³ = ? L</p>
+    <div class="choices">
+      <button class="choice-btn" onclick="checkMC(this, false)">0,009 L</button>
+      <button class="choice-btn" onclick="checkMC(this, false)">9 L</button>
+      <button class="choice-btn" onclick="checkMC(this, true)">90 L</button>
+      <button class="choice-btn" onclick="checkMC(this, false)">900 L</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+  <!-- Q6 -->
+  <div class="card">
+    <span class="q-number">Question 6</span>
+    <p class="question">🌺 Un pavé droit de dimensions 0,5 dm ; 2 cm ; 13 mm a un volume de :</p>
+    <div class="choices">
+      <button class="choice-btn" onclick="checkMC(this, false)">130 cm³</button>
+      <button class="choice-btn" onclick="checkMC(this, true)">13 cm³</button>
+      <button class="choice-btn" onclick="checkMC(this, false)">1,3 dm³</button>
+      <button class="choice-btn" onclick="checkMC(this, false)">1 300 mm³</button>
+    </div>
+    <p style="font-size:0.83em;color:#ad1457;margin-top:10px;">💡 Astuce : 0,5 dm = 5 cm et 13 mm = 1,3 cm → V = 5 × 2 × 1,3</p>
+    <div class="feedback"></div>
+  </div>
+
+  <!-- Q7 -->
+  <div class="card">
+    <span class="q-number">Question 7</span>
+    <p class="question">🌸 Ingrid veut réaliser un fauteuil en plâtre. La forme est un grand cube (8 cm de côté) moins un petit cube (5 cm de côté). Quel est le volume de plâtre nécessaire ?</p>
+    <div class="choices">
+      <button class="choice-btn" onclick="checkMC(this, false)">512 cm³</button>
+      <button class="choice-btn" onclick="checkMC(this, false)">125 cm³</button>
+      <button class="choice-btn" onclick="checkMC(this, true)">387 cm³</button>
+      <button class="choice-btn" onclick="checkMC(this, false)">637 cm³</button>
+    </div>
+    <p style="font-size:0.83em;color:#ad1457;margin-top:10px;">💡 V = 8³ − 5³ = 512 − 125 = 387 cm³</p>
+    <div class="feedback"></div>
+  </div>
+
+  <!-- Q8 -->
+  <div class="card">
+    <span class="q-number">Question 8</span>
+    <p class="question">🌷 34 mL = ? mm³</p>
+    <div class="choices">
+      <button class="choice-btn" onclick="checkMC(this, false)">34 mm³</button>
+      <button class="choice-btn" onclick="checkMC(this, false)">340 mm³</button>
+      <button class="choice-btn" onclick="checkMC(this, false)">3 400 mm³</button>
+      <button class="choice-btn" onclick="checkMC(this, true)">34 000 mm³</button>
+    </div>
+    <p style="font-size:0.83em;color:#ad1457;margin-top:10px;">💡 1 mL = 1 cm³ = 1 000 mm³ → 34 × 1 000</p>
+    <div class="feedback"></div>
+  </div>
+
+</div><!-- end quiz-container -->
+
+
+<!-- ══════════════════════════════ SECTION 2 : FILL-IN ══════════════════════════════ -->
+<div class="section-wrapper" style="margin-top:40px;">
+  <div class="section-label">🌺 Partie 2 — Complète les conversions 🌺</div>
+</div>
+
+<div class="quiz-container">
+
+  <div class="card">
+    <span class="q-number">Conversions</span>
+    <p class="question">🌸 Complète chaque conversion !</p>
+
+    <!-- Row 1 -->
+    <div class="fill-group">
+      <label>72 km³ =</label>
+      <input class="fill-input" id="c1" type="text" placeholder="?" />
+      <label>hm³</label>
+    </div>
+    <!-- Row 2 -->
+    <div class="fill-group">
+      <label>61 mm³ =</label>
+      <input class="fill-input" id="c2" type="text" placeholder="?" />
+      <label>dm³</label>
+    </div>
+    <!-- Row 3 -->
+    <div class="fill-group">
+      <label>354 m³ =</label>
+      <input class="fill-input" id="c3" type="text" placeholder="?" />
+      <label>dam³</label>
+    </div>
+    <!-- Row 4 -->
+    <div class="fill-group">
+      <label>0,09 m³ =</label>
+      <input class="fill-input" id="c4" type="text" placeholder="?" />
+      <label>L</label>
+    </div>
+    <!-- Row 5 -->
+    <div class="fill-group">
+      <label>5,14 cm³ =</label>
+      <input class="fill-input" id="c5" type="text" placeholder="?" />
+      <label>mm³</label>
+    </div>
+    <!-- Row 6 -->
+    <div class="fill-group">
+      <label>34 mL =</label>
+      <input class="fill-input" id="c6" type="text" placeholder="?" />
+      <label>mm³</label>
+    </div>
+
+    <button class="check-btn" onclick="checkFill()">🌷 Vérifier mes réponses</button>
+    <div class="feedback" id="fill-feedback"></div>
+  </div>
+
+</div>
+
+
+<!-- ══════════════════════════════ SECTION 3 : PAPER EXERCISES ══════════════════════════════ -->
+<div class="section-wrapper" style="margin-top:40px;">
+  <div class="section-label">✏️ Partie 3 — Exercices sur papier ✏️</div>
+</div>
+
+<div class="quiz-container">
+
+  <!-- Paper Ex 1 -->
+  <div class="paper-card">
+    <span class="q-number">Exercice A</span>
+    <p class="question">🌸 <strong>Les boîtes de Solange</strong><br><br>
+      Solange veut construire une boîte parallélépipédique en carton de volume 36 cm³.
+      Les arêtes doivent mesurer un nombre entier de centimètres (1 cm, 2 cm, 3 cm… mais pas 2,5 cm !).
+      <br><br>
+      Elle pense avoir trouvé 6 boîtes différentes. A-t-elle raison ? Liste toutes les dimensions possibles !
+    </p>
+    <div class="hint-badge">💡 Cherche tous les triplets l × L × h = 36, avec l, L, h entiers</div>
+    <div class="paper-lines">
+      <div class="paper-line"></div>
+      <div class="paper-line"></div>
+      <div class="paper-line"></div>
+      <div class="paper-line"></div>
+      <div class="paper-line"></div>
+      <div class="paper-line"></div>
+      <div class="paper-line"></div>
+    </div>
+  </div>
+
+  <!-- Paper Ex 2 -->
+  <div class="paper-card">
+    <span class="q-number">Exercice B</span>
+    <p class="question">🌷 <strong>Le sablier d'Hector</strong><br><br>
+      Le sablier d'Hector est formé de deux pavés droits identiques de 5 cm × 5 cm × 7 cm.
+      Dans la position actuelle, le sable occupe une hauteur de 2,5 cm dans la partie inférieure.
+      <br><br>
+      Si Hector retourne le sablier, quelle hauteur atteindra le sable une fois écoulé dans l'autre partie ?
+    </p>
+    <div class="hint-badge">💡 Calcule d'abord le volume de sable, puis trouve h dans le nouveau pavé</div>
+    <div class="paper-lines">
+      <div class="paper-line"></div>
+      <div class="paper-line"></div>
+      <div class="paper-line"></div>
+      <div class="paper-line"></div>
+      <div class="paper-line"></div>
+      <div class="paper-line"></div>
+    </div>
+  </div>
+
+  <!-- Paper Ex 3 -->
+  <div class="paper-card">
+    <span class="q-number">Exercice C</span>
+    <p class="question">🌺 <strong>L'arrosage du potager de Chris</strong><br><br>
+      Chris arrose son potager tous les 3 jours avec l'équivalent de 7 arrosoirs de 15 L.
+      Il récupère l'eau de pluie dans une cuve en forme de pavé droit (80 cm × 60 cm, hauteur E).
+      <br><br>
+      La cuve est pleine. Combien de fois Chris peut-il arroser son potager ?
+      <br><em>(La hauteur de la cuve n'est pas visible — cherche à partir des données de la photo ou suppose que E = 150 cm pour faire l'exercice.)</em>
+    </p>
+    <div class="hint-badge">💡 Volume cuve ÷ volume arrosage total par session</div>
+    <div class="paper-lines">
+      <div class="paper-line"></div>
+      <div class="paper-line"></div>
+      <div class="paper-line"></div>
+      <div class="paper-line"></div>
+      <div class="paper-line"></div>
+      <div class="paper-line"></div>
+    </div>
+  </div>
+
+  <!-- Paper Ex 4 -->
+  <div class="paper-card">
+    <span class="q-number">Exercice D</span>
+    <p class="question">🌸 <strong>La fourmi et la pâte de fruits</strong><br><br>
+      Atéa la fourmi veut atteindre le sommet opposé (marqué par le drapeau) d'une pâte de fruits en forme de pavé droit :
+      longueur = 5 cm, largeur = 2,5 cm, hauteur = 1 cm.
+      <br><br>
+      Elle part d'un coin inférieur. Quelle trajectoire doit-elle choisir pour parcourir la distance la plus courte possible ? Calcule cette distance approximativement.
+    </p>
+    <div class="hint-badge">💡 Compare plusieurs chemins possibles sur les faces du pavé — utilise Pythagore !</div>
+    <div class="paper-lines">
+      <div class="paper-line"></div>
+      <div class="paper-line"></div>
+      <div class="paper-line"></div>
+      <div class="paper-line"></div>
+      <div class="paper-line"></div>
+      <div class="paper-line"></div>
+      <div class="paper-line"></div>
+      <div class="paper-line"></div>
+    </div>
+  </div>
+
+</div><!-- end paper section -->
+
+<br>
+<div id="score-banner"></div>
+
+<script>
+  // ── Multiple Choice ──
+  function checkMC(btn, isCorrect) {
+    const card = btn.closest('.card');
+    const allBtns = card.querySelectorAll('.choice-btn');
+    const feedback = card.querySelector('.feedback');
+
+    allBtns.forEach(b => b.disabled = true);
+
+    if (isCorrect) {
+      btn.classList.add('correct');
+      feedback.className = 'feedback show correct';
+      feedback.textContent = '✅ Bravo Selma, c\'est la bonne réponse ! 🌸';
+    } else {
+      btn.classList.add('wrong');
+      // Highlight correct
+      allBtns.forEach(b => {
+        if (b.onclick.toString().includes('true')) b.classList.add('correct');
+      });
+      feedback.className = 'feedback show wrong';
+      feedback.textContent = '❌ Pas tout à fait… regarde la bonne réponse en vert 🌷';
+    }
+  }
+
+  // ── Fill-in Conversions ──
+  const fillAnswers = {
+    c1: ['72000'],          // 72 km³ → hm³  (×1000)
+    c2: ['0.000000061','0,000000061'], // 61 mm³ → dm³  (÷10^9)
+    c3: ['0.354','0,354'],  // 354 m³ → dam³ (÷1000)
+    c4: ['90'],             // 0.09 m³ → L  (0.09 dm³×1000 = 90 dm³ = 90L)
+    c5: ['5140'],           // 5.14 cm³ → mm³ (×1000)
+    c6: ['34000'],          // 34 mL = 34 cm³ → mm³ (×1000)
+  };
+
+  function checkFill() {
+    let correct = 0;
+    let total = Object.keys(fillAnswers).length;
+
+    Object.entries(fillAnswers).forEach(([id, accepted]) => {
+      const input = document.getElementById(id);
+      const val = input.value.trim().replace(',', '.');
+      const isOk = accepted.map(a => a.replace(',','.')).includes(val);
+      input.className = 'fill-input ' + (isOk ? 'correct' : 'wrong');
+      if (isOk) correct++;
+    });
+
+    const fb = document.getElementById('fill-feedback');
+    fb.className = 'feedback show ' + (correct === total ? 'correct' : 'wrong');
+    fb.textContent = correct === total
+      ? `🌸 Parfait ! Tu as tout bon ! (${correct}/${total}) 🎉`
+      : `🌷 Tu as ${correct}/${total} bonnes réponses. Les mauvaises sont en rose — réessaie !`;
+  }
+</script>
+
+</body>
+</html>
