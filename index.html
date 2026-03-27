@@ -21,7 +21,6 @@
       --card-border:  #f5c8db;
     }
 
-    /* Petal SVG background */
     body {
       font-family: 'Nunito', sans-serif;
       background-color: var(--pink-blush);
@@ -31,7 +30,6 @@
       overflow-x: hidden;
     }
 
-    /* Decorative floating petals */
     body::before {
       content: '';
       position: fixed;
@@ -117,6 +115,50 @@
       background: linear-gradient(to left, transparent, var(--pink-mid));
     }
 
+    /* ── Breadcrumb / back button ── */
+    .breadcrumb {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 1.4rem;
+    }
+
+    .breadcrumb.visible { display: flex; }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--pink-deep);
+      background: var(--white);
+      border: 1.5px solid var(--card-border);
+      border-radius: 50px;
+      padding: 7px 16px;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      box-shadow: 0 2px 8px rgba(232,98,138,0.07);
+    }
+
+    .back-btn:hover {
+      border-color: var(--pink-mid);
+      box-shadow: 0 4px 12px rgba(232,98,138,0.14);
+    }
+
+    .breadcrumb-label {
+      font-size: 14px;
+      color: var(--text-soft);
+      font-weight: 600;
+    }
+
+    .breadcrumb-cat {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-mid);
+    }
+
     /* ── Search ── */
     .search-row {
       margin-bottom: 1.2rem;
@@ -164,7 +206,83 @@
       letter-spacing: 0.3px;
     }
 
-    /* ── Cards ── */
+    /* ── Category cards ── */
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 1rem;
+    }
+
+    .cat-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 28px 20px;
+      background: var(--white);
+      border: 1.5px solid var(--card-border);
+      border-radius: 22px;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+      box-shadow: 0 2px 8px rgba(232,98,138,0.06);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cat-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(252,217,231,0.5) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .cat-card:hover {
+      border-color: var(--pink-mid);
+      box-shadow: 0 8px 24px rgba(232,98,138,0.16);
+      transform: translateY(-3px);
+    }
+
+    .cat-card:hover::before { opacity: 1; }
+
+    .cat-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #fce4ef, #f9c8db);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      box-shadow: 0 3px 10px rgba(232,98,138,0.2);
+      position: relative;
+      z-index: 1;
+    }
+
+    .cat-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text-dark);
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cat-sub {
+      font-size: 12px;
+      color: var(--text-soft);
+      font-weight: 600;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Quiz cards ── */
     .page-card {
       display: flex;
       align-items: center;
@@ -296,89 +414,180 @@
     <header>
       <span class="header-flowers">🌸 🌷 🌸</span>
       <h1>Selma's <em>Quizzes</em></h1>
-      <p>Pick a quiz and let the fun begin ✨</p>
+      <p id="header-sub">Choose a subject to get started ✨</p>
       <div class="header-divider">🌺</div>
     </header>
 
-    <div class="search-row">
+    <!-- Breadcrumb (shown when inside a category) -->
+    <div class="breadcrumb" id="breadcrumb">
+      <button class="back-btn" id="back-btn">← Back</button>
+      <span class="breadcrumb-label">Subject:</span>
+      <span class="breadcrumb-cat" id="breadcrumb-cat"></span>
+    </div>
+
+    <!-- Search (shown only inside a category) -->
+    <div class="search-row" id="search-row" style="display:none;">
       <input type="text" id="search" placeholder="Search quizzes…" />
     </div>
 
     <div class="count" id="count"></div>
-    <div id="list"><div class="status"><span class="spinner"></span>Loading quizzes…</div></div>
+    <div id="list"><div class="status"><span class="spinner"></span>Loading…</div></div>
   </div>
 
   <script>
-    // ─── CONFIGURATION ──────────────────────────────────────────
+    // ─── CONFIGURATION ───────────────────────────────────────────
     const GITHUB_USER = "nbreil";
     const GITHUB_REPO = "Selma_quizzes";
     // ────────────────────────────────────────────────────────────
 
-    const API = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/`;
+    const API_ROOT = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/`;
 
-    const ICONS = ["🌸","🌺","🌷","💐","🌼","🌻","🪷","🌹"];
+    // Category metadata — add more here as needed
+    const CAT_META = {
+      Math: { icon: "📐", label: "Mathématiques", sub: "Géométrie · Conversions" },
+      SVT:  { icon: "🌿", label: "SVT",            sub: "Sciences de la Vie et de la Terre" },
+    };
+
+    const QUIZ_ICONS = ["🌸","🌺","🌷","💐","🌼","🌻","🪷","🌹"];
     function pickIcon(name) {
       let hash = 0;
       for (let c of name) hash = (hash * 31 + c.charCodeAt(0)) & 0xffffff;
-      return ICONS[hash % ICONS.length];
+      return QUIZ_ICONS[hash % QUIZ_ICONS.length];
     }
 
     function toLabel(filename) {
       return filename
         .replace(/\.html$/i, "")
+        .replace(/^(Math|SVT)[_-]?/i, "")   // strip category prefix from quiz name
         .replace(/[-_]/g, " ")
-        .replace(/\b\w/g, c => c.toUpperCase());
+        .replace(/\b\w/g, c => c.toUpperCase())
+        .trim() || filename.replace(/\.html$/i, "");
     }
 
-    function renderList(pages) {
-      const list  = document.getElementById("list");
-      const count = document.getElementById("count");
+    // ── State ──
+    let currentCat = null;   // null = category view
+    let allQuizzes = [];     // quizzes in the current category
 
-      count.textContent = pages.length + " quiz" + (pages.length !== 1 ? "zes" : "");
+    // ── Views ──
 
-      if (!pages.length) {
-        list.innerHTML = '<div class="status">🌸 No quizzes found</div>';
+    function showCategoryView(categories) {
+      currentCat = null;
+      allQuizzes = [];
+
+      document.getElementById("breadcrumb").classList.remove("visible");
+      document.getElementById("search-row").style.display = "none";
+      document.getElementById("search").value = "";
+      document.getElementById("header-sub").textContent = "Choose a subject to get started ✨";
+      document.getElementById("count").textContent = "";
+
+      if (!categories.length) {
+        document.getElementById("list").innerHTML = '<div class="status">🌸 No subjects found</div>';
         return;
       }
 
-      list.innerHTML = pages.map(p => `
-        <a class="page-card" href="${p.name}">
-          <div class="page-icon">${pickIcon(p.name)}</div>
+      const grid = document.createElement("div");
+      grid.className = "category-grid";
+      grid.innerHTML = categories.map(cat => {
+        const meta = CAT_META[cat.name] || { icon: "📚", label: cat.name, sub: "" };
+        return `
+          <div class="cat-card" onclick="loadCategory('${cat.name}', '${meta.label}')">
+            <div class="cat-icon">${meta.icon}</div>
+            <div class="cat-name">${meta.label}</div>
+            ${meta.sub ? `<div class="cat-sub">${meta.sub}</div>` : ""}
+          </div>
+        `;
+      }).join("");
+
+      document.getElementById("list").innerHTML = "";
+      document.getElementById("list").appendChild(grid);
+    }
+
+    function showQuizView(catName, catLabel, quizzes) {
+      currentCat = catName;
+      allQuizzes = quizzes;
+
+      document.getElementById("breadcrumb").classList.add("visible");
+      document.getElementById("breadcrumb-cat").textContent = catLabel;
+      document.getElementById("search-row").style.display = "";
+      document.getElementById("header-sub").textContent = "";
+
+      renderQuizList(quizzes, catName);
+    }
+
+    function renderQuizList(quizzes, catName) {
+      const count = document.getElementById("count");
+      count.textContent = quizzes.length + " quiz" + (quizzes.length !== 1 ? "zes" : "");
+
+      if (!quizzes.length) {
+        document.getElementById("list").innerHTML = '<div class="status">🌸 No quizzes found</div>';
+        return;
+      }
+
+      document.getElementById("list").innerHTML = quizzes.map(q => `
+        <a class="page-card" href="${catName}/${q.name}">
+          <div class="page-icon">${pickIcon(q.name)}</div>
           <div>
-            <div class="page-name">${toLabel(p.name)}</div>
-            <div class="page-path">${p.name}</div>
+            <div class="page-name">${toLabel(q.name)}</div>
+            <div class="page-path">${q.name}</div>
           </div>
           <span class="page-arrow">›</span>
         </a>
       `).join("");
     }
 
-    let allPages = [];
+    // ── Data loading ──
 
-    async function loadPages() {
+    async function loadRoot() {
       try {
-        const res = await fetch(API);
+        const res = await fetch(API_ROOT);
         if (!res.ok) throw new Error("API error " + res.status);
-        const files = await res.json();
-
-        allPages = files
-          .filter(f => f.type === "file" && f.name.endsWith(".html") && f.name !== "index.html")
-          .sort((a, b) => a.name.localeCompare(b.name));
-
-        renderList(allPages);
+        const items = await res.json();
+        const dirs = items.filter(f => f.type === "dir" && !f.name.startsWith("."));
+        showCategoryView(dirs);
       } catch (e) {
         document.getElementById("list").innerHTML =
-          '<div class="status">🌷 Could not load quizzes. Check your GITHUB_USER and GITHUB_REPO settings.</div>';
+          '<div class="status">🌷 Could not load subjects. Check your GITHUB_USER and GITHUB_REPO settings.</div>';
         console.error(e);
       }
     }
 
-    document.getElementById("search").addEventListener("input", e => {
-      const q = e.target.value.toLowerCase();
-      renderList(allPages.filter(p => p.name.toLowerCase().includes(q)));
+    async function loadCategory(catName, catLabel) {
+      document.getElementById("list").innerHTML =
+        '<div class="status"><span class="spinner"></span>Loading quizzes…</div>';
+      try {
+        const res = await fetch(API_ROOT + catName);
+        if (!res.ok) throw new Error("API error " + res.status);
+        const items = await res.json();
+        const quizzes = items
+          .filter(f => f.type === "file" && f.name.endsWith(".html"))
+          .sort((a, b) => a.name.localeCompare(b.name));
+        showQuizView(catName, catLabel, quizzes);
+      } catch (e) {
+        document.getElementById("list").innerHTML =
+          '<div class="status">🌷 Could not load quizzes.</div>';
+        console.error(e);
+      }
+    }
+
+    // ── Events ──
+
+    document.getElementById("back-btn").addEventListener("click", () => {
+      document.getElementById("list").innerHTML =
+        '<div class="status"><span class="spinner"></span>Loading…</div>';
+      loadRoot();
     });
 
-    loadPages();
+    document.getElementById("search").addEventListener("input", e => {
+      if (!currentCat) return;
+      const q = e.target.value.toLowerCase();
+      renderQuizList(
+        allQuizzes.filter(p => p.name.toLowerCase().includes(q)),
+        currentCat
+      );
+    });
+
+    // ── Boot ──
+    loadRoot();
   </script>
 </body>
 </html>
