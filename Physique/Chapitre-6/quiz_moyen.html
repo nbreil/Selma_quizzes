@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz Moyen – Mouvement et vitesse</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --pink-deep: #e8628a; --pink-mid: #f093b0; --pink-light: #fcd9e7;
+      --pink-blush: #fff0f5; --rose: #f7c5d5; --text-dark: #3d1a2b;
+      --text-mid: #7a4460; --text-soft: #c48aa8; --white: #fffbfc; --card-border: #f5c8db;
+      --correct: #68c97a; --wrong: #e87070;
+    }
+    body { font-family: 'Nunito', sans-serif; background: var(--pink-blush); color: var(--text-dark); min-height: 100vh; overflow-x: hidden; }
+    body::before { content: ''; position: fixed; inset: 0; background-image: radial-gradient(ellipse 60% 40% at 15% 20%, rgba(248,180,210,0.35) 0%, transparent 60%), radial-gradient(ellipse 50% 60% at 85% 75%, rgba(244,155,195,0.25) 0%, transparent 55%); pointer-events: none; z-index: 0; }
+    .petal { position: fixed; font-size: 20px; opacity: 0.22; pointer-events: none; animation: floatPetal linear infinite; z-index: 0; }
+    @keyframes floatPetal { 0%{transform:translateY(-30px) rotate(0deg);opacity:0} 10%{opacity:.22} 90%{opacity:.15} 100%{transform:translateY(110vh) rotate(360deg);opacity:0} }
+    .shell { max-width: 740px; margin: 0 auto; padding: 3rem 1.5rem 5rem; position: relative; z-index: 1; }
+    .back-btn { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; color: var(--pink-deep); background: var(--white); border: 1.5px solid var(--card-border); border-radius: 50px; padding: 7px 16px; cursor: pointer; text-decoration: none; box-shadow: 0 2px 8px rgba(232,98,138,.07); transition: border-color .2s; margin-bottom: 2rem; }
+    .back-btn:hover { border-color: var(--pink-mid); }
+    header { text-align: center; margin-bottom: 2.5rem; }
+    .header-flowers { font-size: 26px; letter-spacing: 8px; display: block; margin-bottom: 6px; animation: sway 4s ease-in-out infinite; }
+    @keyframes sway { 0%,100%{transform:rotate(-2deg)} 50%{transform:rotate(2deg)} }
+    header h1 { font-family: 'Playfair Display', serif; font-size: 34px; font-weight: 600; color: var(--pink-deep); }
+    header h1 em { font-style: italic; font-weight: 400; color: var(--text-mid); }
+    .badge { display: inline-block; background: linear-gradient(135deg,#fce4ef,#f9c8db); color: var(--text-mid); font-size: 13px; font-weight: 700; padding: 4px 14px; border-radius: 50px; margin-top: 8px; }
+    .divider { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 1.2rem 0; color: var(--pink-mid); font-size: 16px; }
+    .divider::before,.divider::after { content:''; display:block; height:1px; width:80px; background:linear-gradient(to right,transparent,var(--pink-mid)); }
+    .divider::after { background:linear-gradient(to left,transparent,var(--pink-mid)); }
+    .progress-bar-wrap { background: var(--pink-light); border-radius: 50px; height: 8px; margin-bottom: 2rem; overflow: hidden; }
+    .progress-bar { height: 100%; background: linear-gradient(to right, var(--pink-mid), var(--pink-deep)); border-radius: 50px; transition: width .4s ease; }
+    .progress-label { text-align: right; font-size: 12px; color: var(--text-soft); font-weight: 600; margin-bottom: 6px; }
+    .question-card { background: var(--white); border: 1.5px solid var(--card-border); border-radius: 22px; padding: 2rem; margin-bottom: 1.2rem; box-shadow: 0 2px 12px rgba(232,98,138,.07); }
+    .q-number { font-size: 12px; font-weight: 700; color: var(--text-soft); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+    .q-text { font-size: 16px; font-weight: 600; color: var(--text-dark); line-height: 1.5; margin-bottom: 1.2rem; }
+    .options { display: flex; flex-direction: column; gap: 10px; }
+    .option { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 14px; cursor: pointer; border: 1.5px solid var(--card-border); background: var(--pink-blush); font-size: 15px; font-weight: 500; color: var(--text-dark); transition: border-color .2s, background .2s, transform .1s; user-select: none; }
+    .option:hover:not(.disabled) { border-color: var(--pink-mid); background: #fff5f9; transform: translateX(3px); }
+    .option.correct { border-color: var(--correct); background: #f0fff3; color: #2d7a3a; }
+    .option.wrong   { border-color: var(--wrong);   background: #fff0f0; color: #8b2020; }
+    .option.disabled { cursor: default; }
+    .option .opt-letter { width: 28px; height: 28px; border-radius: 50%; background: var(--pink-light); color: var(--pink-deep); font-weight: 700; font-size: 13px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .option.correct .opt-letter { background: #d4f4da; color: #2d7a3a; }
+    .option.wrong   .opt-letter { background: #fde0e0; color: #8b2020; }
+    .feedback { margin-top: 1rem; padding: 10px 14px; border-radius: 12px; font-size: 14px; font-weight: 600; display: none; }
+    .feedback.show { display: block; }
+    .feedback.correct { background: #f0fff3; color: #2d7a3a; border: 1px solid #a8ddb5; }
+    .feedback.wrong   { background: #fff0f0; color: #8b2020; border: 1px solid #f0b0b0; }
+    .score-card { background: var(--white); border: 2px solid var(--pink-mid); border-radius: 22px; padding: 2.5rem 2rem; text-align: center; display: none; box-shadow: 0 4px 20px rgba(232,98,138,.12); }
+    .score-card.show { display: block; }
+    .score-emoji { font-size: 56px; margin-bottom: 12px; }
+    .score-title { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 600; color: var(--pink-deep); }
+    .score-num   { font-size: 48px; font-weight: 700; color: var(--text-dark); margin: 10px 0; }
+    .score-sub   { font-size: 15px; color: var(--text-soft); margin-bottom: 1.5rem; }
+    .restart-btn { background: linear-gradient(135deg, var(--pink-mid), var(--pink-deep)); color: white; border: none; border-radius: 50px; padding: 12px 32px; font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 14px rgba(232,98,138,.3); transition: transform .15s; }
+    .restart-btn:hover { transform: translateY(-2px); }
+  </style>
+</head>
+<body>
+  <span class="petal" style="left:8%;  animation-duration:12s; animation-delay:0s;   top:-20px;">🌸</span>
+  <span class="petal" style="left:30%; animation-duration:15s; animation-delay:3s;   top:-20px;">🌺</span>
+  <span class="petal" style="left:65%; animation-duration:10s; animation-delay:1.5s; top:-20px;">🌸</span>
+  <span class="petal" style="left:85%; animation-duration:14s; animation-delay:4s;   top:-20px;">🌷</span>
+
+  <div class="shell">
+    <a class="back-btn" href="../../index.html">← Retour</a>
+    <header>
+      <span class="header-flowers">🌸 🌷 🌸</span>
+      <h1>Quiz <em>Moyen</em></h1>
+      <div class="badge">Chapitre 6 — Mouvement et vitesse</div>
+      <div class="divider">🌺</div>
+    </header>
+    <div class="progress-label" id="progress-label">Question 1 / 20</div>
+    <div class="progress-bar-wrap"><div class="progress-bar" id="progress-bar" style="width:5%"></div></div>
+    <div id="quiz-container"></div>
+    <div class="score-card" id="score-card">
+      <div class="score-emoji" id="score-emoji">🌸</div>
+      <div class="score-title">Résultat final</div>
+      <div class="score-num" id="score-num">0 / 20</div>
+      <div class="score-sub" id="score-sub"></div>
+      <button class="restart-btn" onclick="restart()">Recommencer 🌷</button>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      { q: "Un coureur parcourt 400 m en 43,03 s. Quelle est sa vitesse en m/s (arrondie) ?", opts: ["6,5 m/s", "9,3 m/s", "12 m/s", "43 m/s"], ans: 1, exp: "v = 400 ÷ 43,03 ≈ 9,3 m/s. C'est le record de Wayde Van Niekerk." },
+      { q: "Un objet parcourt 10 m en 5,3 s. Quelle est sa vitesse environ ?", opts: ["1,9 m/s", "53 m/s", "0,5 m/s", "2,5 m/s"], ans: 0, exp: "v = 10 ÷ 5,3 ≈ 1,9 m/s (≈ 1,8 m/s)." },
+      { q: "Federica Pellegrini nage 200 m en 1 min 53 s. Combien de secondes cela fait-il ?", opts: ["93 s", "113 s", "153 s", "73 s"], ans: 1, exp: "1 min = 60 s, donc 60 + 53 = 113 s." },
+      { q: "Avec 200 m en 113 s, quelle est la vitesse de Pellegrini (arrondie) ?", opts: ["0,56 m/s", "1,77 m/s", "3,5 m/s", "11,3 m/s"], ans: 1, exp: "v = 200 ÷ 113 ≈ 1,77 m/s ≈ 1,8 m/s." },
+      { q: "Dans quel type de mouvement les distances successives sont-elles toujours les mêmes ?", opts: ["Accéléré", "Ralenti", "Uniforme", "Circulaire"], ans: 2, exp: "Dans un mouvement uniforme, l'objet parcourt la même distance à chaque intervalle de temps." },
+      { q: "Un vélo parcourt 5 m, puis 7 m, puis 9 m à chaque seconde. Comment évolue sa vitesse ?", opts: ["Elle diminue", "Elle est constante", "Elle augmente", "Elle est nulle"], ans: 2, exp: "Les distances augmentent → la vitesse augmente → mouvement accéléré." },
+      { q: "Un vélo parcourt 10 m, puis 8 m, puis 6 m à chaque seconde. Quel est le type de mouvement ?", opts: ["Uniforme", "Accéléré", "Nul", "Ralenti"], ans: 3, exp: "Les distances diminuent → vitesse diminue → mouvement ralenti." },
+      { q: "Un élève parcourt 30 m en 6 s. Quelle est sa vitesse ?", opts: ["180 m/s", "0,2 m/s", "5 m/s", "36 m/s"], ans: 2, exp: "v = 30 ÷ 6 = 5 m/s." },
+      { q: "Peter Genyn parcourt 100 m en 20,33 s. Sa vitesse est environ :", opts: ["20,33 m/s", "4,9 m/s", "2 m/s", "100 m/s"], ans: 1, exp: "v = 100 ÷ 20,33 ≈ 4,9 m/s." },
+      { q: "Suzanne Schulting parcourt 1 000 m en 86 s. Sa vitesse est :", opts: ["86 m/s", "0,086 m/s", "11,6 m/s", "8,6 m/s"], ans: 2, exp: "v = 1 000 ÷ 86 ≈ 11,6 m/s." },
+      { q: "Que dois-je faire pour calculer une vitesse moyenne ?", opts: ["Prendre la mesure la plus grande", "Prendre uniquement la première mesure", "Calculer la somme de toutes les mesures divisée par le nombre de mesures", "Ignorer les mesures extrêmes"], ans: 2, exp: "La moyenne = somme des mesures ÷ nombre de mesures." },
+      { q: "2 heures 22 minutes 55 secondes, converti en secondes, c'est :", opts: ["8 155 s", "8 575 s", "7 975 s", "9 000 s"], ans: 1, exp: "2×3600 + 22×60 + 55 = 7200 + 1320 + 55 = 8 575 s." },
+      { q: "La durée entre deux positions successives dans les schémas de mouvement :", opts: ["Change à chaque fois", "Augmente toujours", "Reste toujours la même", "Diminue toujours"], ans: 2, exp: "La durée entre deux positions successives ne varie pas — c'est un intervalle de temps constant." },
+      { q: "Quel outil utilise-t-on pour suivre un protocole de mesure de vitesse ?", opts: ["Un thermomètre et une règle", "Un chronomètre et un mètre", "Une balance et un voltmètre", "Une calculatrice seulement"], ans: 1, exp: "On a besoin d'un chronomètre (pour la durée) et d'un mètre (pour la distance)." },
+      { q: "Lors de la Phase 1 d'une course (0 à 8 s), un coureur s'éloigne de plus en plus à chaque seconde. Quel est son mouvement ?", opts: ["Uniforme", "Ralenti", "Accéléré", "Nul"], ans: 2, exp: "Des distances croissantes → le mouvement est accéléré." },
+      { q: "Lors de la Phase 3 (35 à 43 s), les distances diminuent. Comment qualifie-t-on ce mouvement ?", opts: ["Accéléré", "Uniforme", "Ralenti", "Nul"], ans: 2, exp: "Des distances décroissantes → le mouvement est ralenti." },
+      { q: "Quelle conversion est correcte ?", opts: ["1 h = 600 s", "1 h = 3 600 s", "1 h = 360 s", "1 h = 100 min"], ans: 1, exp: "1 h = 60 min = 60 × 60 s = 3 600 s." },
+      { q: "Quelle est la vitesse approximative d'un marcheur ?", opts: ["50 km/h", "112 km/h", "4 km/h", "10 m/s"], ans: 2, exp: "Un marcheur marche à environ 4 km/h." },
+      { q: "Un objet se déplace à vitesse constante. Que peut-on dire des distances parcourues à intervalles de temps égaux ?", opts: ["Elles augmentent", "Elles diminuent", "Elles sont toujours les mêmes", "Elles varient aléatoirement"], ans: 2, exp: "À vitesse constante (mouvement uniforme), les distances parcourues lors d'intervalles de temps égaux sont toujours identiques." },
+      { q: "Si v = d ÷ t et que v = 5 m/s et t = 6 s, quelle est la distance ?", opts: ["0,83 m", "11 m", "30 m", "1 m"], ans: 2, exp: "d = v × t = 5 × 6 = 30 m." },
+    ];
+
+    let current = 0, score = 0, answered = false;
+
+    function render() {
+      const container = document.getElementById("quiz-container");
+      if (current >= questions.length) { showScore(); return; }
+      answered = false;
+      const q = questions[current];
+      const pct = Math.round((current / questions.length) * 100) + 5;
+      document.getElementById("progress-bar").style.width = pct + "%";
+      document.getElementById("progress-label").textContent = `Question ${current + 1} / ${questions.length}`;
+      container.innerHTML = `
+        <div class="question-card">
+          <div class="q-number">Question ${current + 1}</div>
+          <div class="q-text">${q.q}</div>
+          <div class="options">
+            ${q.opts.map((o, i) => `<div class="option" onclick="answer(${i})" id="opt-${i}"><div class="opt-letter">${String.fromCharCode(65+i)}</div>${o}</div>`).join("")}
+          </div>
+          <div class="feedback" id="feedback"></div>
+        </div>`;
+    }
+
+    function answer(i) {
+      if (answered) return;
+      answered = true;
+      const q = questions[current];
+      const fb = document.getElementById("feedback");
+      document.querySelectorAll(".option").forEach(el => el.classList.add("disabled"));
+      if (i === q.ans) {
+        score++;
+        document.getElementById(`opt-${i}`).classList.add("correct");
+        fb.textContent = "✅ Bravo ! " + q.exp;
+        fb.className = "feedback correct show";
+      } else {
+        document.getElementById(`opt-${i}`).classList.add("wrong");
+        document.getElementById(`opt-${q.ans}`).classList.add("correct");
+        fb.textContent = "❌ " + q.exp;
+        fb.className = "feedback wrong show";
+      }
+      setTimeout(() => { current++; render(); }, 2200);
+    }
+
+    function showScore() {
+      document.getElementById("quiz-container").innerHTML = "";
+      document.getElementById("progress-bar").style.width = "100%";
+      document.getElementById("progress-label").textContent = "Terminé !";
+      const card = document.getElementById("score-card");
+      card.classList.add("show");
+      document.getElementById("score-num").textContent = score + " / " + questions.length;
+      const pct = Math.round((score / questions.length) * 100);
+      let emoji = "🌸", msg = "";
+      if (pct === 100) { emoji = "🏆"; msg = "Parfait ! Tu maîtrises tout !"; }
+      else if (pct >= 75) { emoji = "🌺"; msg = "Très bien ! Encore un peu de révision et c'est parfait."; }
+      else if (pct >= 50) { emoji = "🌷"; msg = "Pas mal ! Relis la fiche résumé pour progresser."; }
+      else { emoji = "📖"; msg = "Continue de réviser, tu vas y arriver !"; }
+      document.getElementById("score-emoji").textContent = emoji;
+      document.getElementById("score-sub").textContent = msg;
+    }
+
+    function restart() {
+      current = 0; score = 0;
+      document.getElementById("score-card").classList.remove("show");
+      render();
+    }
+
+    render();
+  </script>
+</body>
+</html>

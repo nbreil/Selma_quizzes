@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz Facile – Mouvement et vitesse</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --pink-deep: #e8628a; --pink-mid: #f093b0; --pink-light: #fcd9e7;
+      --pink-blush: #fff0f5; --rose: #f7c5d5; --text-dark: #3d1a2b;
+      --text-mid: #7a4460; --text-soft: #c48aa8; --white: #fffbfc; --card-border: #f5c8db;
+      --correct: #68c97a; --wrong: #e87070;
+    }
+    body { font-family: 'Nunito', sans-serif; background: var(--pink-blush); color: var(--text-dark); min-height: 100vh; overflow-x: hidden; }
+    body::before { content: ''; position: fixed; inset: 0; background-image: radial-gradient(ellipse 60% 40% at 15% 20%, rgba(248,180,210,0.35) 0%, transparent 60%), radial-gradient(ellipse 50% 60% at 85% 75%, rgba(244,155,195,0.25) 0%, transparent 55%); pointer-events: none; z-index: 0; }
+    .petal { position: fixed; font-size: 20px; opacity: 0.22; pointer-events: none; animation: floatPetal linear infinite; z-index: 0; }
+    @keyframes floatPetal { 0%{transform:translateY(-30px) rotate(0deg);opacity:0} 10%{opacity:.22} 90%{opacity:.15} 100%{transform:translateY(110vh) rotate(360deg);opacity:0} }
+    .shell { max-width: 740px; margin: 0 auto; padding: 3rem 1.5rem 5rem; position: relative; z-index: 1; }
+    .back-btn { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; color: var(--pink-deep); background: var(--white); border: 1.5px solid var(--card-border); border-radius: 50px; padding: 7px 16px; cursor: pointer; text-decoration: none; box-shadow: 0 2px 8px rgba(232,98,138,.07); transition: border-color .2s, box-shadow .2s; margin-bottom: 2rem; }
+    .back-btn:hover { border-color: var(--pink-mid); box-shadow: 0 4px 12px rgba(232,98,138,.14); }
+    header { text-align: center; margin-bottom: 2.5rem; }
+    .header-flowers { font-size: 26px; letter-spacing: 8px; display: block; margin-bottom: 6px; animation: sway 4s ease-in-out infinite; }
+    @keyframes sway { 0%,100%{transform:rotate(-2deg)} 50%{transform:rotate(2deg)} }
+    header h1 { font-family: 'Playfair Display', serif; font-size: 34px; font-weight: 600; color: var(--pink-deep); text-shadow: 0 2px 16px rgba(232,98,138,.15); }
+    header h1 em { font-style: italic; font-weight: 400; color: var(--text-mid); }
+    .badge { display: inline-block; background: linear-gradient(135deg,#fce4ef,#f9c8db); color: var(--text-mid); font-size: 13px; font-weight: 700; padding: 4px 14px; border-radius: 50px; margin-top: 8px; }
+    .divider { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 1.2rem 0; color: var(--pink-mid); font-size: 16px; }
+    .divider::before,.divider::after { content:''; display:block; height:1px; width:80px; background:linear-gradient(to right,transparent,var(--pink-mid)); }
+    .divider::after { background:linear-gradient(to left,transparent,var(--pink-mid)); }
+
+    /* Progress */
+    .progress-bar-wrap { background: var(--pink-light); border-radius: 50px; height: 8px; margin-bottom: 2rem; overflow: hidden; }
+    .progress-bar { height: 100%; background: linear-gradient(to right, var(--pink-mid), var(--pink-deep)); border-radius: 50px; transition: width .4s ease; }
+    .progress-label { text-align: right; font-size: 12px; color: var(--text-soft); font-weight: 600; margin-bottom: 6px; }
+
+    /* Question card */
+    .question-card { background: var(--white); border: 1.5px solid var(--card-border); border-radius: 22px; padding: 2rem; margin-bottom: 1.2rem; box-shadow: 0 2px 12px rgba(232,98,138,.07); }
+    .q-number { font-size: 12px; font-weight: 700; color: var(--text-soft); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+    .q-text { font-size: 16px; font-weight: 600; color: var(--text-dark); line-height: 1.5; margin-bottom: 1.2rem; }
+    .options { display: flex; flex-direction: column; gap: 10px; }
+    .option {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 16px; border-radius: 14px; cursor: pointer;
+      border: 1.5px solid var(--card-border); background: var(--pink-blush);
+      font-size: 15px; font-weight: 500; color: var(--text-dark);
+      transition: border-color .2s, background .2s, transform .1s;
+      user-select: none;
+    }
+    .option:hover:not(.disabled) { border-color: var(--pink-mid); background: #fff5f9; transform: translateX(3px); }
+    .option.correct  { border-color: var(--correct); background: #f0fff3; color: #2d7a3a; }
+    .option.wrong    { border-color: var(--wrong);   background: #fff0f0; color: #8b2020; }
+    .option.disabled { cursor: default; }
+    .option .opt-letter { width: 28px; height: 28px; border-radius: 50%; background: var(--pink-light); color: var(--pink-deep); font-weight: 700; font-size: 13px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .option.correct .opt-letter { background: #d4f4da; color: #2d7a3a; }
+    .option.wrong   .opt-letter { background: #fde0e0; color: #8b2020; }
+    .feedback { margin-top: 1rem; padding: 10px 14px; border-radius: 12px; font-size: 14px; font-weight: 600; display: none; }
+    .feedback.show { display: block; }
+    .feedback.correct { background: #f0fff3; color: #2d7a3a; border: 1px solid #a8ddb5; }
+    .feedback.wrong   { background: #fff0f0; color: #8b2020; border: 1px solid #f0b0b0; }
+
+    /* Score */
+    .score-card { background: var(--white); border: 2px solid var(--pink-mid); border-radius: 22px; padding: 2.5rem 2rem; text-align: center; display: none; box-shadow: 0 4px 20px rgba(232,98,138,.12); }
+    .score-card.show { display: block; }
+    .score-emoji { font-size: 56px; margin-bottom: 12px; }
+    .score-title { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 600; color: var(--pink-deep); }
+    .score-num   { font-size: 48px; font-weight: 700; color: var(--text-dark); margin: 10px 0; }
+    .score-sub   { font-size: 15px; color: var(--text-soft); margin-bottom: 1.5rem; }
+    .restart-btn { background: linear-gradient(135deg, var(--pink-mid), var(--pink-deep)); color: white; border: none; border-radius: 50px; padding: 12px 32px; font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 14px rgba(232,98,138,.3); transition: transform .15s, box-shadow .15s; }
+    .restart-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(232,98,138,.4); }
+  </style>
+</head>
+<body>
+  <span class="petal" style="left:8%;  animation-duration:12s; animation-delay:0s;   top:-20px;">🌸</span>
+  <span class="petal" style="left:30%; animation-duration:15s; animation-delay:3s;   top:-20px;">🌺</span>
+  <span class="petal" style="left:65%; animation-duration:10s; animation-delay:1.5s; top:-20px;">🌸</span>
+  <span class="petal" style="left:85%; animation-duration:14s; animation-delay:4s;   top:-20px;">🌷</span>
+
+  <div class="shell">
+    <a class="back-btn" href="../../index.html">← Retour</a>
+
+    <header>
+      <span class="header-flowers">🌸 🌷 🌸</span>
+      <h1>Quiz <em>Facile</em></h1>
+      <div class="badge">Chapitre 6 — Mouvement et vitesse</div>
+      <div class="divider">🌺</div>
+    </header>
+
+    <div class="progress-label" id="progress-label">Question 1 / 20</div>
+    <div class="progress-bar-wrap"><div class="progress-bar" id="progress-bar" style="width:5%"></div></div>
+
+    <div id="quiz-container"></div>
+    <div class="score-card" id="score-card">
+      <div class="score-emoji" id="score-emoji">🌸</div>
+      <div class="score-title">Résultat final</div>
+      <div class="score-num" id="score-num">0 / 20</div>
+      <div class="score-sub" id="score-sub"></div>
+      <button class="restart-btn" onclick="restart()">Recommencer 🌷</button>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      { q: "Qu'est-ce que la vitesse ?", opts: ["La couleur d'un objet", "La distance parcourue divisée par la durée", "La masse d'un objet", "La forme du trajet"], ans: 1, exp: "v = d ÷ t : distance parcourue divisée par la durée." },
+      { q: "Quelle est la formule de la vitesse ?", opts: ["v = d × t", "v = d + t", "v = d ÷ t", "v = t ÷ d"], ans: 2, exp: "La formule est v = d ÷ t." },
+      { q: "En quelles unités mesure-t-on une distance ?", opts: ["Secondes et minutes", "Mètres et kilomètres", "Grammes et kilogrammes", "Litres et millilitres"], ans: 1, exp: "La distance se mesure en mètres (m) ou en kilomètres (km)." },
+      { q: "En quelles unités mesure-t-on une durée ?", opts: ["Mètres et kilomètres", "Kilogrammes", "Secondes, minutes, heures", "Litres"], ans: 2, exp: "La durée se mesure en secondes (s), minutes (min) ou heures (h)." },
+      { q: "Combien y a-t-il de secondes dans 1 minute ?", opts: ["10 s", "100 s", "60 s", "30 s"], ans: 2, exp: "1 min = 60 s." },
+      { q: "Combien y a-t-il de mètres dans 1 kilomètre ?", opts: ["10 m", "100 m", "10 000 m", "1 000 m"], ans: 3, exp: "1 km = 1 000 m." },
+      { q: "Si la distance est en mètres et la durée en secondes, la vitesse est en :", opts: ["km/h", "m/s", "km/min", "m/min"], ans: 1, exp: "Distance en m ÷ durée en s → vitesse en m/s." },
+      { q: "Un objet en mouvement, c'est :", opts: ["Un objet très lourd", "Un objet qui ne change pas de position", "Un objet qui change de position", "Un objet très rapide"], ans: 2, exp: "Un objet en mouvement est un objet qui change de position." },
+      { q: "Comment appelle-t-on un mouvement où la vitesse est constante ?", opts: ["Accéléré", "Ralenti", "Uniforme", "Circulaire"], ans: 2, exp: "Un mouvement à vitesse constante est un mouvement uniforme." },
+      { q: "Combien y a-t-il de secondes dans 1 heure ?", opts: ["60 s", "600 s", "3 600 s", "360 s"], ans: 2, exp: "1 h = 60 min × 60 s = 3 600 s." },
+      { q: "Un élève marche à 1,8 m/s. Que signifie cette valeur ?", opts: ["Il parcourt 1,8 km en 1 heure", "Il parcourt 1,8 mètre en 1 seconde", "Il parcourt 1,8 cm en 1 seconde", "Il parcourt 18 mètres en 1 minute"], ans: 1, exp: "1,8 m/s signifie qu'il parcourt 1,8 mètre chaque seconde." },
+      { q: "Quel instrument utilise-t-on pour mesurer la durée d'un déplacement ?", opts: ["Une règle", "Une balance", "Un chronomètre", "Un thermomètre"], ans: 2, exp: "On utilise un chronomètre pour mesurer la durée." },
+      { q: "Quel instrument utilise-t-on pour mesurer une distance ?", opts: ["Un chronomètre", "Un mètre (règle)", "Une balance", "Un voltmètre"], ans: 1, exp: "On utilise un mètre ou une règle pour mesurer la distance." },
+      { q: "Comment appelle-t-on la personne par rapport à laquelle on décrit le mouvement ?", opts: ["Le mobile", "Le moteur", "L'observateur", "Le mesurant"], ans: 2, exp: "L'observateur est la personne par rapport à laquelle on décrit le mouvement." },
+      { q: "Un guépard court à 112 km/h. La vitesse du son est 340 m/s. Lequel est le plus rapide ?", opts: ["Le guépard", "Le son", "Ils vont à la même vitesse", "On ne peut pas comparer"], ans: 1, exp: "340 m/s = 340 × 3,6 ≈ 1 224 km/h. Le son est bien plus rapide que le guépard." },
+      { q: "Dans un mouvement accéléré, la vitesse :", opts: ["Reste constante", "Diminue", "Augmente", "Est nulle"], ans: 2, exp: "Dans un mouvement accéléré, la vitesse augmente." },
+      { q: "Dans un mouvement ralenti, les distances successives parcourues sont :", opts: ["De plus en plus grandes", "Toujours les mêmes", "De plus en plus petites", "Nulles"], ans: 2, exp: "Dans un mouvement ralenti, l'objet parcourt des distances de plus en plus petites." },
+      { q: "Combien vaut 2 heures en minutes ?", opts: ["60 min", "100 min", "120 min", "180 min"], ans: 2, exp: "2 h = 2 × 60 = 120 min." },
+      { q: "La lumière se déplace à environ 300 000 000 m/s. C'est :", opts: ["La vitesse la plus lente connue", "La vitesse du son", "La vitesse la plus grande connue dans l'univers", "La vitesse d'une voiture"], ans: 2, exp: "La vitesse de la lumière est la plus grande connue, environ 300 000 000 m/s." },
+      { q: "Pour calculer la vitesse, il faut connaître :", opts: ["Uniquement la distance", "Uniquement la durée", "La masse et la distance", "La distance ET la durée"], ans: 3, exp: "Il faut connaître la distance parcourue ET la durée du trajet." },
+    ];
+
+    let current = 0, score = 0, answered = false;
+
+    function render() {
+      const container = document.getElementById("quiz-container");
+      if (current >= questions.length) { showScore(); return; }
+      answered = false;
+      const q = questions[current];
+      const pct = Math.round((current / questions.length) * 100) + 5;
+      document.getElementById("progress-bar").style.width = pct + "%";
+      document.getElementById("progress-label").textContent = `Question ${current + 1} / ${questions.length}`;
+
+      container.innerHTML = `
+        <div class="question-card">
+          <div class="q-number">Question ${current + 1}</div>
+          <div class="q-text">${q.q}</div>
+          <div class="options">
+            ${q.opts.map((o, i) => `
+              <div class="option" onclick="answer(${i})" id="opt-${i}">
+                <div class="opt-letter">${String.fromCharCode(65+i)}</div>
+                ${o}
+              </div>`).join("")}
+          </div>
+          <div class="feedback" id="feedback"></div>
+        </div>`;
+    }
+
+    function answer(i) {
+      if (answered) return;
+      answered = true;
+      const q = questions[current];
+      const fb = document.getElementById("feedback");
+      document.querySelectorAll(".option").forEach(el => el.classList.add("disabled"));
+      if (i === q.ans) {
+        score++;
+        document.getElementById(`opt-${i}`).classList.add("correct");
+        fb.textContent = "✅ Bravo ! " + q.exp;
+        fb.className = "feedback correct show";
+      } else {
+        document.getElementById(`opt-${i}`).classList.add("wrong");
+        document.getElementById(`opt-${q.ans}`).classList.add("correct");
+        fb.textContent = "❌ " + q.exp;
+        fb.className = "feedback wrong show";
+      }
+      setTimeout(() => { current++; render(); }, 2200);
+    }
+
+    function showScore() {
+      document.getElementById("quiz-container").innerHTML = "";
+      document.getElementById("progress-bar").style.width = "100%";
+      document.getElementById("progress-label").textContent = "Terminé !";
+      const card = document.getElementById("score-card");
+      card.classList.add("show");
+      document.getElementById("score-num").textContent = score + " / " + questions.length;
+      const pct = Math.round((score / questions.length) * 100);
+      let emoji = "🌸", msg = "";
+      if (pct === 100) { emoji = "🏆"; msg = "Parfait ! Tu maîtrises tout !"; }
+      else if (pct >= 75) { emoji = "🌺"; msg = "Très bien ! Encore un peu de révision et c'est parfait."; }
+      else if (pct >= 50) { emoji = "🌷"; msg = "Pas mal ! Relis la fiche résumé pour progresser."; }
+      else { emoji = "📖"; msg = "Continue de réviser, tu vas y arriver !"; }
+      document.getElementById("score-emoji").textContent = emoji;
+      document.getElementById("score-sub").textContent = msg;
+    }
+
+    function restart() {
+      current = 0; score = 0;
+      document.getElementById("score-card").classList.remove("show");
+      render();
+    }
+
+    render();
+  </script>
+</body>
+</html>

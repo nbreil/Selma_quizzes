@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Questions ouvertes – Mouvement et vitesse</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --pink-deep: #e8628a; --pink-mid: #f093b0; --pink-light: #fcd9e7;
+      --pink-blush: #fff0f5; --text-dark: #3d1a2b; --text-mid: #7a4460;
+      --text-soft: #c48aa8; --white: #fffbfc; --card-border: #f5c8db;
+    }
+    body { font-family: 'Nunito', sans-serif; background: var(--pink-blush); color: var(--text-dark); min-height: 100vh; overflow-x: hidden; }
+    body::before { content: ''; position: fixed; inset: 0; background-image: radial-gradient(ellipse 60% 40% at 15% 20%, rgba(248,180,210,0.35) 0%, transparent 60%), radial-gradient(ellipse 50% 60% at 85% 75%, rgba(244,155,195,0.25) 0%, transparent 55%); pointer-events: none; z-index: 0; }
+    .petal { position: fixed; font-size: 20px; opacity: 0.22; pointer-events: none; animation: floatPetal linear infinite; z-index: 0; }
+    @keyframes floatPetal { 0%{transform:translateY(-30px) rotate(0deg);opacity:0} 10%{opacity:.22} 90%{opacity:.15} 100%{transform:translateY(110vh) rotate(360deg);opacity:0} }
+    .shell { max-width: 740px; margin: 0 auto; padding: 3rem 1.5rem 5rem; position: relative; z-index: 1; }
+    .back-btn { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; color: var(--pink-deep); background: var(--white); border: 1.5px solid var(--card-border); border-radius: 50px; padding: 7px 16px; cursor: pointer; text-decoration: none; box-shadow: 0 2px 8px rgba(232,98,138,.07); transition: border-color .2s; margin-bottom: 2rem; }
+    .back-btn:hover { border-color: var(--pink-mid); }
+    header { text-align: center; margin-bottom: 2.5rem; }
+    .header-flowers { font-size: 26px; letter-spacing: 8px; display: block; margin-bottom: 6px; animation: sway 4s ease-in-out infinite; }
+    @keyframes sway { 0%,100%{transform:rotate(-2deg)} 50%{transform:rotate(2deg)} }
+    header h1 { font-family: 'Playfair Display', serif; font-size: 34px; font-weight: 600; color: var(--pink-deep); }
+    header h1 em { font-style: italic; font-weight: 400; color: var(--text-mid); }
+    header p { margin-top: 8px; font-size: 15px; color: var(--text-soft); font-weight: 500; }
+    .badge { display: inline-block; background: linear-gradient(135deg,#fce4ef,#f9c8db); color: var(--text-mid); font-size: 13px; font-weight: 700; padding: 4px 14px; border-radius: 50px; margin-top: 8px; }
+    .divider { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 1.2rem 0; color: var(--pink-mid); font-size: 16px; }
+    .divider::before,.divider::after { content:''; display:block; height:1px; width:80px; background:linear-gradient(to right,transparent,var(--pink-mid)); }
+    .divider::after { background:linear-gradient(to left,transparent,var(--pink-mid)); }
+
+    /* Question cards */
+    .q-card { background: var(--white); border: 1.5px solid var(--card-border); border-radius: 22px; padding: 1.8rem 2rem; margin-bottom: 1.4rem; box-shadow: 0 2px 12px rgba(232,98,138,.07); }
+    .q-header { display: flex; align-items: center; gap: 12px; margin-bottom: 1rem; }
+    .q-num-badge { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg,#fce4ef,#f9c8db); color: var(--pink-deep); font-weight: 700; font-size: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 6px rgba(232,98,138,.18); }
+    .q-title { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 600; color: var(--text-dark); line-height: 1.4; }
+    .q-context { font-size: 13px; color: var(--text-soft); font-style: italic; margin-bottom: 10px; padding: 8px 12px; background: #fff5f9; border-radius: 10px; border-left: 3px solid var(--pink-light); }
+    textarea {
+      width: 100%; min-height: 120px; padding: 14px 16px;
+      font-family: 'Nunito', sans-serif; font-size: 15px; color: var(--text-dark);
+      background: var(--pink-blush); border: 1.5px solid var(--card-border);
+      border-radius: 14px; resize: vertical; outline: none;
+      transition: border-color .2s, box-shadow .2s;
+      line-height: 1.6;
+    }
+    textarea:focus { border-color: var(--pink-deep); box-shadow: 0 0 0 3px rgba(232,98,138,.1); }
+    textarea::placeholder { color: var(--text-soft); }
+
+    /* Actions */
+    .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 2rem; }
+    .btn-save {
+      flex: 1; min-width: 180px; padding: 14px 28px;
+      background: linear-gradient(135deg, var(--pink-mid), var(--pink-deep));
+      color: white; border: none; border-radius: 50px;
+      font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 700;
+      cursor: pointer; box-shadow: 0 4px 14px rgba(232,98,138,.3);
+      transition: transform .15s, box-shadow .15s;
+    }
+    .btn-save:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(232,98,138,.4); }
+    .btn-clear {
+      padding: 14px 22px; background: var(--white); color: var(--text-mid);
+      border: 1.5px solid var(--card-border); border-radius: 50px;
+      font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 600;
+      cursor: pointer; transition: border-color .2s;
+    }
+    .btn-clear:hover { border-color: var(--pink-mid); }
+
+    /* Toast */
+    .toast {
+      position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(80px);
+      background: var(--pink-deep); color: white; padding: 12px 24px; border-radius: 50px;
+      font-size: 14px; font-weight: 700; box-shadow: 0 4px 20px rgba(232,98,138,.4);
+      transition: transform .3s ease; z-index: 999;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+  <span class="petal" style="left:8%;  animation-duration:12s; animation-delay:0s;   top:-20px;">🌸</span>
+  <span class="petal" style="left:30%; animation-duration:15s; animation-delay:3s;   top:-20px;">🌺</span>
+  <span class="petal" style="left:65%; animation-duration:10s; animation-delay:1.5s; top:-20px;">🌸</span>
+  <span class="petal" style="left:85%; animation-duration:14s; animation-delay:4s;   top:-20px;">🌷</span>
+
+  <div class="shell">
+    <a class="back-btn" href="../../index.html">← Retour</a>
+    <header>
+      <span class="header-flowers">🌸 🌷 🌸</span>
+      <h1>Questions <em>ouvertes</em></h1>
+      <div class="badge">Chapitre 6 — Mouvement et vitesse</div>
+      <p>Réponds dans tes propres mots, puis télécharge tes réponses ✨</p>
+      <div class="divider">🌺</div>
+    </header>
+
+    <!-- Question 1 -->
+    <div class="q-card">
+      <div class="q-header">
+        <div class="q-num-badge">1</div>
+        <div class="q-title">Explique avec tes propres mots ce qu'est la vitesse d'un objet et comment on la calcule.</div>
+      </div>
+      <p class="q-context">Tu peux utiliser un exemple concret tiré du cours (coureur, voiture, nageur…)</p>
+      <textarea id="r1" placeholder="Écris ta réponse ici…"></textarea>
+    </div>
+
+    <!-- Question 2 -->
+    <div class="q-card">
+      <div class="q-header">
+        <div class="q-num-badge">2</div>
+        <div class="q-title">Décris les trois types de mouvement (uniforme, accéléré, ralenti) en expliquant comment on les reconnaît sur un schéma de positions.</div>
+      </div>
+      <p class="q-context">Pense aux distances entre les positions successives et à ce qu'elles nous indiquent sur la vitesse.</p>
+      <textarea id="r2" placeholder="Écris ta réponse ici…"></textarea>
+    </div>
+
+    <!-- Question 3 -->
+    <div class="q-card">
+      <div class="q-header">
+        <div class="q-num-badge">3</div>
+        <div class="q-title">Un élève souhaite mesurer la vitesse à laquelle il marche. Décris le protocole expérimental qu'il doit suivre, étape par étape.</div>
+      </div>
+      <p class="q-context">Indique le matériel nécessaire, les étapes à suivre et comment calculer la vitesse à partir des mesures.</p>
+      <textarea id="r3" placeholder="Écris ta réponse ici…"></textarea>
+    </div>
+
+    <!-- Question 4 -->
+    <div class="q-card">
+      <div class="q-header">
+        <div class="q-num-badge">4</div>
+        <div class="q-title">Wayde Van Niekerk a établi le record du monde du 400 m en 43,03 s aux JO de Rio 2016. Calcule sa vitesse en m/s puis convertis-la en km/h. Montre toutes les étapes de ton calcul.</div>
+      </div>
+      <p class="q-context">Rappel : pour passer de m/s en km/h, il faut multiplier par 3,6.</p>
+      <textarea id="r4" placeholder="Écris ta réponse ici…"></textarea>
+    </div>
+
+    <!-- Question 5 -->
+    <div class="q-card">
+      <div class="q-header">
+        <div class="q-num-badge">5</div>
+        <div class="q-title">Explique pourquoi il est important de réaliser plusieurs mesures de durée lors d'une expérience et de calculer leur moyenne.</div>
+      </div>
+      <p class="q-context">Pense à ce qui pourrait varier d'une mesure à l'autre et à ce que la moyenne permet d'obtenir.</p>
+      <textarea id="r5" placeholder="Écris ta réponse ici…"></textarea>
+    </div>
+
+    <!-- Actions -->
+    <div class="actions">
+      <button class="btn-save" onclick="saveAnswers()">💾 Télécharger mes réponses (.txt)</button>
+      <button class="btn-clear" onclick="clearAll()">Effacer tout</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Tes réponses ont été téléchargées 🌸</div>
+
+  <script>
+    function saveAnswers() {
+      const date = new Date().toLocaleDateString('fr-FR');
+      const lines = [
+        "Chapitre 6 — Mouvement et vitesse",
+        "Questions ouvertes — Réponses de Selma",
+        `Date : ${date}`,
+        "=".repeat(60),
+        "",
+      ];
+
+      const questions = [
+        "Question 1 : Explique avec tes propres mots ce qu'est la vitesse d'un objet et comment on la calcule.",
+        "Question 2 : Décris les trois types de mouvement (uniforme, accéléré, ralenti) en expliquant comment on les reconnaît sur un schéma de positions.",
+        "Question 3 : Un élève souhaite mesurer la vitesse à laquelle il marche. Décris le protocole expérimental, étape par étape.",
+        "Question 4 : Calcule la vitesse de Wayde Van Niekerk (400 m en 43,03 s) en m/s et en km/h. Montre toutes les étapes.",
+        "Question 5 : Explique pourquoi il est important de réaliser plusieurs mesures de durée et de calculer leur moyenne.",
+      ];
+
+      for (let i = 1; i <= 5; i++) {
+        const answer = document.getElementById(`r${i}`).value.trim();
+        lines.push(questions[i-1]);
+        lines.push("-".repeat(40));
+        lines.push(answer || "(pas de réponse)");
+        lines.push("");
+      }
+
+      const blob = new Blob([lines.join("\n")], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Selma_Physique_Chap6_questions_ouvertes_${date.replace(/\//g,"-")}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      const toast = document.getElementById("toast");
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 3000);
+    }
+
+    function clearAll() {
+      if (!confirm("Effacer toutes tes réponses ?")) return;
+      for (let i = 1; i <= 5; i++) document.getElementById(`r${i}`).value = "";
+    }
+
+    // Auto-save to localStorage
+    for (let i = 1; i <= 5; i++) {
+      const ta = document.getElementById(`r${i}`);
+      const key = `phys_chap6_q${i}`;
+      ta.value = localStorage.getItem(key) || "";
+      ta.addEventListener("input", () => localStorage.setItem(key, ta.value));
+    }
+  </script>
+</body>
+</html>

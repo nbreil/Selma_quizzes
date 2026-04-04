@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chapitre 6 – Mouvement et vitesse · Fiche résumé</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --pink-deep:   #e8628a;
+      --pink-mid:    #f093b0;
+      --pink-light:  #fcd9e7;
+      --pink-blush:  #fff0f5;
+      --rose:        #f7c5d5;
+      --text-dark:   #3d1a2b;
+      --text-mid:    #7a4460;
+      --text-soft:   #c48aa8;
+      --white:       #fffbfc;
+      --card-border: #f5c8db;
+    }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background-color: var(--pink-blush);
+      color: var(--text-dark);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image:
+        radial-gradient(ellipse 60% 40% at 15% 20%, rgba(248,180,210,0.35) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 60% at 85% 75%, rgba(244,155,195,0.25) 0%, transparent 55%);
+      pointer-events: none; z-index: 0;
+    }
+
+    .petal { position: fixed; font-size: 20px; opacity: 0.22; pointer-events: none; animation: floatPetal linear infinite; z-index: 0; }
+    @keyframes floatPetal {
+      0%   { transform: translateY(-30px) rotate(0deg);   opacity: 0; }
+      10%  { opacity: 0.22; }
+      90%  { opacity: 0.15; }
+      100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+    }
+
+    .shell { max-width: 780px; margin: 0 auto; padding: 3rem 1.5rem 5rem; position: relative; z-index: 1; }
+
+    /* Back button */
+    .back-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 600;
+      color: var(--pink-deep); background: var(--white);
+      border: 1.5px solid var(--card-border); border-radius: 50px;
+      padding: 7px 16px; cursor: pointer; text-decoration: none;
+      box-shadow: 0 2px 8px rgba(232,98,138,0.07);
+      transition: border-color .2s, box-shadow .2s; margin-bottom: 2rem; display: inline-flex;
+    }
+    .back-btn:hover { border-color: var(--pink-mid); box-shadow: 0 4px 12px rgba(232,98,138,0.14); }
+
+    /* Header */
+    header { text-align: center; margin-bottom: 2.5rem; }
+    .header-flowers { font-size: 26px; letter-spacing: 8px; display: block; margin-bottom: 6px; animation: sway 4s ease-in-out infinite; }
+    @keyframes sway { 0%,100%{ transform: rotate(-2deg); } 50%{ transform: rotate(2deg); } }
+    header h1 { font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 600; color: var(--pink-deep); line-height: 1.2; text-shadow: 0 2px 16px rgba(232,98,138,0.15); }
+    header h1 em { font-style: italic; font-weight: 400; color: var(--text-mid); }
+    header p { margin-top: 8px; font-size: 15px; color: var(--text-soft); font-weight: 500; }
+    .divider { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 1.2rem 0; color: var(--pink-mid); font-size: 16px; }
+    .divider::before, .divider::after { content: ''; display: block; height: 1px; width: 80px; background: linear-gradient(to right, transparent, var(--pink-mid)); }
+    .divider::after { background: linear-gradient(to left, transparent, var(--pink-mid)); }
+
+    /* Cards */
+    .section {
+      background: var(--white); border: 1.5px solid var(--card-border);
+      border-radius: 22px; padding: 1.8rem 2rem; margin-bottom: 1.4rem;
+      box-shadow: 0 2px 12px rgba(232,98,138,0.07);
+    }
+    .section-title {
+      font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 600;
+      color: var(--pink-deep); margin-bottom: 1rem; display: flex; align-items: center; gap: 10px;
+    }
+    .section-title .icon {
+      width: 38px; height: 38px; border-radius: 12px;
+      background: linear-gradient(135deg, #fce4ef, #f9c8db);
+      display: flex; align-items: center; justify-content: center; font-size: 20px;
+      box-shadow: 0 2px 6px rgba(232,98,138,0.18); flex-shrink: 0;
+    }
+
+    /* Formula box */
+    .formula-box {
+      background: linear-gradient(135deg, #fce4ef, #ffd6e8);
+      border: 2px solid var(--pink-mid); border-radius: 16px;
+      padding: 1.2rem 1.5rem; text-align: center; margin: 1rem 0;
+    }
+    .formula-box .formula {
+      font-family: 'Playfair Display', serif; font-size: 32px;
+      font-weight: 600; color: var(--pink-deep); letter-spacing: 2px;
+    }
+    .formula-box .formula-label { font-size: 13px; color: var(--text-mid); margin-top: 4px; font-weight: 600; }
+
+    /* Vocab list */
+    .vocab-item { display: flex; gap: 10px; margin-bottom: 0.75rem; align-items: flex-start; }
+    .vocab-term {
+      font-weight: 700; color: var(--pink-deep); min-width: 180px;
+      font-size: 14px; padding-top: 1px;
+    }
+    .vocab-def { font-size: 14px; color: var(--text-mid); line-height: 1.5; }
+
+    /* Motion types */
+    .motion-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-top: 0.5rem; }
+    .motion-card {
+      border-radius: 16px; padding: 1.1rem 1.2rem; text-align: center;
+      border: 1.5px solid var(--card-border);
+    }
+    .motion-card.uniforme  { background: #fff5f9; }
+    .motion-card.accelere  { background: #fff0f8; }
+    .motion-card.ralenti   { background: #fdf5ff; }
+    .motion-card .m-icon   { font-size: 28px; margin-bottom: 6px; }
+    .motion-card .m-name   { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 600; color: var(--pink-deep); }
+    .motion-card .m-desc   { font-size: 13px; color: var(--text-mid); margin-top: 4px; line-height: 1.4; }
+    .motion-card .m-tag    { display: inline-block; margin-top: 8px; font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 50px; background: var(--pink-light); color: var(--pink-deep); }
+
+    /* Units table */
+    table { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 0.5rem; }
+    th { background: linear-gradient(135deg, #fce4ef, #f9c8db); color: var(--text-mid); font-weight: 700; padding: 10px 14px; text-align: left; font-size: 13px; }
+    td { padding: 9px 14px; border-bottom: 1px solid var(--pink-light); color: var(--text-dark); }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #fff5f9; }
+
+    /* Conversions */
+    .conv-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-top: 0.5rem; }
+    .conv-pill {
+      background: var(--pink-light); border-radius: 50px; padding: 8px 16px;
+      text-align: center; font-size: 14px; font-weight: 700; color: var(--text-mid);
+    }
+
+    /* Speed examples */
+    .speed-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-top: 0.5rem; }
+    .speed-item {
+      background: #fff5f9; border: 1.5px solid var(--card-border); border-radius: 14px;
+      padding: 10px 14px; display: flex; justify-content: space-between; align-items: center;
+    }
+    .speed-item .s-name { font-size: 13px; color: var(--text-mid); font-weight: 600; }
+    .speed-item .s-val  { font-size: 14px; font-weight: 700; color: var(--pink-deep); }
+
+    /* Key points list */
+    .key-list { list-style: none; }
+    .key-list li { padding: 8px 0 8px 28px; position: relative; font-size: 14px; color: var(--text-mid); border-bottom: 1px solid var(--pink-light); line-height: 1.5; }
+    .key-list li:last-child { border-bottom: none; }
+    .key-list li::before { content: '🌸'; position: absolute; left: 0; top: 8px; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <span class="petal" style="left:8%;  animation-duration:12s; animation-delay:0s;   top:-20px;">🌸</span>
+  <span class="petal" style="left:25%; animation-duration:15s; animation-delay:3s;   top:-20px;">🌺</span>
+  <span class="petal" style="left:55%; animation-duration:10s; animation-delay:1.5s; top:-20px;">🌸</span>
+  <span class="petal" style="left:78%; animation-duration:14s; animation-delay:5s;   top:-20px;">🌷</span>
+  <span class="petal" style="left:90%; animation-duration:11s; animation-delay:2s;   top:-20px;">🌸</span>
+
+  <div class="shell">
+    <a class="back-btn" href="../../index.html">← Retour</a>
+
+    <header>
+      <span class="header-flowers">🌸 🌷 🌸</span>
+      <h1>Chapitre 6 · <em>Mouvement et vitesse</em></h1>
+      <p>Fiche résumé — tout ce qu'il faut retenir ✨</p>
+      <div class="divider">🌺</div>
+    </header>
+
+    <!-- Formule -->
+    <div class="section">
+      <div class="section-title"><div class="icon">📐</div>La formule essentielle</div>
+      <div class="formula-box">
+        <div class="formula">v = d ÷ t</div>
+        <div class="formula-label">vitesse = distance ÷ durée</div>
+      </div>
+      <table>
+        <thead>
+          <tr><th>Distance d</th><th>Durée t</th><th>Vitesse v</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>mètre (m)</td><td>seconde (s)</td><td>mètre par seconde (m/s)</td></tr>
+          <tr><td>kilomètre (km)</td><td>heure (h)</td><td>kilomètre par heure (km/h)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Lexique -->
+    <div class="section">
+      <div class="section-title"><div class="icon">📖</div>Vocabulaire clé</div>
+      <div class="vocab-item"><span class="vocab-term">Distance</span><span class="vocab-def">Longueur du trajet parcouru par un objet. Se mesure en mètre (m) ou kilomètre (km).</span></div>
+      <div class="vocab-item"><span class="vocab-term">Durée</span><span class="vocab-def">Temps pendant lequel un objet se déplace. Se mesure en seconde (s), minute (min) ou heure (h).</span></div>
+      <div class="vocab-item"><span class="vocab-term">Vitesse</span><span class="vocab-def">Distance parcourue pendant une certaine durée. Formule : v = d / t.</span></div>
+      <div class="vocab-item"><span class="vocab-term">Mouvement</span><span class="vocab-def">Changement de position d'un objet au cours du temps.</span></div>
+      <div class="vocab-item"><span class="vocab-term">Observateur</span><span class="vocab-def">Personne ou objet par rapport auquel on décrit le mouvement.</span></div>
+    </div>
+
+    <!-- Types de mouvement -->
+    <div class="section">
+      <div class="section-title"><div class="icon">🏃</div>Les 3 types de mouvement</div>
+      <div class="motion-grid">
+        <div class="motion-card uniforme">
+          <div class="m-icon">➡️</div>
+          <div class="m-name">Uniforme</div>
+          <div class="m-desc">L'objet parcourt la <strong>même distance</strong> à chaque intervalle de temps.</div>
+          <div class="m-tag">Vitesse constante</div>
+        </div>
+        <div class="motion-card accelere">
+          <div class="m-icon">🚀</div>
+          <div class="m-name">Accéléré</div>
+          <div class="m-desc">L'objet parcourt des distances de <strong>plus en plus grandes</strong>.</div>
+          <div class="m-tag">Vitesse augmente</div>
+        </div>
+        <div class="motion-card ralenti">
+          <div class="m-icon">🐢</div>
+          <div class="m-name">Ralenti</div>
+          <div class="m-desc">L'objet parcourt des distances de <strong>plus en plus petites</strong>.</div>
+          <div class="m-tag">Vitesse diminue</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Conversions -->
+    <div class="section">
+      <div class="section-title"><div class="icon">🔄</div>Conversions à connaître</div>
+      <div class="conv-grid">
+        <div class="conv-pill">1 km = 1 000 m</div>
+        <div class="conv-pill">1 min = 60 s</div>
+        <div class="conv-pill">1 h = 3 600 s</div>
+        <div class="conv-pill">1 h = 60 min</div>
+        <div class="conv-pill">2 h = 7 200 s</div>
+        <div class="conv-pill">1 m = 100 cm</div>
+      </div>
+    </div>
+
+    <!-- Exemples de vitesses -->
+    <div class="section">
+      <div class="section-title"><div class="icon">⚡</div>Exemples de vitesses</div>
+      <div class="speed-grid">
+        <div class="speed-item"><span class="s-name">Marcheur</span><span class="s-val">4 km/h</span></div>
+        <div class="speed-item"><span class="s-name">Voiture en ville</span><span class="s-val">50 km/h</span></div>
+        <div class="speed-item"><span class="s-name">Guépard</span><span class="s-val">112 km/h</span></div>
+        <div class="speed-item"><span class="s-name">Record TGV</span><span class="s-val">574,8 km/h</span></div>
+        <div class="speed-item"><span class="s-name">Son</span><span class="s-val">340 m/s</span></div>
+        <div class="speed-item"><span class="s-name">Lumière</span><span class="s-val">300 000 000 m/s</span></div>
+        <div class="speed-item"><span class="s-name">Usain Bolt (100m)</span><span class="s-val">≈ 10 m/s</span></div>
+        <div class="speed-item"><span class="s-name">Nageur (Pellegrini)</span><span class="s-val">≈ 1,8 m/s</span></div>
+      </div>
+    </div>
+
+    <!-- Protocole expérimental -->
+    <div class="section">
+      <div class="section-title"><div class="icon">🔬</div>Mesurer la vitesse — protocole</div>
+      <ul class="key-list">
+        <li>Choisir la <strong>distance</strong> à parcourir et la mesurer avec un mètre.</li>
+        <li>Déclencher le <strong>chronomètre</strong> au départ du mouvement.</li>
+        <li>Arrêter le chronomètre à l'arrivée et noter la <strong>durée</strong>.</li>
+        <li>Répéter plusieurs fois et calculer la <strong>moyenne</strong> des durées.</li>
+        <li>Calculer la vitesse : <strong>v = d ÷ t</strong>.</li>
+      </ul>
+    </div>
+
+    <!-- Points clés -->
+    <div class="section">
+      <div class="section-title"><div class="icon">⭐</div>À retenir absolument</div>
+      <ul class="key-list">
+        <li>La vitesse est toujours <strong>distance ÷ durée</strong>.</li>
+        <li>Si d en mètres et t en secondes → v en <strong>m/s</strong>.</li>
+        <li>Si d en km et t en heures → v en <strong>km/h</strong>.</li>
+        <li>Mouvement <strong>uniforme</strong> = vitesse constante = distances égales.</li>
+        <li>Mouvement <strong>accéléré</strong> = vitesse augmente = distances croissantes.</li>
+        <li>Mouvement <strong>ralenti</strong> = vitesse diminue = distances décroissantes.</li>
+        <li>La durée entre deux positions successives <strong>ne change pas</strong> dans ces schémas.</li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>

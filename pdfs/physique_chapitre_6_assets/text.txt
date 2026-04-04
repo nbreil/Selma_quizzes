@@ -1,0 +1,296 @@
+============================================================
+PAGE 1 — Couverture
+============================================================
+Chapitre 6 : Mouvement et vitesse
+(Cahier de Selma — lycée)
+
+L'épreuve olympique du 400m est une des épreuves reines de l'athlétisme olympique.
+Les coureurs parcourent un premier virage, suivi d'une ligne droite, d'un second virage
+et d'une dernière ligne droite avant l'arrivée.
+
+Dans ce chapitre, nous allons :
+- revoir comment mesurer la distance et la durée lors du déplacement d'un objet
+- effectuer des conversions d'unités de distance et de temps
+- apprendre à calculer la vitesse à partir de la distance parcourue et de la durée de déplacement d'un objet
+- identifier des situations où la vitesse d'un objet par rapport à un observateur a une valeur constante ou variable
+
+Compétences travaillées :
+- Proposer et suivre un protocole expérimental
+- Utiliser des instruments de mesure
+- Étudier des phénomènes en mobilisant des grandeurs physiques et en réalisant des calculs
+- Maîtriser les notions d'échelles spatiale et temporelle et citer quelques ordres de grandeur caractéristiques
+
+Feuille de route :
+- Activité 1 — Comment calculer la vitesse d'un coureur ?
+- Activité 2 — Comment mesurer la vitesse d'un objet ?
+
+
+============================================================
+PAGE 2 — Lexique : Mouvement et vitesse
+============================================================
+
+- Distance (distance) : Longueur du trajet parcouru par un objet. Elle se mesure en mètre (m) ou en kilomètre (km).
+- Durée (time/duration) : Temps pendant lequel un objet se déplace. Elle se mesure en seconde (s), minute (min) ou heure (h).
+- Vitesse (speed) : Distance parcourue pendant une certaine durée. Formule : v = d / t. Elle se mesure en mètre par seconde (m/s) ou kilomètre par heure (km/h).
+- Mouvement (motion/movement) : Changement de position d'un objet au cours du temps.
+- Objet en mouvement (moving object) : Objet qui change de position.
+- Observateur (observer) : Personne ou objet par rapport auquel on décrit le mouvement.
+- Vitesse constante (constant speed) : La vitesse ne change pas. L'objet parcourt la même distance pendant la même durée.
+- Mouvement uniforme (uniform motion) : Mouvement avec une vitesse constante.
+- Mouvement accéléré (accelerated motion) : La vitesse augmente. L'objet parcourt des distances de plus en plus grandes pendant la même durée.
+- Mouvement ralenti (decelerated motion / slowing down) : La vitesse diminue. L'objet parcourt des distances de plus en plus petites pendant la même durée.
+- Conversion : Transformer une unité en une autre.
+  - 1 km = 1000 m
+  - 1 min = 60 s
+  - 1 h = 3600 s
+
+
+============================================================
+PAGE 3 — Activité 1 : Comment calculer la vitesse d'un coureur ?
+============================================================
+
+Partie I. Définition de la vitesse
+
+1. Signification des abréviations :
+   km = kilomètre, m = mètre, s = seconde(s), min = minute(s), h = heure(s)
+
+2. km/h = kilomètre par heure (combien de kilomètres par heure)
+   m/s = mètre par seconde (combien de mètres par seconde)
+
+3. Table de correspondance objet / vitesse :
+   - Voiture en ville     → 50 km/h
+   - Marcheur             → 4 km/h
+   - Usain Bolt 100m      → ~37,58 km/h (≈ 10 m/s)
+   - Lumière              → 300 000 000 m/s
+   - Guépard              → 112 km/h
+   - Son                  → 340 m/s
+   - Record du TGV        → 574,8 km/h
+
+4. Conversions :
+   - 1 h = 60 min
+   - 2 h = 120 min
+   - 1 min = 60 s
+   Note : Selma a écrit 1h = 1800 s (erreur — la bonne réponse est 3600 s)
+
+Partie II. Calcul de la vitesse d'un coureur
+
+Record du monde du 400m : Wayde Van Niekerk (Afrique du Sud), 43,03 s (JO Rio 2016)
+- Distance : 400 m, Durée : 43,03 s
+- v = d / t = 400 / 43,03 ≈ 9,29 m/s
+
+
+============================================================
+PAGE 4 — Partie III : Les variations de vitesse
+============================================================
+
+Positions d'un coureur à différents instants lors de 3 phases de course :
+
+Phase 1 (0 à 8 s) :
+- La distance entre deux positions augmente.
+- La durée entre deux positions successives ne varie pas.
+- La vitesse augmente → mouvement ACCÉLÉRÉ.
+
+Phase 2 (8 à 16 s) :
+- La distance entre deux positions est constante (varie de deux en deux, régulièrement).
+- La vitesse est constante → mouvement UNIFORME.
+
+Phase 3 (35 à 43 s) :
+- La distance entre deux positions diminue.
+- La vitesse diminue → mouvement RALENTI.
+
+
+============================================================
+PAGE 5 — Activité 2 : Comment mesurer la vitesse d'un objet ?
+============================================================
+
+Matériel : support, rail, voiture miniature, mètre, chronomètre
+
+Mission 1 : Calculer la vitesse d'une voiture lorsqu'on la lâche sur un rail incliné sur une distance de 1 mètre.
+Mission 2 : Connaître la vitesse d'un élève qui marche régulièrement sur une distance de 10 m.
+
+1. Que faut-il connaître pour calculer la vitesse ?
+   → Il faut connaître la distance et le temps.
+
+2. Protocole :
+   On a besoin d'un chronomètre pour mesurer le temps et d'un mètre pour mesurer la distance de 10 m.
+   Au départ on déclenche le chronomètre et on se déplace.
+   À l'arrivée on arrête le chronomètre et on lit la durée du déplacement.
+
+Mesures et résultats :
+- Distance mesurée : d = 10 m
+- Durées mesurées (5 essais) : 6,00 / 5,75 / 5,81 / 4,56 / 4,21 s
+- Moyenne : t = 26,33 / 5 = 5,266 s
+- Tableau de proportionnalité : d = 10 m → t = 5,266 s → pour t = 1 s → d = 1,8 m
+- Conclusion : L'élève parcourt une distance de 1,8 mètre en 1 seconde. Sa vitesse (moyenne) est de 1,8 m/s.
+
+
+============================================================
+PAGE 6 — Exercices d'entraînement : les records de vitesse
+============================================================
+
+Exercice 1 — Sprint en fauteuil roulant
+Record paralympique 100m fauteuil roulant : Peter Genyn (Belgique, 2021) = 20,33 s
+- Tableau de proportionnalité : d = 100 m, t = 20,33 s → pour t = 1 s → d = 4,9 m
+- Vitesse de Peter Genyn : 4,9 m/s
+
+Exercice 2 — La natation
+Record olympique 200m nage : Federica Pellegrini (Italie, 2009) = 1 min 53 s
+- Conversion : 1 min 53 s = 60 + 53 = 113 s
+- Tableau : d = 200 m, t = 113 s → pour t = 1 s → d ≈ 1,77 m
+- Vitesse de Federica Pellegrini : ≈ 1,8 m/s
+
+Exercice 3 — Patinage de vitesse
+Record 1000m piste courte : Suzanne Schulting (Pays-Bas, 2022) = 86 s
+- v = 1000 / 86 ≈ 11,6 m/s
+
+
+============================================================
+PAGE 7 — Exercices suite (page retournée dans le PDF)
+============================================================
+
+Exercice 4 — Canoë
+Sébastien Brendel (France) remporte la médaille d'or du 1000m en canoë monoplace (JO 2012).
+- d = 1000 m, t ≈ 265 s (4 min 25 s environ)
+- v = 1000 / 265 ≈ 3,77 m/s (Selma écrit environ 0,1 m/s — vraisemblablement une erreur de lecture)
+
+Exercice 5 — Marathon
+Record olympique féminin marathon : Sifan Hassan (JO Paris 2024), 2h 22 min 55 s
+- Conversion : 2h 22 min 55 s = (2×3600) + (22×60) + 55 = 7200 + 1320 + 55 = 8575 s
+- Distance marathon = 42 195 m
+- v = 42 195 / 8575 ≈ 4,9 m/s
+
+
+============================================================
+PAGE 8 — BILAN du Chapitre : Mouvement et vitesse (page retournée)
+============================================================
+
+1) La vitesse d'un objet
+
+La vitesse d'un objet en mouvement correspond à la distance parcourue divisée par la durée du parcours :
+v = d / t
+
+Tableau des unités :
+| Si la distance d est en | et la durée t est en | alors la vitesse V est en |
+| mètre (m)               | seconde (s)          | mètre par seconde (m/s)   |
+| kilomètre (km)          | heure (h)            | kilomètre par heure (km/h)|
+
+2) Variation de la vitesse
+
+- Si un objet parcourt des distances de plus en plus GRANDES pendant la même durée
+  → vitesse AUGMENTE → mouvement ACCÉLÉRÉ
+
+- Si un objet parcourt les MÊMES distances pendant la même durée
+  → vitesse CONSTANTE → mouvement UNIFORME
+
+- Si un objet parcourt des distances de plus en plus PETITES pendant la même durée
+  → vitesse DIMINUE → mouvement RALENTI
+
+
+============================================================
+PAGE 9 — Fiche révision du Chapitre : Mouvement et vitesse (page retournée)
+============================================================
+
+Questions à te poser / Réponses :
+
+Q : Qu'est-ce que la vitesse d'un objet ?
+R : C'est la distance parcourue (en ligne droite par exemple) par une unité de temps (1 s, 1 min, 1 h par exemple).
+
+Q : Cites quelques unités de distance.
+R : mètre (m), kilomètre (km), centimètre (cm)…
+
+Q : Cites quelques unités de temps.
+R : seconde (s), minute (min), heure (h)
+
+Q : Si la distance d est exprimée en mètres et la durée t en secondes, en quelles unités sera exprimée la vitesse ?
+R : en mètres par seconde (m/s)
+
+Q : Combien y a-t-il de secondes dans 1 min ?
+R : 1 min = 60 s
+
+Q : Combien y a-t-il de secondes dans 1 h ?
+R : 1 h = 60 × 60 = 3600 s
+
+Q : Combien y a-t-il de mètres dans 1 km ?
+R : 1 km = 1000 m
+
+Q : Comment définir la vitesse d'un objet qui parcourt toujours la même distance pendant la même durée ?
+R : Sa vitesse est constante → le mouvement est uniforme.
+
+Q : Comment évolue la vitesse d'un objet qui parcourt des distances de plus en plus grandes pendant la même durée ?
+R : Sa vitesse augmente → le mouvement est accéléré.
+
+Q : Comment évolue la vitesse d'un objet qui parcourt des distances de plus en plus petites pendant la même durée ?
+R : Sa vitesse diminue → le mouvement est ralenti.
+
+Q : Comment qualifies-tu le mouvement si la vitesse est constante ?
+R : Le mouvement est uniforme.
+
+Q : Comment qualifies-tu le mouvement si la vitesse augmente ?
+R : Le mouvement est accéléré.
+
+Q : Comment qualifies-tu le mouvement si la vitesse diminue ?
+R : Le mouvement est ralenti.
+
+
+============================================================
+PAGE 10 — Exercices : Conversions & Vitesse (page retournée)
+============================================================
+
+Exercice 1 — Conversions & Unités
+- 1 km = 1000 m
+- 1 h = 3600 s
+- 1 min = 60 s
+- a) 1 m = 100 cm
+- b) 0,2 h = 12 min
+- c) 1 h = 3600 s ✓
+- d) 1 h = 60 min ✓
+- e) 2 h = 120 min ✓
+
+Classification des mouvements d'un chien (tableau) :
+- Chien A → mouvement uniforme
+- Chien B → mouvement accéléré
+- Chien C → mouvement ralenti
+
+Exercice 2 — Calcul de vitesse
+Un élève parcourt 30 mètres en 6 secondes.
+- v = d / t = 30 / 6 = 5 m/s
+Conclusion : L'élève parcourt 30 m en 6 s, sa vitesse est donc de 5 m/s.
+
+
+============================================================
+PAGE 11 — Exercice 3 : Variation de vitesse (page retournée)
+============================================================
+
+"L'élève parcourt 15 mètres en 1 seconde. Sa vitesse est donc de 15 m/s."
+On observe un vélo à différents moments.
+
+Situation A : Il parcourt 5 m chaque seconde.
+- Comment évolue sa vitesse ? → Elle est constante.
+- Comment qualifier le mouvement ? → uniforme
+
+Situation B : Il parcourt 5 m, puis 7 m, puis 9 m en 1 seconde.
+- Comment évolue sa vitesse ? → Elle augmente.
+- Comment qualifier le mouvement ? → accéléré
+
+Situation C : Il parcourt 10 m, puis 8 m, puis 6 m en 1 seconde.
+- Comment évolue sa vitesse ? → Elle diminue.
+- Comment qualifier le mouvement ? → ralenti / décéléré
+
+
+============================================================
+PAGE 12 — Fiche de révision 1
+============================================================
+
+Pour bien réussir cette évaluation, voici les savoirs que tu dois connaître :
+- Mesurer la distance et la durée du mouvement d'un objet
+- Calculer la distance et la durée du parcours et la vitesse d'un objet
+- Convertir des unités de distance et de temps
+- Identifier des situations où la vitesse d'un objet par rapport à un observateur est constante ou variable
+- Proposer un protocole expérimental
+- Utiliser des instruments de mesure
+- Étudier des mouvements en mobilisant des grandeurs physiques (distance, durée, vitesse) et en réalisant des calculs
+- Rendre compte d'expériences, d'observations et de conclusions en utilisant un vocabulaire précis
+
+MON BILAN DU CHAPITRE (tableau auto-évaluation) :
+- Ce que j'ai réussi et que je maîtrise bien
+- La raison de mon succès / de mes difficultés / de mes réussites

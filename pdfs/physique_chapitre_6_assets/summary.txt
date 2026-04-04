@@ -1,0 +1,5 @@
+Source: physique_chapitre_6.pdf
+Pages:  12
+Images: 12
+Output: pdfs/physique_chapitre_6_assets
+Note: Image-based PDF — text extracted visually from images and saved manually to text.txt

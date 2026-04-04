@@ -443,9 +443,11 @@
     const API_ROOT = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/`;
 
     // Category metadata — add more here as needed
+    // Only folders listed here are shown. Unlisted folders (pdfs, tools, etc.) are hidden.
     const CAT_META = {
-      Math: { icon: "📐", label: "Mathématiques", sub: "Géométrie · Conversions" },
-      SVT:  { icon: "🌿", label: "SVT",            sub: "Sciences de la Vie et de la Terre" },
+      Math:     { icon: "📐", label: "Mathématiques", sub: "Géométrie · Conversions" },
+      SVT:      { icon: "🌿", label: "SVT",            sub: "Sciences de la Vie et de la Terre" },
+      Physique: { icon: "⚡", label: "Physique",        sub: "Mouvement · Vitesse" },
     };
 
     const QUIZ_ICONS = ["🌸","🌺","🌷","💐","🌼","🌻","🪷","🌹"];
@@ -470,7 +472,7 @@
 
     // ── Views ──
 
-    function showCategoryView(categories) {
+    function showCategoryView() {
       currentCat = null;
       allQuizzes = [];
 
@@ -480,30 +482,22 @@
       document.getElementById("header-sub").textContent = "Choose a subject to get started ✨";
       document.getElementById("count").textContent = "";
 
-      if (!categories.length) {
-        document.getElementById("list").innerHTML = '<div class="status">🌸 No subjects found</div>';
-        return;
-      }
-
       const grid = document.createElement("div");
       grid.className = "category-grid";
-      grid.innerHTML = categories.map(cat => {
-        const meta = CAT_META[cat.name] || { icon: "📚", label: cat.name, sub: "" };
-        return `
-          <div class="cat-card" onclick="loadCategory('${cat.name}', '${meta.label}')">
-            <div class="cat-icon">${meta.icon}</div>
-            <div class="cat-name">${meta.label}</div>
-            ${meta.sub ? `<div class="cat-sub">${meta.sub}</div>` : ""}
-          </div>
-        `;
-      }).join("");
+      grid.innerHTML = Object.entries(CAT_META).map(([key, meta]) => `
+        <div class="cat-card" onclick="loadCategory('${key}', '${meta.label}')">
+          <div class="cat-icon">${meta.icon}</div>
+          <div class="cat-name">${meta.label}</div>
+          ${meta.sub ? `<div class="cat-sub">${meta.sub}</div>` : ""}
+        </div>
+      `).join("");
 
       document.getElementById("list").innerHTML = "";
       document.getElementById("list").appendChild(grid);
     }
 
-    function showQuizView(catName, catLabel, quizzes) {
-      currentCat = catName;
+    function showQuizView(catPath, catLabel, quizzes) {
+      currentCat = catPath;
       allQuizzes = quizzes;
 
       document.getElementById("breadcrumb").classList.add("visible");
@@ -511,20 +505,51 @@
       document.getElementById("search-row").style.display = "";
       document.getElementById("header-sub").textContent = "";
 
-      renderQuizList(quizzes, catName);
+      renderQuizList(quizzes, catPath);
     }
 
-    function renderQuizList(quizzes, catName) {
+    function showChapterView(catName, catLabel, chapters) {
+      currentCat = catName;
+      allQuizzes = [];
+
+      document.getElementById("breadcrumb").classList.add("visible");
+      document.getElementById("breadcrumb-cat").textContent = catLabel;
+      document.getElementById("search-row").style.display = "none";
+      document.getElementById("header-sub").textContent = "";
+      document.getElementById("count").textContent = chapters.length + " chapitre" + (chapters.length > 1 ? "s" : "");
+
+      const CHAP_ICONS = ["🔬","⚡","🌊","🔭","🧪","💡","🌡️","🧲"];
+      function chapIcon(name) {
+        let h = 0; for (let c of name) h = (h * 31 + c.charCodeAt(0)) & 0xffffff;
+        return CHAP_ICONS[h % CHAP_ICONS.length];
+      }
+      function chapLabel(name) {
+        return name.replace(/[-_]/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      }
+
+      document.getElementById("list").innerHTML = chapters.map(ch => `
+        <div class="page-card" style="cursor:pointer" onclick="loadCategory('${catName}/${ch.name}', '${catLabel} › ${chapLabel(ch.name)}')">
+          <div class="page-icon">${chapIcon(ch.name)}</div>
+          <div>
+            <div class="page-name">${chapLabel(ch.name)}</div>
+            <div class="page-path">${catName}/${ch.name}</div>
+          </div>
+          <span class="page-arrow">›</span>
+        </div>
+      `).join("");
+    }
+
+    function renderQuizList(quizzes, catPath) {
       const count = document.getElementById("count");
       count.textContent = quizzes.length + " quiz" + (quizzes.length !== 1 ? "zes" : "");
 
       if (!quizzes.length) {
-        document.getElementById("list").innerHTML = '<div class="status">🌸 No quizzes found</div>';
+        document.getElementById("list").innerHTML = '<div class="status">🌸 Aucun quiz trouvé</div>';
         return;
       }
 
       document.getElementById("list").innerHTML = quizzes.map(q => `
-        <a class="page-card" href="${catName}/${q.name}">
+        <a class="page-card" href="${catPath}/${q.name}">
           <div class="page-icon">${pickIcon(q.name)}</div>
           <div>
             <div class="page-name">${toLabel(q.name)}</div>
@@ -537,34 +562,26 @@
 
     // ── Data loading ──
 
-    async function loadRoot() {
-      try {
-        const res = await fetch(API_ROOT);
-        if (!res.ok) throw new Error("API error " + res.status);
-        const items = await res.json();
-        const dirs = items.filter(f => f.type === "dir" && !f.name.startsWith("."));
-        showCategoryView(dirs);
-      } catch (e) {
-        document.getElementById("list").innerHTML =
-          '<div class="status">🌷 Could not load subjects. Check your GITHUB_USER and GITHUB_REPO settings.</div>';
-        console.error(e);
-      }
-    }
-
-    async function loadCategory(catName, catLabel) {
+    async function loadCategory(catPath, catLabel) {
       document.getElementById("list").innerHTML =
-        '<div class="status"><span class="spinner"></span>Loading quizzes…</div>';
+        '<div class="status"><span class="spinner"></span>Chargement…</div>';
       try {
-        const res = await fetch(API_ROOT + catName);
+        const res = await fetch(API_ROOT + catPath);
         if (!res.ok) throw new Error("API error " + res.status);
         const items = await res.json();
-        const quizzes = items
-          .filter(f => f.type === "file" && f.name.endsWith(".html"))
-          .sort((a, b) => a.name.localeCompare(b.name));
-        showQuizView(catName, catLabel, quizzes);
+        const quizzes = items.filter(f => f.type === "file" && f.name.endsWith(".html")).sort((a, b) => a.name.localeCompare(b.name));
+        const chapters = items.filter(f => f.type === "dir").sort((a, b) => a.name.localeCompare(b.name));
+
+        if (quizzes.length > 0) {
+          showQuizView(catPath, catLabel, quizzes);
+        } else if (chapters.length > 0) {
+          showChapterView(catPath, catLabel, chapters);
+        } else {
+          showQuizView(catPath, catLabel, []);
+        }
       } catch (e) {
         document.getElementById("list").innerHTML =
-          '<div class="status">🌷 Could not load quizzes.</div>';
+          '<div class="status">🌷 Impossible de charger.</div>';
         console.error(e);
       }
     }
@@ -572,9 +589,7 @@
     // ── Events ──
 
     document.getElementById("back-btn").addEventListener("click", () => {
-      document.getElementById("list").innerHTML =
-        '<div class="status"><span class="spinner"></span>Loading…</div>';
-      loadRoot();
+      showCategoryView();
     });
 
     document.getElementById("search").addEventListener("input", e => {
@@ -587,7 +602,7 @@
     });
 
     // ── Boot ──
-    loadRoot();
+    showCategoryView();
   </script>
 </body>
 </html>
