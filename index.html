@@ -527,8 +527,11 @@
         return name.replace(/[-_]/g, " ").replace(/\b\w/g, c => c.toUpperCase());
       }
 
-      document.getElementById("list").innerHTML = chapters.map(ch => `
-        <div class="page-card" style="cursor:pointer" onclick="loadCategory('${catName}/${ch.name}', '${catLabel} › ${chapLabel(ch.name)}')">
+      const listEl = document.getElementById("list");
+      listEl.innerHTML = chapters.map(ch => `
+        <div class="page-card" style="cursor:pointer"
+             data-path="${catName}/${ch.name}"
+             data-label="${catLabel} - ${chapLabel(ch.name)}">
           <div class="page-icon">${chapIcon(ch.name)}</div>
           <div>
             <div class="page-name">${chapLabel(ch.name)}</div>
@@ -537,6 +540,12 @@
           <span class="page-arrow">›</span>
         </div>
       `).join("");
+
+      listEl.querySelectorAll(".page-card[data-path]").forEach(card => {
+        card.addEventListener("click", () => {
+          loadCategory(card.dataset.path, card.dataset.label);
+        });
+      });
     }
 
     function renderQuizList(quizzes, catPath) {
