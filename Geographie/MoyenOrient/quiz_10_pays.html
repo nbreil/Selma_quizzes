@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>10 Pays – Moyen-Orient</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --pink-deep:#e8628a; --pink-mid:#f093b0; --pink-light:#fcd9e7;
+      --pink-blush:#fff0f5; --rose:#f7c5d5; --text-dark:#3d1a2b;
+      --text-mid:#7a4460; --text-soft:#c48aa8; --white:#fffbfc; --card-border:#f5c8db;
+    }
+    body { font-family:'Nunito',sans-serif; background:var(--pink-blush); color:var(--text-dark); min-height:100vh; overflow-x:hidden; }
+    body::before { content:''; position:fixed; inset:0; background-image:radial-gradient(ellipse 60% 40% at 15% 20%,rgba(248,180,210,.35) 0%,transparent 60%),radial-gradient(ellipse 50% 60% at 85% 75%,rgba(244,155,195,.25) 0%,transparent 55%); pointer-events:none; z-index:0; }
+    .petal { position:fixed; font-size:20px; opacity:.22; pointer-events:none; animation:floatPetal linear infinite; z-index:0; }
+    @keyframes floatPetal { 0%{transform:translateY(-30px) rotate(0deg);opacity:0} 10%{opacity:.22} 90%{opacity:.15} 100%{transform:translateY(110vh) rotate(360deg);opacity:0} }
+    .shell { max-width:820px; margin:0 auto; padding:2.5rem 1.5rem 5rem; position:relative; z-index:1; }
+    .back-btn { display:inline-flex; align-items:center; gap:6px; font-size:14px; font-weight:600; color:var(--pink-deep); background:var(--white); border:1.5px solid var(--card-border); border-radius:50px; padding:7px 16px; cursor:pointer; text-decoration:none; box-shadow:0 2px 8px rgba(232,98,138,.07); transition:border-color .2s,box-shadow .2s; margin-bottom:1.8rem; }
+    .back-btn:hover { border-color:var(--pink-mid); box-shadow:0 4px 12px rgba(232,98,138,.14); }
+    header { text-align:center; margin-bottom:1.4rem; }
+    .header-flowers { font-size:26px; letter-spacing:8px; display:block; margin-bottom:6px; animation:sway 4s ease-in-out infinite; }
+    @keyframes sway { 0%,100%{transform:rotate(-2deg)} 50%{transform:rotate(2deg)} }
+    header h1 { font-family:'Playfair Display',serif; font-size:34px; font-weight:600; color:var(--pink-deep); text-shadow:0 2px 16px rgba(232,98,138,.15); }
+    header h1 em { font-style:italic; font-weight:400; color:var(--text-mid); }
+    .progress-row { display:flex; align-items:center; gap:12px; margin-bottom:.8rem; }
+    .progress-label { font-size:13px; font-weight:700; color:var(--text-soft); white-space:nowrap; }
+    .progress-bar-wrap { flex:1; background:var(--pink-light); border-radius:50px; height:8px; overflow:hidden; }
+    .progress-bar { height:100%; background:linear-gradient(to right,var(--pink-mid),var(--pink-deep)); border-radius:50px; transition:width .4s ease; }
+    .score-label { font-size:13px; font-weight:700; color:var(--text-mid); white-space:nowrap; }
+    .quiz-card { background:var(--white); border:1.5px solid var(--card-border); border-radius:22px; padding:1.2rem 1.6rem; margin-bottom:.8rem; box-shadow:0 2px 12px rgba(232,98,138,.07); display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+    .question-text { font-family:'Playfair Display',serif; font-size:20px; font-weight:600; color:var(--text-dark); }
+    .question-text strong { color:var(--pink-deep); font-style:italic; }
+    .hearts-row { display:flex; align-items:center; gap:5px; }
+    .heart { font-size:24px; transition:transform .25s,filter .25s,opacity .25s; }
+    .heart.lost { filter:grayscale(1); opacity:.3; transform:scale(.8); }
+    .feedback-bar { background:var(--white); border:1.5px solid var(--card-border); border-radius:16px; padding:.6rem 1.4rem; margin-bottom:.8rem; font-size:14px; font-weight:600; color:var(--text-mid); text-align:center; min-height:42px; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(232,98,138,.05); transition:background .3s,border-color .3s; }
+    .feedback-bar.wrong-fb   { background:#fff5f0; border-color:#ffb88c; color:#b04010; }
+    .feedback-bar.correct-fb { background:#f0fff5; border-color:#80d8a0; color:#1a6b38; }
+    .feedback-bar.skip-fb    { background:#fff8f0; border-color:#ffd0a0; color:#8b5a10; }
+    #map-wrap { background:var(--white); border:1.5px solid var(--card-border); border-radius:22px; overflow:hidden; box-shadow:0 4px 20px rgba(232,98,138,.08); }
+    #map-wrap svg { width:100%; height:auto; display:block; }
+    .country { fill:#fce4ef; stroke:#d4799c; stroke-width:.6px; cursor:pointer; transition:fill .18s; }
+    .country:hover:not(.wrong):not(.correct):not(.revealed):not(.done) { fill:#f9c8db; }
+    .country.wrong    { fill:#ffb347; stroke:#e07010; }
+    .country.correct  { fill:#7ecfa0; stroke:#3a9a60; animation:correctPulse .5s ease-out; }
+    .country.revealed { fill:#a0dfc0; stroke:#3a9a60; }
+    .country.done     { fill:#c8f0d8; stroke:#6ab88a; cursor:default; }
+    @keyframes correctPulse { 0%{fill:#fff} 50%{fill:#b0f0c8} 100%{fill:#7ecfa0} }
+    .country-label { font-family:'Nunito',sans-serif; font-size:9px; font-weight:800; pointer-events:none; text-anchor:middle; dominant-baseline:middle; }
+    .overlay { display:none; position:fixed; inset:0; background:rgba(255,240,248,.88); backdrop-filter:blur(6px); z-index:300; align-items:center; justify-content:center; }
+    .overlay.visible { display:flex; }
+    .result-box { background:var(--white); border:2px solid var(--card-border); border-radius:28px; padding:2.5rem 3rem; text-align:center; box-shadow:0 12px 48px rgba(232,98,138,.2); max-width:400px; width:90%; animation:slideUp .35s ease-out; }
+    @keyframes slideUp { from{transform:translateY(28px);opacity:0} to{transform:translateY(0);opacity:1} }
+    .result-emoji { font-size:60px; margin-bottom:.8rem; }
+    .result-title { font-family:'Playfair Display',serif; font-size:28px; font-weight:600; color:var(--pink-deep); margin-bottom:.4rem; }
+    .result-score { font-size:42px; font-weight:800; color:var(--text-dark); margin:.6rem 0; }
+    .result-sub   { font-size:15px; color:var(--text-mid); font-weight:500; margin-bottom:1.6rem; }
+    .replay-btn { display:inline-flex; align-items:center; gap:8px; font-family:'Nunito',sans-serif; font-size:15px; font-weight:700; color:var(--white); background:linear-gradient(135deg,var(--pink-deep),var(--pink-mid)); border:none; border-radius:50px; padding:12px 30px; cursor:pointer; box-shadow:0 4px 16px rgba(232,98,138,.35); transition:transform .15s,box-shadow .15s; }
+    .replay-btn:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(232,98,138,.45); }
+  </style>
+</head>
+<body>
+  <span class="petal" style="left:6%;animation-duration:13s;animation-delay:0s;top:-20px;">🌙</span>
+  <span class="petal" style="left:25%;animation-duration:16s;animation-delay:3s;top:-20px;">🌸</span>
+  <span class="petal" style="left:50%;animation-duration:11s;animation-delay:1.5s;top:-20px;">🌙</span>
+  <span class="petal" style="left:75%;animation-duration:14s;animation-delay:5s;top:-20px;">🌷</span>
+  <span class="petal" style="left:90%;animation-duration:10s;animation-delay:2s;top:-20px;">🌸</span>
+
+  <div class="overlay" id="overlay">
+    <div class="result-box">
+      <div class="result-emoji" id="res-emoji">🌸</div>
+      <div class="result-title" id="res-title">Résultat</div>
+      <div class="result-score" id="res-score">0 / 10</div>
+      <div class="result-sub" id="res-sub"></div>
+      <button class="replay-btn" onclick="location.reload()">🔄 Rejouer</button>
+    </div>
+  </div>
+
+  <div class="shell">
+    <a class="back-btn" href="../../index.html">← Retour</a>
+    <header>
+      <span class="header-flowers">🌙 🌸 🌙</span>
+      <h1>Géographie — <em>Moyen-Orient</em></h1>
+    </header>
+    <div class="progress-row">
+      <span class="progress-label" id="progress-label">Pays 1 / 10</span>
+      <div class="progress-bar-wrap"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
+      <span class="score-label" id="score-label">✓ 0</span>
+    </div>
+    <div class="quiz-card">
+      <div class="question-text" id="question-text">Où se trouve … ?</div>
+      <div class="hearts-row" id="hearts-row">
+        <span class="heart" id="h1">💖</span>
+        <span class="heart" id="h2">💖</span>
+        <span class="heart" id="h3">💖</span>
+      </div>
+    </div>
+    <div class="feedback-bar" id="feedback">🌍 Clique sur le bon pays !</div>
+    <div id="map-wrap"></div>
+  </div>
+
+  <script>
+    const COUNTRY_NAMES = {"48":"Bahreïn","275":"Palestine","364":"Iran","368":"Irak","376":"Israël","400":"Jordanie","414":"Koweït","422":"Liban","512":"Oman","634":"Qatar","682":"Arabie saoudite","760":"Syrie","784":"Émirats arabes unis","792":"Turquie","887":"Yémen"};
+    const MAX_TRIES = 3, TOTAL = 10;
+    let queue=[], qIndex=0, triesLeft=MAX_TRIES, score=0, locked=false;
+
+    function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a;}
+    function currentTarget(){return queue[qIndex];}
+    function nid(id){return String(parseInt(id,10));}
+
+    function setFeedback(type,msg){const el=document.getElementById("feedback");el.className="feedback-bar"+(type?" "+type+"-fb":"");el.textContent=msg;}
+    function resetHearts(){for(let i=1;i<=MAX_TRIES;i++)document.getElementById("h"+i).classList.remove("lost");}
+    function loseHeart(){const idx=MAX_TRIES-triesLeft;document.getElementById("h"+idx)?.classList.add("lost");}
+    function updateProgress(){
+      document.getElementById("progress-label").textContent="Pays "+(qIndex+1)+" / "+TOTAL;
+      document.getElementById("progress-bar").style.width=(qIndex/TOTAL*100)+"%";
+      document.getElementById("score-label").textContent="✓ "+score;
+    }
+    function setQuestion(name){document.getElementById("question-text").innerHTML="Où se trouve <strong>"+name+"</strong> ?";}
+
+    const W=820, H=560;
+    const svg=d3.select("#map-wrap").append("svg").attr("viewBox","0 0 "+W+" "+H).attr("preserveAspectRatio","xMidYMid meet");
+    svg.append("rect").attr("width",W).attr("height",H).attr("fill","#cce8f6");
+    svg.append("defs").append("clipPath").attr("id","vp").append("rect").attr("width",W).attr("height",H);
+    const g=svg.append("g").attr("clip-path","url(#vp)");
+    const labelsG=svg.append("g").attr("clip-path","url(#vp)");
+    const projection=d3.geoMercator().center([45,28]).scale(620).translate([W/2,H/2]);
+    const pathGen=d3.geoPath().projection(projection);
+
+    const TOPO={"type":"Topology","transform":{"scale":[0.0036000360003600037,0.0016925586033320105],"translate":[-180,-85.60903777459771]},"objects":{"countries":{"type":"GeometryCollection","geometries":[{"type":"Polygon","arcs":[[0,1,2,3,4,5,6]],"id":"376","properties":{"name":"Israel"}},{"type":"Polygon","arcs":[[-6,7,8]],"id":"422","properties":{"name":"Lebanon"}},{"type":"Polygon","arcs":[[-2,9]],"id":"275","properties":{"name":"Palestine"}},{"type":"Polygon","arcs":[[-1,10,11,12,13,-3,-10]],"id":"400","properties":{"name":"Jordan"}},{"type":"Polygon","arcs":[[14,15,16,17,18]],"id":"784","properties":{"name":"United Arab Emirates"}},{"type":"Polygon","arcs":[[19,20]],"id":"634","properties":{"name":"Qatar"}},{"type":"Polygon","arcs":[[21,22,23]],"id":"414","properties":{"name":"Kuwait"}},{"type":"Polygon","arcs":[[-12,24,25,26,27,-24,28]],"id":"368","properties":{"name":"Iraq"}},{"type":"MultiPolygon","arcs":[[[-18,29,30,31]],[[-16,32]]],"id":"512","properties":{"name":"Oman"}},{"type":"Polygon","arcs":[[-34,34,35,36,37,38,39,40,41]],"id":"356","properties":{"name":"India"}},{"type":"Polygon","arcs":[[-7,-9,43,44,-25,-11]],"id":"760","properties":{"name":"Syria"}},{"type":"MultiPolygon","arcs":[[[-26,-45,48,49,-46,-43]],[[-47,50,-48]]],"id":"792","properties":{"name":"Turkey"}},{"type":"Polygon","arcs":[[-31,51,52]],"id":"887","properties":{"name":"Yemen"}},{"type":"Polygon","arcs":[[-13,-29,-23,53,-21,54,-19,-32,-53,55]],"id":"682","properties":{"name":"Saudi Arabia"}}]}},"arcs":[[[59922,69905],[-49,-186]],[[59873,69719],[-100,82],[-58,-394],[69,-66],[-71,-81],[-12,-156],[131,80]],[[59832,69184],[7,-230],[-139,-944]],[[59700,68010],[-27,153],[-155,862]],[[59518,69025],[80,194],[-19,34],[74,276],[56,446],[40,149],[8,6]],[[59757,70130],[93,-1],[25,104],[75,8]],[[59950,70241],[4,-242],[-38,-90],[6,-4]],[[59757,70130],[99,482],[138,416],[5,21]],[[59999,71049],[125,-31],[45,-231],[-151,-223],[-68,-323]],[[59873,69719],[0,-362],[-41,-173]],[[59922,69905],[309,-234],[544,630]],[[60775,70301],[112,-720]],[[60887,69581],[-53,-89],[-556,-296],[277,-591],[-92,-101],[-46,-197],[-212,-82],[-66,-213],[-120,-182],[-310,94]],[[59709,67924],[-9,86]],[[64327,64904],[49,29],[11,-162],[217,93],[230,-15],[168,-18],[190,400],[207,379],[176,364]],[[65575,65974],[52,-202]],[[65627,65772],[38,-466]],[[65665,65306],[-142,-3],[-23,-384],[50,-82],[-126,-117],[-1,-241],[-81,-245],[-7,-238]],[[65335,63996],[-56,-125],[-835,298],[-106,599],[-11,136]],[[64113,65205],[-18,430],[75,310],[76,64],[84,-185],[5,-346],[-61,-348]],[[64274,65130],[-77,-42],[-84,117]],[[63326,68290],[58,-261],[-25,-135],[89,-445]],[[63448,67449],[-196,-16],[-69,282],[-248,57]],[[62935,67772],[204,567],[187,-49]],[[60775,70301],[615,614],[105,715],[-26,431],[152,146],[142,369]],[[61763,72576],[119,92],[324,-77],[97,-150],[133,100]],[[62436,72541],[180,-705],[182,-177],[21,-345],[-139,-204],[-65,-461],[193,-562],[340,-324],[143,-449],[-46,-428],[89,0],[3,-314],[153,-311]],[[63490,68261],[-164,29]],[[62935,67772],[-516,47],[-784,1188],[-413,414],[-335,160]],[[65665,65306],[125,-404],[155,-214],[203,-78],[165,-107],[125,-339],[75,-196],[100,-75],[-1,-132],[-101,-352],[-44,-166],[-117,-189],[-104,-404],[-126,31],[-58,-141],[-44,-300],[34,-395],[-26,-72],[-128,2],[-174,-221],[-27,-288],[-63,-125],[-173,5],[-109,-149],[1,-238],[-134,-165],[-153,56],[-186,-199],[-128,-34]],[[64752,60417],[-91,413],[-217,975]],[[64444,61805],[833,591],[185,1182],[-127,418]],[[65575,65974],[80,201],[35,-51],[-26,-244],[-37,-108]],[[75742,63602],[137,140],[-30,251],[63,201],[11,612],[217,-135],[124,487],[14,288],[153,496],[-8,338],[359,408],[199,-107],[-23,364],[97,108],[-20,224]],[[75742,63602],[-147,937],[-76,-2],[-46,-377],[-152,306],[86,336],[124,34],[128,500],[-160,101],[-257,-8],[-265,81],[-24,410],[-133,30],[-220,255],[-98,-401],[200,-313],[-173,-220],[-62,-215],[171,-159],[-47,-356],[96,-444],[43,-486]],[[74730,63611],[-39,-216],[-189,7],[-343,-122],[16,-445],[-148,-349],[-400,-398],[-311,-695],[-209,-373],[-276,-387],[-1,-271],[-138,-146],[-251,-212],[-129,-31],[-84,-450],[58,-769],[15,-490],[-118,-561],[-1,-1004],[-144,-29],[-126,-450],[84,-195],[-253,-168],[-93,-401],[-112,-170],[-263,552],[-128,827],[-107,596],[-97,279],[-148,568],[-69,739],[-48,369],[-253,811],[-115,1145],[-83,756],[1,716],[-54,553],[-404,-353],[-196,70],[-362,716],[133,214],[-82,232],[-326,501]],[[68937,64577],[185,395],[612,-2],[-56,507],[-156,300],[-31,455],[-182,265],[306,619],[323,-45],[290,620],[174,599],[270,593],[-4,421],[236,342],[-224,292],[-96,400],[-99,517],[137,255],[421,-144],[310,88],[268,496]],[[71621,71550],[298,-692],[-28,-482],[111,-303],[-9,-301],[-200,79],[78,-651],[273,-374],[386,-413]],[[72530,68413],[-176,-268],[-108,-553],[269,-224],[262,-289],[362,-332],[381,-76],[160,-301],[215,-56],[334,-138],[231,10],[32,234],[-36,375],[21,255]],[[74477,67050],[170,124],[23,-465]],[[74670,66709],[6,-119],[252,-224],[175,92],[234,-39],[227,17],[20,363],[-113,189]],[[75471,66988],[224,74],[252,439],[321,376],[233,-145],[198,249],[130,-367],[-94,-248],[300,-89]],[[62436,72541],[-152,473],[55,183],[-87,678],[190,168]],[[59999,71049],[-26,452],[68,243]],[[60041,71744],[74,129],[75,130],[15,329],[91,-115],[306,165],[147,-112],[229,2],[320,222],[149,-10],[316,92]],[[62442,74043],[-109,172],[-207,147],[27,288],[-47,208]],[[57776,75399],[-239,79],[-283,-186]],[[57254,75292],[135,-157],[-86,-369],[-66,-67]],[[60041,71744],[-102,268],[105,222],[-169,-51],[-233,136],[-191,-340],[-421,-66],[-225,317],[-300,20],[-64,-245],[-192,-70],[-268,314],[-303,-11],[-165,588],[-203,328],[135,459],[-176,283],[308,565],[428,23],[117,449],[529,-78],[334,383],[324,167],[459,13],[485,-417],[399,-228],[323,91],[239,-53],[328,309]],[[61542,75120],[296,28],[268,-290]],[[57776,75399],[33,-228],[243,-190],[-51,-145],[-330,-33],[-118,-182],[-232,-319],[-87,276],[3,121]],[[64752,60417],[-201,-158],[-54,-263],[-6,-201],[-277,-249],[-444,-276],[-249,-417],[-122,-33],[-83,35],[-163,-245],[-177,-114],[-233,-30],[-70,-34],[-61,-156],[-73,-43],[-43,-150],[-137,13],[-89,-80],[-192,30],[-72,345],[8,323],[-46,174],[-54,437],[-80,243],[56,29],[-29,270],[34,114],[-12,257]],[[61883,60238],[121,189],[-28,249],[74,290],[114,-153],[75,53],[321,14],[50,-59],[269,-60],[106,30],[70,-197],[130,99],[199,620],[259,266],[801,226]],[[63448,67449],[109,-510],[137,-135],[47,-207],[190,-249],[16,-243],[-27,-197],[35,-199],[80,-165],[37,-194],[41,-145]],[[64274,65130],[53,-226]],[[61883,60238],[-37,252],[-83,178],[-22,236],[-143,212],[-148,495],[-79,482],[-192,406],[-124,97],[-184,563],[-32,411],[12,350],[-159,655],[-130,231],[-150,122],[-92,339],[15,133],[-77,306],[-81,132],[-108,440],[-170,476],[-141,406],[-139,-3],[44,325],[12,206],[34,236]]]};
+    const all=topojson.feature(TOPO,TOPO.objects.countries);
+    const features=all.features;
+    const featureMap={};
+    features.forEach(f=>featureMap[nid(f.id)]=f);
+    g.selectAll(".country").data(features).enter().append("path")
+      .attr("class","country").attr("id",d=>"c-"+nid(d.id)).attr("d",pathGen).on("click",handleClick);
+
+    function initGame(){
+      const ids=Object.keys(COUNTRY_NAMES);
+      queue=shuffle([...ids]).slice(0,Math.min(TOTAL,ids.length));
+      qIndex=0;score=0;triesLeft=MAX_TRIES;locked=false;
+      updateProgress();loadQuestion();
+    }
+    function loadQuestion(){
+      triesLeft=MAX_TRIES;locked=false;resetHearts();
+      setQuestion(COUNTRY_NAMES[currentTarget()]);
+      setFeedback("","🌍 Clique sur le bon pays !");
+      updateProgress();
+    }
+    function handleClick(event,d){
+      if(locked)return;
+      const id=nid(d.id);
+      const el=d3.select("#c-"+id);
+      if(el.classed("correct")||el.classed("done")||el.classed("revealed"))return;
+      const name=COUNTRY_NAMES[id]||d.properties?.name||"?";
+      if(id===currentTarget()){
+        el.classed("correct",true);
+        addLabel(id,name,"#1a5c38");
+        score++;locked=true;
+        setFeedback("correct","🎉 Bravo, c'est bien "+name+" !");
+        setTimeout(nextQuestion,1200);
+      } else {
+        if(el.classed("wrong"))return;
+        el.classed("wrong",true);
+        addLabel(id,name,"#7a2e10");
+        triesLeft--;loseHeart();
+        setFeedback("wrong","✗ Ici c'est : "+name);
+        if(triesLeft<=0){
+          locked=true;
+          const tid=currentTarget();
+          d3.select("#c-"+tid).classed("revealed",true);
+          addLabel(tid,COUNTRY_NAMES[tid]+" ✓","#1a5c38");
+          setFeedback("skip","C'était "+COUNTRY_NAMES[tid]+" — question suivante dans 2s…");
+          setTimeout(nextQuestion,2000);
+        }
+      }
+    }
+    function addLabel(id,text,color){
+      const feat=featureMap[id];if(!feat)return;
+      const[cx,cy]=pathGen.centroid(feat);
+      if(!isFinite(cx)||!isFinite(cy))return;
+      labelsG.append("text").attr("class","country-label").attr("x",cx).attr("y",cy).attr("fill",color).text(text);
+    }
+    function nextQuestion(){
+      const cur=d3.select("#c-"+currentTarget());
+      cur.classed("correct",false).classed("revealed",false).classed("done",true);
+      qIndex++;
+      if(qIndex>=queue.length){finishGame();}else{loadQuestion();}
+    }
+    function finishGame(){
+      document.getElementById("progress-bar").style.width="100%";
+      document.getElementById("progress-label").textContent="Terminé !";
+      document.getElementById("score-label").textContent="✓ "+score;
+      const emoji=score===10?"🌟":score>=7?"🎉":score>=4?"💪":"🌸";
+      const sub=score===10?"Score parfait ! Tu es une championne 🏆":score>=7?"Excellent résultat !":score>=4?"Pas mal, continue !":"C'est difficile, mais tu vas progresser !";
+      document.getElementById("res-emoji").textContent=emoji;
+      document.getElementById("res-title").textContent="Score final";
+      document.getElementById("res-score").textContent=score+" / "+queue.length;
+      document.getElementById("res-sub").textContent=sub;
+      document.getElementById("overlay").classList.add("visible");
+    }
+    initGame();
+  </script>
+</body>
+</html>

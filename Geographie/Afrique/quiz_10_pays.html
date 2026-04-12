@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>10 Pays – Afrique</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --pink-deep:#e8628a; --pink-mid:#f093b0; --pink-light:#fcd9e7;
+      --pink-blush:#fff0f5; --rose:#f7c5d5; --text-dark:#3d1a2b;
+      --text-mid:#7a4460; --text-soft:#c48aa8; --white:#fffbfc; --card-border:#f5c8db;
+    }
+    body { font-family:'Nunito',sans-serif; background:var(--pink-blush); color:var(--text-dark); min-height:100vh; overflow-x:hidden; }
+    body::before { content:''; position:fixed; inset:0; background-image:radial-gradient(ellipse 60% 40% at 15% 20%,rgba(248,180,210,.35) 0%,transparent 60%),radial-gradient(ellipse 50% 60% at 85% 75%,rgba(244,155,195,.25) 0%,transparent 55%); pointer-events:none; z-index:0; }
+    .petal { position:fixed; font-size:20px; opacity:.22; pointer-events:none; animation:floatPetal linear infinite; z-index:0; }
+    @keyframes floatPetal { 0%{transform:translateY(-30px) rotate(0deg);opacity:0} 10%{opacity:.22} 90%{opacity:.15} 100%{transform:translateY(110vh) rotate(360deg);opacity:0} }
+    .shell { max-width:820px; margin:0 auto; padding:2.5rem 1.5rem 5rem; position:relative; z-index:1; }
+    .back-btn { display:inline-flex; align-items:center; gap:6px; font-size:14px; font-weight:600; color:var(--pink-deep); background:var(--white); border:1.5px solid var(--card-border); border-radius:50px; padding:7px 16px; cursor:pointer; text-decoration:none; box-shadow:0 2px 8px rgba(232,98,138,.07); transition:border-color .2s,box-shadow .2s; margin-bottom:1.8rem; }
+    .back-btn:hover { border-color:var(--pink-mid); box-shadow:0 4px 12px rgba(232,98,138,.14); }
+    header { text-align:center; margin-bottom:1.4rem; }
+    .header-flowers { font-size:26px; letter-spacing:8px; display:block; margin-bottom:6px; animation:sway 4s ease-in-out infinite; }
+    @keyframes sway { 0%,100%{transform:rotate(-2deg)} 50%{transform:rotate(2deg)} }
+    header h1 { font-family:'Playfair Display',serif; font-size:34px; font-weight:600; color:var(--pink-deep); text-shadow:0 2px 16px rgba(232,98,138,.15); }
+    header h1 em { font-style:italic; font-weight:400; color:var(--text-mid); }
+    .progress-row { display:flex; align-items:center; gap:12px; margin-bottom:.8rem; }
+    .progress-label { font-size:13px; font-weight:700; color:var(--text-soft); white-space:nowrap; }
+    .progress-bar-wrap { flex:1; background:var(--pink-light); border-radius:50px; height:8px; overflow:hidden; }
+    .progress-bar { height:100%; background:linear-gradient(to right,var(--pink-mid),var(--pink-deep)); border-radius:50px; transition:width .4s ease; }
+    .score-label { font-size:13px; font-weight:700; color:var(--text-mid); white-space:nowrap; }
+    .quiz-card { background:var(--white); border:1.5px solid var(--card-border); border-radius:22px; padding:1.2rem 1.6rem; margin-bottom:.8rem; box-shadow:0 2px 12px rgba(232,98,138,.07); display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+    .question-text { font-family:'Playfair Display',serif; font-size:20px; font-weight:600; color:var(--text-dark); }
+    .question-text strong { color:var(--pink-deep); font-style:italic; }
+    .hearts-row { display:flex; align-items:center; gap:5px; }
+    .heart { font-size:24px; transition:transform .25s,filter .25s,opacity .25s; }
+    .heart.lost { filter:grayscale(1); opacity:.3; transform:scale(.8); }
+    .feedback-bar { background:var(--white); border:1.5px solid var(--card-border); border-radius:16px; padding:.6rem 1.4rem; margin-bottom:.8rem; font-size:14px; font-weight:600; color:var(--text-mid); text-align:center; min-height:42px; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(232,98,138,.05); transition:background .3s,border-color .3s; }
+    .feedback-bar.wrong-fb   { background:#fff5f0; border-color:#ffb88c; color:#b04010; }
+    .feedback-bar.correct-fb { background:#f0fff5; border-color:#80d8a0; color:#1a6b38; }
+    .feedback-bar.skip-fb    { background:#fff8f0; border-color:#ffd0a0; color:#8b5a10; }
+    #map-wrap { background:var(--white); border:1.5px solid var(--card-border); border-radius:22px; overflow:hidden; box-shadow:0 4px 20px rgba(232,98,138,.08); }
+    #map-wrap svg { width:100%; height:auto; display:block; }
+    .country { fill:#fce4ef; stroke:#d4799c; stroke-width:.6px; cursor:pointer; transition:fill .18s; }
+    .country:hover:not(.wrong):not(.correct):not(.revealed):not(.done) { fill:#f9c8db; }
+    .country.wrong    { fill:#ffb347; stroke:#e07010; }
+    .country.correct  { fill:#7ecfa0; stroke:#3a9a60; animation:correctPulse .5s ease-out; }
+    .country.revealed { fill:#a0dfc0; stroke:#3a9a60; }
+    .country.done     { fill:#c8f0d8; stroke:#6ab88a; cursor:default; }
+    @keyframes correctPulse { 0%{fill:#fff} 50%{fill:#b0f0c8} 100%{fill:#7ecfa0} }
+    .country-label { font-family:'Nunito',sans-serif; font-size:9px; font-weight:800; pointer-events:none; text-anchor:middle; dominant-baseline:middle; }
+    .overlay { display:none; position:fixed; inset:0; background:rgba(255,240,248,.88); backdrop-filter:blur(6px); z-index:300; align-items:center; justify-content:center; }
+    .overlay.visible { display:flex; }
+    .result-box { background:var(--white); border:2px solid var(--card-border); border-radius:28px; padding:2.5rem 3rem; text-align:center; box-shadow:0 12px 48px rgba(232,98,138,.2); max-width:400px; width:90%; animation:slideUp .35s ease-out; }
+    @keyframes slideUp { from{transform:translateY(28px);opacity:0} to{transform:translateY(0);opacity:1} }
+    .result-emoji { font-size:60px; margin-bottom:.8rem; }
+    .result-title { font-family:'Playfair Display',serif; font-size:28px; font-weight:600; color:var(--pink-deep); margin-bottom:.4rem; }
+    .result-score { font-size:42px; font-weight:800; color:var(--text-dark); margin:.6rem 0; }
+    .result-sub   { font-size:15px; color:var(--text-mid); font-weight:500; margin-bottom:1.6rem; }
+    .replay-btn { display:inline-flex; align-items:center; gap:8px; font-family:'Nunito',sans-serif; font-size:15px; font-weight:700; color:var(--white); background:linear-gradient(135deg,var(--pink-deep),var(--pink-mid)); border:none; border-radius:50px; padding:12px 30px; cursor:pointer; box-shadow:0 4px 16px rgba(232,98,138,.35); transition:transform .15s,box-shadow .15s; }
+    .replay-btn:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(232,98,138,.45); }
+  </style>
+</head>
+<body>
+  <span class="petal" style="left:6%;animation-duration:13s;animation-delay:0s;top:-20px;">🌍</span>
+  <span class="petal" style="left:25%;animation-duration:16s;animation-delay:3s;top:-20px;">🌸</span>
+  <span class="petal" style="left:50%;animation-duration:11s;animation-delay:1.5s;top:-20px;">🌍</span>
+  <span class="petal" style="left:75%;animation-duration:14s;animation-delay:5s;top:-20px;">🌷</span>
+  <span class="petal" style="left:90%;animation-duration:10s;animation-delay:2s;top:-20px;">🌸</span>
+
+  <div class="overlay" id="overlay">
+    <div class="result-box">
+      <div class="result-emoji" id="res-emoji">🌸</div>
+      <div class="result-title" id="res-title">Résultat</div>
+      <div class="result-score" id="res-score">0 / 10</div>
+      <div class="result-sub" id="res-sub"></div>
+      <button class="replay-btn" onclick="location.reload()">🔄 Rejouer</button>
+    </div>
+  </div>
+
+  <div class="shell">
+    <a class="back-btn" href="../../index.html">← Retour</a>
+    <header>
+      <span class="header-flowers">🌍 🌸 🌍</span>
+      <h1>Géographie — <em>Afrique</em></h1>
+    </header>
+    <div class="progress-row">
+      <span class="progress-label" id="progress-label">Pays 1 / 10</span>
+      <div class="progress-bar-wrap"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
+      <span class="score-label" id="score-label">✓ 0</span>
+    </div>
+    <div class="quiz-card">
+      <div class="question-text" id="question-text">Où se trouve … ?</div>
+      <div class="hearts-row" id="hearts-row">
+        <span class="heart" id="h1">💖</span>
+        <span class="heart" id="h2">💖</span>
+        <span class="heart" id="h3">💖</span>
+      </div>
+    </div>
+    <div class="feedback-bar" id="feedback">🌍 Clique sur le bon pays !</div>
+    <div id="map-wrap"></div>
+  </div>
+
+  <script>
+    const COUNTRY_NAMES = {"12":"Algérie","24":"Angola","72":"Botswana","108":"Burundi","120":"Cameroun","140":"Rép. Centrafricaine","148":"Tchad","178":"Congo","180":"RD Congo","204":"Bénin","226":"Guinée équatoriale","231":"Éthiopie","232":"Érythrée","262":"Djibouti","266":"Gabon","270":"Gambie","288":"Ghana","324":"Guinée","384":"Côte d'Ivoire","404":"Kenya","426":"Lesotho","430":"Liberia","434":"Libye","450":"Madagascar","454":"Malawi","466":"Mali","478":"Mauritanie","504":"Maroc","508":"Mozambique","516":"Namibie","562":"Niger","566":"Nigéria","624":"Guinée-Bissau","646":"Rwanda","686":"Sénégal","694":"Sierra Leone","706":"Somalie","710":"Afrique du Sud","716":"Zimbabwe","728":"Soudan du Sud","729":"Soudan","748":"Eswatini","768":"Togo","788":"Tunisie","800":"Ouganda","818":"Égypte","834":"Tanzanie","854":"Burkina Faso","894":"Zambie"};
+    const MAX_TRIES = 3, TOTAL = 10;
+    let queue=[], qIndex=0, triesLeft=MAX_TRIES, score=0, locked=false;
+
+    function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a;}
+    function currentTarget(){return queue[qIndex];}
+    function nid(id){return String(parseInt(id,10));}
+
+    function setFeedback(type,msg){const el=document.getElementById("feedback");el.className="feedback-bar"+(type?" "+type+"-fb":"");el.textContent=msg;}
+    function resetHearts(){for(let i=1;i<=MAX_TRIES;i++)document.getElementById("h"+i).classList.remove("lost");}
+    function loseHeart(){const idx=MAX_TRIES-triesLeft;document.getElementById("h"+idx)?.classList.add("lost");}
+    function updateProgress(){
+      document.getElementById("progress-label").textContent="Pays "+(qIndex+1)+" / "+TOTAL;
+      document.getElementById("progress-bar").style.width=(qIndex/TOTAL*100)+"%";
+      document.getElementById("score-label").textContent="✓ "+score;
+    }
+    function setQuestion(name){document.getElementById("question-text").innerHTML="Où se trouve <strong>"+name+"</strong> ?";}
+
+    const W=820, H=620;
+    const svg=d3.select("#map-wrap").append("svg").attr("viewBox","0 0 "+W+" "+H).attr("preserveAspectRatio","xMidYMid meet");
+    svg.append("rect").attr("width",W).attr("height",H).attr("fill","#cce8f6");
+    svg.append("defs").append("clipPath").attr("id","vp").append("rect").attr("width",W).attr("height",H);
+    const g=svg.append("g").attr("clip-path","url(#vp)");
+    const labelsG=svg.append("g").attr("clip-path","url(#vp)");
+    const projection=d3.geoMercator().center([20,0]).scale(400).translate([W/2,H/2]);
+    const pathGen=d3.geoPath().projection(projection);
+
+    const TOPO={"type":"Topology","transform":{"scale":[0.0036000360003600037,0.0016925586033320105],"translate":[-180,-85.60903777459771]},"objects":{"countries":{"type":"GeometryCollection","geometries":[{"type":"Polygon","arcs":[[0,1,2,3,4,5,6,7,8]],"id":"834","properties":{"name":"Tanzania"}},{"type":"Polygon","arcs":[[-6,12,13,14,15,16,17,18,19,20,21]],"id":"180","properties":{"name":"Dem. Rep. Congo"}},{"type":"Polygon","arcs":[[22,23,24,25]],"id":"706","properties":{"name":"Somalia"}},{"type":"Polygon","arcs":[[-1,26,27,28,-23,29]],"id":"404","properties":{"name":"Kenya"}},{"type":"Polygon","arcs":[[30,31,32,33,34,35,36,37]],"id":"729","properties":{"name":"Sudan"}},{"type":"Polygon","arcs":[[-32,38,39,40,41]],"id":"148","properties":{"name":"Chad"}},{"type":"Polygon","arcs":[[42,43,44,45,46,47,48],[49]],"id":"710","properties":{"name":"South Africa"}},{"type":"Polygon","arcs":[[-50]],"id":"426","properties":{"name":"Lesotho"}},{"type":"Polygon","arcs":[[-45,50,51,52]],"id":"716","properties":{"name":"Zimbabwe"}},{"type":"Polygon","arcs":[[-44,53,54,-51]],"id":"072","properties":{"name":"Botswana"}},{"type":"Polygon","arcs":[[-43,55,56,57,-54]],"id":"516","properties":{"name":"Namibia"}},{"type":"Polygon","arcs":[[58,59,60,61,62,63,64]],"id":"686","properties":{"name":"Senegal"}},{"type":"Polygon","arcs":[[-61,65,66,67,68,69,70]],"id":"466","properties":{"name":"Mali"}},{"type":"Polygon","arcs":[[-11,71,-66,-60,72]],"id":"478","properties":{"name":"Mauritania"}},{"type":"Polygon","arcs":[[73,74,75,76,77]],"id":"204","properties":{"name":"Benin"}},{"type":"Polygon","arcs":[[-41,78,79,-77,80,-68,81,82]],"id":"562","properties":{"name":"Niger"}},{"type":"Polygon","arcs":[[-78,-80,83,84]],"id":"566","properties":{"name":"Nigeria"}},{"type":"Polygon","arcs":[[-40,85,86,87,88,89,-84,-79]],"id":"120","properties":{"name":"Cameroon"}},{"type":"Polygon","arcs":[[-75,90,91,92]],"id":"768","properties":{"name":"Togo"}},{"type":"Polygon","arcs":[[-92,93,94,95]],"id":"288","properties":{"name":"Ghana"}},{"type":"Polygon","arcs":[[-70,96,-95,97,98,99]],"id":"384","properties":{"name":"Côte d'Ivoire"}},{"type":"Polygon","arcs":[[-62,-71,-100,100,101,102,103]],"id":"324","properties":{"name":"Guinea"}},{"type":"Polygon","arcs":[[-63,-104,104]],"id":"624","properties":{"name":"Guinea-Bissau"}},{"type":"Polygon","arcs":[[-99,105,106,-101]],"id":"430","properties":{"name":"Liberia"}},{"type":"Polygon","arcs":[[-102,-107,107]],"id":"694","properties":{"name":"Sierra Leone"}},{"type":"Polygon","arcs":[[-69,-81,-76,-93,-96,-97]],"id":"854","properties":{"name":"Burkina Faso"}},{"type":"Polygon","arcs":[[-18,108,-86,-39,-31,109]],"id":"140","properties":{"name":"Central African Rep."}},{"type":"Polygon","arcs":[[-17,110,111,112,-87,-109]],"id":"178","properties":{"name":"Congo"}},{"type":"Polygon","arcs":[[-88,-113,113,114]],"id":"266","properties":{"name":"Gabon"}},{"type":"Polygon","arcs":[[-89,-115,115]],"id":"226","properties":{"name":"Eq. Guinea"}},{"type":"Polygon","arcs":[[-5,116,117,-52,-55,-58,118,-13]],"id":"894","properties":{"name":"Zambia"}},{"type":"Polygon","arcs":[[-4,119,-117]],"id":"454","properties":{"name":"Malawi"}},{"type":"Polygon","arcs":[[-3,120,-48,121,-46,-53,-118,-120]],"id":"508","properties":{"name":"Mozambique"}},{"type":"Polygon","arcs":[[-47,-122]],"id":"748","properties":{"name":"eSwatini"}},{"type":"MultiPolygon","arcs":[[[-16,122,-111]],[[-14,-119,-57,123]]],"id":"024","properties":{"name":"Angola"}},{"type":"Polygon","arcs":[[-7,-22,124]],"id":"108","properties":{"name":"Burundi"}},{"type":"Polygon","arcs":[[126]],"id":"450","properties":{"name":"Madagascar"}},{"type":"Polygon","arcs":[[-65,127]],"id":"270","properties":{"name":"Gambia"}},{"type":"Polygon","arcs":[[128,129,130]],"id":"788","properties":{"name":"Tunisia"}},{"type":"Polygon","arcs":[[-10,131,132,-129,133,-82,-67,-72]],"id":"012","properties":{"name":"Algeria"}},{"type":"Polygon","arcs":[[-36,134,135,136]],"id":"232","properties":{"name":"Eritrea"}},{"type":"Polygon","arcs":[[-132,-12,137]],"id":"504","properties":{"name":"Morocco"}},{"type":"Polygon","arcs":[[-34,138,139,-126,140]],"id":"818","properties":{"name":"Egypt"}},{"type":"Polygon","arcs":[[-33,-42,-83,-134,-131,141,-139]],"id":"434","properties":{"name":"Libya"}},{"type":"Polygon","arcs":[[-24,-29,142,-37,-137,143,144]],"id":"231","properties":{"name":"Ethiopia"}},{"type":"Polygon","arcs":[[-136,145,146,-144]],"id":"262","properties":{"name":"Djibouti"}},{"type":"Polygon","arcs":[[-9,147,-20,148,-27]],"id":"800","properties":{"name":"Uganda"}},{"type":"Polygon","arcs":[[-8,-125,-21,-148]],"id":"646","properties":{"name":"Rwanda"}},{"type":"Polygon","arcs":[[-19,-110,-38,-143,-28,-149]],"id":"728","properties":{"name":"S. Sudan"}}]}},"arcs":[[[59417,50018],[47,-65],[1007,-1203],[19,-343],[399,-590]],[[60889,47817],[-128,-728],[16,-335],[178,-216],[8,-153],[-76,-357],[16,-180],[-18,-282],[97,-370],[115,-583],[101,-129]],[[61198,44484],[-221,-342],[-303,-230],[-167,10],[-99,-177],[-193,-16],[-73,-74],[-334,166],[-209,-48]],[[59599,43773],[-77,804],[-95,275],[-55,164],[-273,110]],[[59099,45126],[-157,177],[-177,100],[-111,99],[-116,150]],[[58538,45652],[-150,745],[-161,330],[-55,343],[27,307],[-50,544]],[[58149,47921],[115,28],[101,214],[108,308],[69,124],[-3,192],[-60,134],[-16,233]],[[58463,49154],[80,74],[16,348],[-110,333]],[[58449,49909],[98,71],[304,-7],[566,45]],[[47592,66920],[1,-40],[-6,-114]],[[47587,66766],[-1,-895],[-911,31],[9,-1512],[-261,-53],[-68,-304],[53,-853],[-1088,4],[-60,-197]],[[45272,63236],[5,-1],[625,48],[33,213],[114,265],[92,816],[386,637],[131,745],[86,44],[91,460],[234,63],[100,-76],[126,0],[90,134],[172,19],[-7,317],[42,0]],[[58538,45652],[-109,60],[-373,-99],[-75,-71],[-79,-377],[62,-261],[-49,-699],[-34,-593],[75,-105],[194,-230],[76,107],[23,-637],[-212,5],[-114,325],[-103,252],[-213,82],[-62,310],[-170,-187],[-222,83],[-93,268],[-176,55],[-131,-15],[-15,184],[-96,15]],[[56642,44124],[-127,35],[-172,-89],[-121,15],[-68,-54],[15,703],[-93,219],[-21,363],[41,356],[-56,228],[-5,372],[-337,-5],[24,213],[-142,-2],[-15,-103],[-172,-23],[-69,-344],[-42,-148],[-154,83],[-91,-83],[-184,-47],[-106,309],[-64,191],[-80,354],[-68,440],[-820,8],[-98,-71],[-80,11],[-115,-79]],[[53422,46976],[-39,183]],[[53383,47159],[71,62],[9,258],[45,152],[101,124]],[[53609,47755],[73,-60],[95,226],[152,-6],[17,-167],[104,-105],[164,370],[161,289],[71,189],[-10,486],[121,574],[127,304],[183,285],[32,189],[7,216],[45,205],[-14,335],[34,524],[55,368],[83,316],[16,357]],[[55125,52650],[25,412],[108,300],[149,190],[229,-200],[177,-218],[203,-59],[207,-115],[83,357],[38,46],[127,-60],[309,295],[110,-125],[90,18],[41,143],[104,51],[209,-62],[178,-14],[91,63]],[[57603,53672],[169,-488],[124,-71],[75,99],[128,-39],[155,125],[66,-252],[244,-393]],[[58564,52653],[-16,-691],[111,-80],[-89,-210],[-107,-157],[-106,-308],[-59,-274],[-15,-475],[-65,-225],[-2,-446]],[[58216,49787],[-80,-165],[-10,-351],[-38,-46],[-26,-323]],[[58062,48902],[70,-268],[17,-713]],[[61551,49585],[-165,488],[-3,2152],[243,670]],[[61626,52895],[76,186],[178,11],[247,417],[362,26],[785,1773]],[[63274,55308],[194,493],[125,363],[0,308],[0,596],[1,244],[2,9]],[[63596,57321],[89,12],[128,88],[147,59],[132,202],[105,2],[6,-163],[-25,-344],[1,-310],[-59,-214],[-78,-639],[-134,-659],[-172,-755],[-238,-866],[-237,-661],[-327,-806],[-278,-479],[-415,-586],[-259,-450],[-304,-715],[-64,-312],[-63,-140]],[[59417,50018],[-3,627],[80,239],[137,391],[101,431],[-123,678],[-32,296],[-132,411]],[[59445,53091],[171,352],[188,390]],[[59804,53833],[145,-99],[0,-332],[95,-194],[193,0],[352,-502],[87,-6],[65,16],[62,-68],[185,-47],[82,247],[254,247],[112,-200],[190,0]],[[61551,49585],[-195,-236],[-68,-246],[-104,-44],[-40,-416],[-89,-238],[-54,-393],[-112,-195]],[[56824,55442],[-212,258],[-96,170],[-18,184],[45,246],[-1,241],[-160,369],[-31,253]],[[56351,57163],[3,143],[-102,174],[-3,343],[-58,228],[-98,-34],[28,217],[72,246],[-32,245],[92,181],[-58,138],[73,365],[127,435],[240,-41],[-14,2345]],[[56621,62148],[3,248],[320,2],[0,1180]],[[56944,63578],[1117,0],[1077,0],[1102,0]],[[60240,63578],[90,-580],[-61,-107],[40,-608],[102,-706],[106,-145],[152,-219]],[[60669,61213],[-141,-337],[-204,-97],[-88,-181],[-27,-393],[-120,-868],[30,-236]],[[60119,59101],[-45,-508],[-112,-582],[-168,-293],[-119,-451],[-28,-241],[-132,-166],[-82,-618],[4,-531]],[[59437,55711],[-3,460],[-39,12],[5,294],[-33,203],[-143,233],[-34,426],[34,436],[-129,41],[-19,-132],[-167,-30],[67,-173],[23,-355],[-152,-324],[-138,-426],[-144,-61],[-233,345],[-105,-122],[-29,-172],[-143,-112],[-9,-122],[-277,0],[-38,122],[-200,20],[-100,-101],[-77,51],[-143,344],[-48,163],[-200,-81],[-76,-274],[-72,-528],[-95,-111],[-85,-65],[189,-230]],[[56351,57163],[-176,-101],[-141,-239],[-201,-645],[-261,-273],[-269,36],[-78,-54],[28,-208],[-145,-207],[-118,-230],[-350,-226],[-69,134],[-46,11],[-52,-152],[-229,-44]],[[54244,54965],[43,160],[-87,407],[-39,245],[-121,100],[-164,345],[60,279],[127,-60],[78,42],[155,-6],[-151,537],[10,393],[-18,392],[-111,378]],[[54026,58177],[28,279],[-178,13],[0,380],[-115,219],[120,778],[354,557],[15,769],[107,1199],[60,254],[-116,203],[-4,188],[-104,153],[-68,919]],[[54125,64088],[280,323],[1108,-1132],[1108,-1131]],[[54540,33696],[133,292],[109,-162],[47,-252],[125,-43],[175,-112],[149,43],[248,302],[0,2182]],[[55526,35946],[75,-88],[165,-562],[-26,-360],[62,-207],[199,60],[139,264],[132,177],[68,283],[135,137],[117,-71],[133,-166],[226,-29],[178,138],[28,184],[48,283],[152,47],[83,222],[93,393],[249,442],[393,435]],[[58175,37528],[113,-7],[134,-100],[94,71],[148,-59]],[[58664,37433],[133,-832],[72,-419],[-49,-659],[23,-212]],[[58843,35311],[-140,108],[-80,-42],[-26,-172],[-76,-222],[2,-204],[166,-320],[163,63],[56,263]],[[58908,34785],[211,-5]],[[59119,34780],[-70,-430],[-32,-491],[-72,-267],[-190,-298],[-54,-86],[-118,-300],[-77,-303],[-158,-424],[-314,-609],[-196,-355],[-210,-269],[-290,-229],[-141,-31],[-36,-164],[-169,88],[-138,-113],[-301,114],[-168,-72],[-115,31],[-286,-233],[-238,-94],[-171,-223],[-127,-14],[-117,210],[-94,11],[-120,264],[-13,-82],[-37,159],[2,346],[-90,396],[89,108],[-7,453],[-182,553],[-139,501],[-1,1],[-199,768]],[[58049,33472],[-121,182],[-130,-120],[-151,-232],[-148,-374],[209,-454],[99,59],[51,188],[155,93],[47,192],[85,288],[-96,178]],[[58175,37528],[-177,267],[-215,90],[-82,375],[0,208],[-119,64],[-315,649],[-87,342],[-56,105],[-107,473]],[[57017,40101],[311,-65],[90,-68],[94,13],[154,383],[241,486],[100,46],[33,205],[159,235],[210,81]],[[58409,41417],[18,-220],[232,12],[128,-125],[60,-146],[132,-43],[145,-190],[0,-748],[-54,-409],[-12,-442],[45,-175],[-31,-348],[-42,-53],[-74,-426],[-292,-671]],[[55526,35946],[0,1725],[274,20],[8,2105],[207,19],[428,207],[106,-243],[177,231],[85,2],[156,133]],[[56967,40145],[50,-44]],[[54540,33696],[-207,446],[-108,432],[-62,575],[-68,428],[-93,910],[-7,707],[-35,322],[-108,243],[-144,489],[-146,708],[-60,371],[-226,577],[-17,453]],[[53259,40357],[134,113],[166,100],[180,-17],[166,-267],[42,41],[1126,26],[192,-284],[673,-83],[510,241]],[[56448,40227],[228,134],[180,-34],[109,-133],[2,-49]],[[45357,58612],[-115,460],[-138,210],[122,112],[134,415],[66,304]],[[45426,60113],[96,189],[138,-51],[135,129],[155,6],[133,-173],[184,-157],[168,-435],[184,-405]],[[46619,59216],[13,-368],[54,-338],[104,-166],[24,-229],[-13,-184]],[[46801,57931],[-40,-33],[-151,47],[-21,-66],[-61,-13],[-200,144],[-134,6]],[[46194,58016],[-513,25],[-75,-67],[-92,19],[-147,-96]],[[45367,57897],[-46,453]],[[45321,58350],[253,-13],[67,83],[50,5],[103,136],[119,-124],[121,-11],[120,133],[-56,170],[-92,-99],[-86,3],[-110,145],[-88,-9],[-63,-140],[-302,-17]],[[46619,59216],[93,107],[47,348],[88,14],[194,-165],[157,117],[107,-39],[42,131],[1114,9],[62,414],[-48,73],[-134,2550],[-134,2550],[425,10]],[[48632,65335],[937,-1289],[937,-1289],[66,-277],[173,-169],[129,-96],[3,-376],[308,58]],[[51185,61897],[1,-1361],[-152,-394],[-24,-364],[-247,-94],[-379,-51],[-102,-210],[-178,-23]],[[50104,59400],[-178,-3],[-70,114],[-153,-84],[-259,-246],[-53,-184],[-216,-265],[-38,-152],[-116,-120],[-134,79],[-76,-144],[-41,-405],[-221,-490],[7,-200],[-76,-250],[18,-343]],[[48498,56707],[-114,-88],[-65,-74],[-43,253],[-80,-67],[-48,11],[-51,-172],[-215,5],[-77,89],[-36,-54]],[[47769,56610],[-85,170],[15,176],[-35,69],[-59,-58],[11,192],[57,152],[-114,248],[-33,163],[-62,130],[-55,15],[-67,-83],[-90,-79],[-76,-128],[-119,48],[-77,150],[-46,19],[-73,-78],[-44,-1],[-16,216]],[[47587,66766],[1045,-1431]],[[45426,60113],[-24,318],[78,291],[34,557],[-30,583],[-34,294],[28,295],[-72,281],[-146,255]],[[50747,54278],[-229,-69]],[[50518,54209],[-69,407],[13,1357],[-56,122],[-11,290],[-96,207],[-85,174],[35,311]],[[50249,57077],[96,67],[56,258],[136,56],[61,176]],[[50598,57634],[93,173],[100,2],[212,-340]],[[51003,57469],[-11,-197],[62,-350],[-54,-238],[29,-159],[-135,-366],[-86,-181],[-52,-372],[7,-376],[-16,-952]],[[54026,58177],[-78,-34],[-9,-188]],[[53939,57955],[-52,-13],[-188,647],[-65,24],[-217,-331],[-215,173],[-150,34],[-80,-83],[-163,18],[-164,-252],[-141,-14],[-337,305],[-131,-145],[-142,10],[-104,223],[-279,221],[-298,-70],[-72,-128],[-39,-340],[-80,-238],[-19,-527]],[[50598,57634],[6,405],[-320,134],[-9,286],[-156,386],[-37,269],[22,286]],[[51185,61897],[392,263],[804,1161],[952,1126]],[[53333,64447],[439,-255],[156,-324],[197,220]],[[53939,57955],[110,-235],[-31,-107],[-14,-196],[-234,-457],[-74,-377],[-39,-307],[-59,-132],[-56,-414],[-148,-243],[-43,-299],[-63,-238],[-26,-246],[-191,-199],[-156,243],[-105,-10],[-165,-345],[-81,-6],[-132,-570],[-71,-418]],[[52361,53399],[-289,-213],[-105,31],[-107,-132],[-222,13],[-149,370],[-91,427],[-197,389],[-209,-7],[-245,1]],[[54244,54965],[-140,-599],[-67,-107],[-21,-458],[28,-249],[-23,-176],[132,-309],[23,-212],[103,-305],[127,-190],[12,-269],[29,-172]],[[54447,51919],[-20,-319],[-220,140],[-225,156],[-350,23]],[[53632,51919],[-35,32],[-164,-76],[-169,79],[-132,-38]],[[53132,51916],[-452,13]],[[52680,51929],[40,466],[-108,391],[-127,100],[-56,265],[-72,85],[4,163]],[[50518,54209],[-224,-126]],[[50294,54083],[-62,207],[-74,375],[-22,294],[61,532],[-69,215],[-27,466],[1,429],[-116,305],[20,184]],[[50006,57090],[243,-13]],[[50294,54083],[-436,-346],[-154,-203],[-250,-171],[-248,168]],[[49206,53531],[13,233],[-121,509],[73,667],[117,496],[-74,841]],[[49214,56277],[-38,444],[7,336],[482,27],[123,-43],[90,96],[128,-47]],[[48498,56707],[125,-129],[49,-195],[125,-125],[97,149],[130,22],[190,-152]],[[49206,53531],[-126,-7],[-194,116],[-178,-7],[-329,-103],[-193,-170],[-275,-217],[-54,15]],[[47857,53158],[22,487],[26,74],[-8,233],[-118,247],[-88,40],[-81,162],[60,262],[-28,286],[13,172]],[[47655,55121],[44,0],[17,258],[-22,114],[27,82],[103,71],[-69,473],[-64,245],[23,200],[55,46]],[[47655,55121],[-78,15],[-57,-238],[-78,3],[-55,126],[19,237],[-116,362],[-73,-67],[-59,-13]],[[47158,55546],[-77,-34],[3,217],[-44,155],[9,171],[-60,249],[-78,211],[-222,1],[-65,-112],[-76,-13],[-48,-128],[-32,-163],[-148,-260]],[[46320,55840],[-122,349],[-108,232],[-71,76],[-69,118],[-32,261],[-41,130],[-80,97]],[[45797,57103],[123,288],[84,-11],[73,99],[61,1],[44,78],[-24,196],[31,62],[5,200]],[[45797,57103],[-149,247],[-117,39],[-63,166],[1,90],[-84,125],[-18,127]],[[47857,53158],[-73,-5],[-286,282],[-252,449],[-237,324],[-187,381]],[[46822,54589],[66,189],[15,172],[126,320],[129,276]],[[46822,54589],[-75,44],[-200,238],[-144,316],[-49,216],[-34,437]],[[55125,52650],[-178,33],[-188,99],[-166,-313],[-146,-550]],[[56824,55442],[152,-239],[2,-192],[187,-308],[116,-255],[70,-355],[208,-234],[44,-187]],[[53609,47755],[-104,203],[-84,-100],[-112,-255]],[[53309,47603],[-228,626]],[[53081,48229],[212,326],[-105,391],[95,148],[187,73],[23,261],[148,-283],[245,-25],[85,279],[36,393],[-31,461],[-131,350],[120,684],[-69,117],[-207,-48],[-78,305],[21,258]],[[53081,48229],[-285,596],[-184,488],[-169,610],[9,196],[61,189],[67,430],[56,438]],[[52636,51176],[94,35],[404,-6],[-2,711]],[[52636,51176],[-52,90],[96,663]],[[59099,45126],[131,-264],[71,-501],[-47,-160],[-56,-479],[53,-490],[-87,-205],[-85,-549],[147,-153]],[[59226,42325],[-843,-487],[26,-421]],[[56448,40227],[-181,369],[-188,483],[13,1880],[579,-7],[-24,203],[41,222],[-49,277],[32,286],[-29,184]],[[59599,43773],[-77,-449],[77,-768],[97,9],[100,-191],[116,-427],[24,-760],[-120,-124],[-85,-410],[-181,365],[-21,417],[59,274],[-16,237],[-110,149],[-77,-54],[-159,284]],[[61198,44484],[45,-265],[-11,-588],[34,-519],[11,-923],[49,-290],[-83,-422],[-108,-410],[-177,-366],[-254,-225],[-313,-287],[-313,-634],[-107,-108],[-194,-420],[-115,-136],[-23,-421],[132,-448],[54,-346],[4,-177],[49,29],[-8,-579],[-45,-275],[65,-101],[-41,-245],[-116,-211],[-229,-199],[-334,-320],[-122,-219],[24,-248],[71,-40],[-24,-311]],[[58908,34785],[-24,261],[-41,265]],[[53383,47159],[-74,444]],[[53259,40357],[-26,372],[38,519],[96,541],[15,254],[90,532],[66,243],[159,386],[90,263],[29,438],[-15,335],[-83,211],[-74,358],[-68,355],[15,122],[85,235],[-84,570],[-57,396],[-139,374],[26,115]],[[58062,48902],[169,-46],[85,336],[147,-38]],[[59700,68010],[-27,153],[-155,862]],[[63761,43212],[74,-251],[69,-390],[45,-711],[72,-276],[-28,-284],[-49,-174],[-94,347],[-53,-175],[53,-438],[-24,-250],[-77,-137],[-18,-500],[-109,-689],[-137,-814],[-172,-1120],[-106,-821],[-125,-685],[-226,-140],[-243,-250],[-160,151],[-220,211],[-77,312],[-18,524],[-98,471],[-26,425],[50,426],[128,102],[1,197],[133,447],[25,377],[-65,280],[-52,372],[-23,544],[97,331],[38,375],[138,22],[155,121],[103,107],[122,7],[158,337],[229,364],[83,297],[-38,253],[118,-71],[153,410],[6,356],[92,264],[96,-254]],[[45321,58350],[36,262]],[[52633,68486],[-118,1061],[-171,238],[-3,143],[-227,352],[-24,445],[171,330],[65,487],[-44,563],[57,303]],[[52339,72408],[302,239],[195,-71],[-9,-299],[236,217],[20,-113],[-139,-290],[-2,-273],[96,-147],[-36,-511],[-183,-297],[53,-322],[143,-10],[70,-281],[106,-92]],[[53191,70158],[-16,-454],[-135,-170],[-86,-189],[-191,-228],[30,-244],[-24,-250],[-136,-137]],[[47592,66920],[-2,700],[449,436],[277,90],[227,159],[107,295],[324,234],[12,438],[161,51],[126,219],[363,99],[51,230],[-73,125],[-96,624],[-17,359],[-104,379]],[[49397,71358],[267,323],[300,102],[175,244],[268,180],[471,105],[459,48],[140,-87],[262,232],[297,5],[113,-137],[190,35]],[[52633,68486],[90,-522],[15,-274],[-49,-482],[21,-270],[-36,-323],[24,-371],[-110,-247],[164,-431],[11,-253],[99,-330],[130,109],[219,-275],[122,-370]],[[60669,61213],[161,-684],[77,-542],[152,-288],[379,-558],[154,-336],[151,-341],[87,-203],[136,-178]],[[61966,58083],[-83,-144],[-119,51]],[[61764,57990],[-95,191],[-114,346],[-124,190],[-71,204],[-242,237],[-191,7],[-67,124],[-163,-139],[-168,268],[-87,-441],[-323,124]],[[45272,63236],[13,274],[106,161],[91,308],[-18,200],[96,417],[155,376],[93,95],[74,344],[6,315],[100,365],[185,216],[177,603],[5,8],[139,227],[259,65],[218,404],[140,158],[232,493],[-70,735],[106,508],[37,312],[179,399],[278,270],[206,244],[186,612],[87,362],[205,-2],[167,-251],[264,41],[288,-131],[121,-6]],[[56944,63578],[0,2175],[0,2101],[-83,476],[71,365],[-43,253],[101,283]],[[56990,69231],[369,10],[268,-156],[275,-175],[129,-92],[214,188],[114,169],[245,49],[198,-75],[75,-293],[65,193],[222,-140],[217,-33],[137,149]],[[59700,68010],[-78,-238],[-60,-446],[-75,-308],[-65,-103],[-93,191],[-125,263],[-198,847],[-29,-53],[115,-624],[171,-594],[210,-920],[102,-321],[90,-334],[249,-654],[-55,-103],[9,-384],[323,-530],[49,-121]],[[53191,70158],[326,-204],[117,51],[232,-98],[368,-264],[130,-526],[250,-114],[391,-248],[296,-293],[136,153],[133,272],[-65,452],[87,288],[200,277],[192,80],[375,-121],[95,-264],[104,-2],[88,-101],[276,-70],[68,-195]],[[59804,53833],[-164,643],[-127,137],[-48,236],[-141,288],[-171,42],[95,337],[147,14],[42,181]],[[61764,57990],[-98,-261],[-94,-277],[22,-163],[4,-180],[155,-10],[67,42],[62,-106]],[[61882,57035],[-61,-209],[103,-325],[102,-285],[106,-210],[909,-702],[233,4]],[[61966,58083],[66,-183],[-9,-245],[-158,-142],[119,-161]],[[61984,57352],[-102,-317]],[[58449,49909],[-166,-182],[-67,60]],[[58564,52653],[115,161],[176,-132],[224,138],[195,-1],[171,272]]]};
+    const all=topojson.feature(TOPO,TOPO.objects.countries);
+    const features=all.features;
+    const featureMap={};
+    features.forEach(f=>featureMap[nid(f.id)]=f);
+    g.selectAll(".country").data(features).enter().append("path")
+      .attr("class","country").attr("id",d=>"c-"+nid(d.id)).attr("d",pathGen).on("click",handleClick);
+
+    function initGame(){
+      const ids=Object.keys(COUNTRY_NAMES);
+      queue=shuffle([...ids]).slice(0,Math.min(TOTAL,ids.length));
+      qIndex=0;score=0;triesLeft=MAX_TRIES;locked=false;
+      updateProgress();loadQuestion();
+    }
+    function loadQuestion(){
+      triesLeft=MAX_TRIES;locked=false;resetHearts();
+      setQuestion(COUNTRY_NAMES[currentTarget()]);
+      setFeedback("","🌍 Clique sur le bon pays !");
+      updateProgress();
+    }
+    function handleClick(event,d){
+      if(locked)return;
+      const id=nid(d.id);
+      const el=d3.select("#c-"+id);
+      if(el.classed("correct")||el.classed("done")||el.classed("revealed"))return;
+      const name=COUNTRY_NAMES[id]||d.properties?.name||"?";
+      if(id===currentTarget()){
+        el.classed("correct",true);
+        addLabel(id,name,"#1a5c38");
+        score++;locked=true;
+        setFeedback("correct","🎉 Bravo, c'est bien "+name+" !");
+        setTimeout(nextQuestion,1200);
+      } else {
+        if(el.classed("wrong"))return;
+        el.classed("wrong",true);
+        addLabel(id,name,"#7a2e10");
+        triesLeft--;loseHeart();
+        setFeedback("wrong","✗ Ici c'est : "+name);
+        if(triesLeft<=0){
+          locked=true;
+          const tid=currentTarget();
+          d3.select("#c-"+tid).classed("revealed",true);
+          addLabel(tid,COUNTRY_NAMES[tid]+" ✓","#1a5c38");
+          setFeedback("skip","C'était "+COUNTRY_NAMES[tid]+" — question suivante dans 2s…");
+          setTimeout(nextQuestion,2000);
+        }
+      }
+    }
+    function addLabel(id,text,color){
+      const feat=featureMap[id];if(!feat)return;
+      const[cx,cy]=pathGen.centroid(feat);
+      if(!isFinite(cx)||!isFinite(cy))return;
+      labelsG.append("text").attr("class","country-label").attr("x",cx).attr("y",cy).attr("fill",color).text(text);
+    }
+    function nextQuestion(){
+      const cur=d3.select("#c-"+currentTarget());
+      cur.classed("correct",false).classed("revealed",false).classed("done",true);
+      qIndex++;
+      if(qIndex>=queue.length){finishGame();}else{loadQuestion();}
+    }
+    function finishGame(){
+      document.getElementById("progress-bar").style.width="100%";
+      document.getElementById("progress-label").textContent="Terminé !";
+      document.getElementById("score-label").textContent="✓ "+score;
+      const emoji=score===10?"🌟":score>=7?"🎉":score>=4?"💪":"🌸";
+      const sub=score===10?"Score parfait ! Tu es une championne 🏆":score>=7?"Excellent résultat !":score>=4?"Pas mal, continue !":"C'est difficile, mais tu vas progresser !";
+      document.getElementById("res-emoji").textContent=emoji;
+      document.getElementById("res-title").textContent="Score final";
+      document.getElementById("res-score").textContent=score+" / "+queue.length;
+      document.getElementById("res-sub").textContent=sub;
+      document.getElementById("overlay").classList.add("visible");
+    }
+    initGame();
+  </script>
+</body>
+</html>
