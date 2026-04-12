@@ -61,6 +61,14 @@
     .result-sub   { font-size:15px; color:var(--text-mid); font-weight:500; margin-bottom:1.6rem; }
     .replay-btn { display:inline-flex; align-items:center; gap:8px; font-family:'Nunito',sans-serif; font-size:15px; font-weight:700; color:var(--white); background:linear-gradient(135deg,var(--pink-deep),var(--pink-mid)); border:none; border-radius:50px; padding:12px 30px; cursor:pointer; box-shadow:0 4px 16px rgba(232,98,138,.35); transition:transform .15s,box-shadow .15s; }
     .replay-btn:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(232,98,138,.45); }
+
+    .result-detail { text-align:left; font-size:12.5px; margin:0.6rem 0 1rem; max-height:150px; overflow-y:auto; border:1px solid var(--card-border); border-radius:12px; padding:0.5rem 0.8rem; background:var(--pink-blush); }
+    .rdi { padding:2px 0; }
+    .rdi.ok   { color:#1a6b38; font-weight:700; }
+    .rdi.miss { color:#b04010; font-weight:700; }
+    .result-btns { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+    .dl-btn { display:inline-flex; align-items:center; gap:8px; font-family:'Nunito',sans-serif; font-size:14px; font-weight:700; color:var(--pink-deep); background:var(--white); border:1.5px solid var(--card-border); border-radius:50px; padding:10px 22px; cursor:pointer; box-shadow:0 2px 8px rgba(232,98,138,.1); transition:border-color .15s,box-shadow .15s; }
+    .dl-btn:hover { border-color:var(--pink-mid); box-shadow:0 4px 12px rgba(232,98,138,.2); }
   </style>
 </head>
 <body>
@@ -75,8 +83,12 @@
       <div class="result-emoji" id="res-emoji">🌸</div>
       <div class="result-title" id="res-title">Résultat</div>
       <div class="result-score" id="res-score">0 / 10</div>
-      <div class="result-sub" id="res-sub"></div>
-      <button class="replay-btn" onclick="location.reload()">🔄 Rejouer</button>
+      <div class="result-sub"   id="res-sub"></div>
+      <div class="result-detail" id="res-detail"></div>
+      <div class="result-btns">
+        <button class="replay-btn" onclick="location.reload()">🔄 Rejouer</button>
+        <button class="dl-btn" id="dl-btn">📄 Sauvegarder</button>
+      </div>
     </div>
   </div>
 
@@ -105,8 +117,10 @@
 
   <script>
     const COUNTRY_NAMES = {"4":"Afghanistan","50":"Bangladesh","64":"Bhoutan","104":"Myanmar","116":"Cambodge","144":"Sri Lanka","156":"Chine","356":"Inde","360":"Indonésie","364":"Iran","368":"Irak","392":"Japon","398":"Kazakhstan","400":"Jordanie","408":"Corée du Nord","410":"Corée du Sud","417":"Kirghizistan","418":"Laos","458":"Malaisie","496":"Mongolie","524":"Népal","586":"Pakistan","608":"Philippines","704":"Viêt Nam","762":"Tadjikistan","764":"Thaïlande","784":"Émirats arabes unis","792":"Turquie","795":"Turkménistan","860":"Ouzbékistan","887":"Yémen"};
+        const QUIZ_ID = "Asie", QUIZ_TITLE = "Asie";
     const MAX_TRIES = 3, TOTAL = 10;
     let queue=[], qIndex=0, triesLeft=MAX_TRIES, score=0, locked=false;
+    let qResults=[], wrongsThisQ=0;
 
     function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a;}
     function currentTarget(){return queue[qIndex];}
@@ -145,13 +159,13 @@
       qIndex=0;score=0;triesLeft=MAX_TRIES;locked=false;
       updateProgress();loadQuestion();
     }
-    function loadQuestion(){
-      triesLeft=MAX_TRIES;locked=false;resetHearts();
+        function loadQuestion(){
+      triesLeft=MAX_TRIES;locked=false;wrongsThisQ=0;resetHearts();
       setQuestion(COUNTRY_NAMES[currentTarget()]);
       setFeedback("","🌍 Clique sur le bon pays !");
       updateProgress();
     }
-    function handleClick(event,d){
+        function handleClick(event,d){
       if(locked)return;
       const id=nid(d.id);
       const el=d3.select("#c-"+id);
@@ -160,6 +174,7 @@
       if(id===currentTarget()){
         el.classed("correct",true);
         addLabel(id,name,"#1a5c38");
+        qResults.push({name,found:true,tries:wrongsThisQ+1});
         score++;locked=true;
         setFeedback("correct","🎉 Bravo, c'est bien "+name+" !");
         setTimeout(nextQuestion,1200);
@@ -167,14 +182,16 @@
         if(el.classed("wrong"))return;
         el.classed("wrong",true);
         addLabel(id,name,"#7a2e10");
-        triesLeft--;loseHeart();
+        triesLeft--;wrongsThisQ++;loseHeart();
         setFeedback("wrong","✗ Ici c'est : "+name);
         if(triesLeft<=0){
           locked=true;
           const tid=currentTarget();
+          const tname=COUNTRY_NAMES[tid];
+          qResults.push({name:tname,found:false,tries:3});
           d3.select("#c-"+tid).classed("revealed",true);
-          addLabel(tid,COUNTRY_NAMES[tid]+" ✓","#1a5c38");
-          setFeedback("skip","C'était "+COUNTRY_NAMES[tid]+" — question suivante dans 2s…");
+          addLabel(tid,tname+" ✓","#1a5c38");
+          setFeedback("skip","C'était "+tname+" — question suivante dans 2s…");
           setTimeout(nextQuestion,2000);
         }
       }
@@ -191,17 +208,60 @@
       qIndex++;
       if(qIndex>=queue.length){finishGame();}else{loadQuestion();}
     }
-    function finishGame(){
+        function finishGame(){
       document.getElementById("progress-bar").style.width="100%";
       document.getElementById("progress-label").textContent="Terminé !";
       document.getElementById("score-label").textContent="✓ "+score;
-      const emoji=score===10?"🌟":score>=7?"🎉":score>=4?"💪":"🌸";
-      const sub=score===10?"Score parfait ! Tu es une championne 🏆":score>=7?"Excellent résultat !":score>=4?"Pas mal, continue !":"C'est difficile, mais tu vas progresser !";
+
+      // Save to localStorage
+      const entry={date:new Date().toLocaleDateString('fr-FR'),results:qResults,score,total:queue.length};
+      const key='scores_'+QUIZ_ID;
+      const hist=JSON.parse(localStorage.getItem(key)||'[]');
+      hist.unshift(entry); if(hist.length>20)hist.pop();
+      localStorage.setItem(key,JSON.stringify(hist));
+
+      // Result overlay
+      const emoji=score===queue.length?"🌟":score>=7?"🎉":score>=4?"💪":"🌸";
+      const sub=score===queue.length?"Score parfait ! Tu es une championne 🏆":score>=7?"Excellent résultat !":score>=4?"Pas mal, continue !":"C'est difficile, mais tu vas progresser !";
       document.getElementById("res-emoji").textContent=emoji;
       document.getElementById("res-title").textContent="Score final";
       document.getElementById("res-score").textContent=score+" / "+queue.length;
       document.getElementById("res-sub").textContent=sub;
+
+      // Per-country detail
+      document.getElementById("res-detail").innerHTML=qResults.map(r=>{
+        const label=r.found?(r.tries===1?" (1er essai)":" ("+r.tries+" essais)"):" (non trouvé)";
+        return '<div class="rdi '+(r.found?'ok':'miss')+'">'+(r.found?'✓':'✗')+' '+r.name+label+'</div>';
+      }).join('');
+
+      // Download button
+      document.getElementById("dl-btn").onclick=()=>downloadTxt(entry);
       document.getElementById("overlay").classList.add("visible");
+    }
+
+    function downloadTxt(entry){
+      const lines=[
+        'Quiz Géographie – '+QUIZ_TITLE,
+        'Date : '+entry.date,
+        'Score : '+entry.score+' / '+entry.total,
+        '',
+        'Détail par pays :'
+      ];
+      entry.results.forEach(r=>{
+        const s=r.found?(r.tries===1?'✓ trouvé du 1er coup':'✓ trouvé en '+r.tries+' essais'):'✗ non trouvé';
+        lines.push('  '+r.name+' : '+s);
+      });
+      // Append history
+      const hist=JSON.parse(localStorage.getItem('scores_'+QUIZ_ID)||'[]');
+      if(hist.length>1){
+        lines.push('','--- Historique ---');
+        hist.slice(1).forEach(h=>lines.push('  '+h.date+' : '+h.score+'/'+h.total));
+      }
+      const blob=new Blob([lines.join('\n')],{type:'text/plain;charset=utf-8'});
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(blob);
+      a.download='score_'+QUIZ_ID+'_'+entry.date.replace(/\//g,'-')+'.txt';
+      document.body.appendChild(a);a.click();document.body.removeChild(a);
     }
     initGame();
   </script>
