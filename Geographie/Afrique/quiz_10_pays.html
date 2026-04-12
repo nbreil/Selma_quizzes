@@ -67,8 +67,6 @@
     .rdi.ok   { color:#1a6b38; font-weight:700; }
     .rdi.miss { color:#b04010; font-weight:700; }
     .result-btns { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
-    .dl-btn { display:inline-flex; align-items:center; gap:8px; font-family:'Nunito',sans-serif; font-size:14px; font-weight:700; color:var(--pink-deep); background:var(--white); border:1.5px solid var(--card-border); border-radius:50px; padding:10px 22px; cursor:pointer; box-shadow:0 2px 8px rgba(232,98,138,.1); transition:border-color .15s,box-shadow .15s; }
-    .dl-btn:hover { border-color:var(--pink-mid); box-shadow:0 4px 12px rgba(232,98,138,.2); }
   </style>
 </head>
 <body>
@@ -87,7 +85,6 @@
       <div class="result-detail" id="res-detail"></div>
       <div class="result-btns">
         <button class="replay-btn" onclick="location.reload()">🔄 Rejouer</button>
-        <button class="dl-btn" id="dl-btn">📄 Sauvegarder</button>
       </div>
     </div>
   </div>
@@ -235,7 +232,7 @@
       }).join('');
 
       // Download button
-      document.getElementById("dl-btn").onclick=()=>downloadTxt(entry);
+      downloadTxt(entry);
       document.getElementById("overlay").classList.add("visible");
     }
 
