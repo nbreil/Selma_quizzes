@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ADAM — Markets & Luxury</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy-deep:   #060b18;
+      --navy-dark:   #0a1020;
+      --navy-mid:    #0f1830;
+      --navy-card:   #111c35;
+      --navy-border: #1e2d4a;
+      --navy-hover:  #162440;
+      --gold:        #c9a84c;
+      --gold-light:  #e2c46e;
+      --gold-dim:    #7a6128;
+      --gold-bg:     rgba(201,168,76,0.07);
+      --text:        #ddd8cc;
+      --text-bright: #f0ead8;
+      --text-muted:  #5a7099;
+      --text-soft:   #8899bb;
+      --green:       #2ecc8a;
+      --red:         #e05555;
+      --mono:        'IBM Plex Mono', monospace;
+      --sans:        'IBM Plex Sans', sans-serif;
+      --serif:       'Playfair Display', Georgia, serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--navy-deep);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Ticker ───────────────────────────────────────────────────── */
+    .ticker-wrap {
+      background: var(--navy-dark);
+      border-bottom: 1px solid var(--navy-border);
+      overflow: hidden;
+      height: 32px;
+      display: flex;
+      align-items: center;
+    }
+
+    .ticker-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: .12em;
+      color: var(--gold);
+      background: var(--navy-mid);
+      border-right: 1px solid var(--navy-border);
+      padding: 0 14px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+      flex-shrink: 0;
+      z-index: 1;
+    }
+
+    .ticker-track {
+      display: flex;
+      gap: 0;
+      animation: tickerScroll 40s linear infinite;
+      white-space: nowrap;
+    }
+    .ticker-track:hover { animation-play-state: paused; }
+
+    @keyframes tickerScroll {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    .tick {
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 0 22px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      height: 32px;
+      border-right: 1px solid var(--navy-border);
+      cursor: default;
+    }
+
+    .tick-name { color: var(--text-bright); font-weight: 500; letter-spacing: .04em; }
+    .tick-val  { color: var(--text-soft); }
+    .tick-chg.up   { color: var(--green); }
+    .tick-chg.down { color: var(--red); }
+
+    /* ── Header ──────────────────────────────────────────────────── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      height: 60px;
+      border-bottom: 1px solid var(--navy-border);
+      background: var(--navy-dark);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-logo {
+      font-family: var(--serif);
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--gold-light);
+      letter-spacing: .06em;
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--text-muted); font-size: 11px; font-family: var(--mono); font-weight: 300; letter-spacing: .14em; vertical-align: middle; margin-left: 10px; }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: .1em;
+      color: var(--text-soft);
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--gold); }
+
+    .nav-time {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: .06em;
+    }
+
+    /* ── Hero ────────────────────────────────────────────────────── */
+    .hero {
+      padding: 80px 40px 60px;
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 60px;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      border-bottom: 1px solid var(--navy-border);
+    }
+
+    .hero-eyebrow {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: .18em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 {
+      font-family: var(--serif);
+      font-size: clamp(42px, 6vw, 72px);
+      font-weight: 900;
+      line-height: 1.05;
+      color: var(--text-bright);
+      margin-bottom: 24px;
+    }
+    .hero h1 em {
+      font-style: italic;
+      color: var(--gold-light);
+    }
+
+    .hero-sub {
+      font-size: 16px;
+      font-weight: 300;
+      line-height: 1.7;
+      color: var(--text-soft);
+      max-width: 520px;
+      margin-bottom: 36px;
+    }
+
+    .hero-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--navy-deep);
+      background: var(--gold);
+      padding: 12px 28px;
+      text-decoration: none;
+      transition: background .2s, transform .15s;
+    }
+    .hero-cta:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+    /* Market panel */
+    .hero-panel {
+      background: var(--navy-card);
+      border: 1px solid var(--navy-border);
+    }
+
+    .panel-header {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--navy-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .panel-title {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+    .panel-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 6px var(--green);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+    .panel-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      align-items: center;
+      padding: 13px 20px;
+      border-bottom: 1px solid rgba(30,45,74,.5);
+      gap: 16px;
+      transition: background .15s;
+      cursor: default;
+    }
+    .panel-row:hover { background: var(--navy-hover); }
+    .panel-row:last-child { border-bottom: none; }
+
+    .pr-name  { font-family: var(--mono); font-size: 12px; color: var(--text-bright); letter-spacing: .04em; }
+    .pr-sub   { font-family: var(--sans); font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+    .pr-price { font-family: var(--mono); font-size: 13px; color: var(--text); text-align: right; }
+    .pr-chg   { font-family: var(--mono); font-size: 11px; text-align: right; }
+    .pr-chg.up   { color: var(--green); }
+    .pr-chg.down { color: var(--red); }
+
+    .mini-chart {
+      width: 60px;
+      height: 28px;
+      flex-shrink: 0;
+    }
+
+    /* ── Section heading ─────────────────────────────────────────── */
+    .section {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 60px 40px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: baseline;
+      gap: 20px;
+      margin-bottom: 36px;
+      border-bottom: 1px solid var(--navy-border);
+      padding-bottom: 16px;
+    }
+    .section-title {
+      font-family: var(--serif);
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text-bright);
+    }
+    .section-tag {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+    }
+
+    /* ── Cards ───────────────────────────────────────────────────── */
+    .card-grid {
+      display: grid;
+      gap: 1px;
+      background: var(--navy-border);
+    }
+    .card-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+    .card-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+
+    .card {
+      background: var(--navy-card);
+      padding: 28px 28px 32px;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      cursor: pointer;
+      transition: background .2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--gold);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform .3s ease;
+    }
+    .card:hover { background: var(--navy-hover); }
+    .card:hover::before { transform: scaleX(1); }
+
+    .card-tag {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      margin-bottom: 14px;
+    }
+    .card h3 {
+      font-family: var(--serif);
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.25;
+      color: var(--text-bright);
+      margin-bottom: 12px;
+    }
+    .card-desc {
+      font-size: 13px;
+      font-weight: 300;
+      line-height: 1.65;
+      color: var(--text-soft);
+      flex: 1;
+    }
+    .card-arrow {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--gold);
+      margin-top: 20px;
+      letter-spacing: .06em;
+    }
+
+    /* ── Featured card (tall left) ───────────────────────────────── */
+    .card.featured {
+      background: var(--navy-mid);
+      padding: 36px;
+    }
+    .card.featured h3 { font-size: 28px; }
+    .card.featured .card-desc { font-size: 14px; }
+
+    /* ── Stat band ───────────────────────────────────────────────── */
+    .stat-band {
+      background: var(--navy-card);
+      border-top: 1px solid var(--navy-border);
+      border-bottom: 1px solid var(--navy-border);
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .stat-item {
+      padding: 28px 32px;
+      border-right: 1px solid var(--navy-border);
+    }
+    .stat-item:last-child { border-right: none; }
+    .stat-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .stat-value {
+      font-family: var(--serif);
+      font-size: 36px;
+      font-weight: 900;
+      color: var(--gold-light);
+      line-height: 1;
+    }
+    .stat-sub {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    /* ── Quote ───────────────────────────────────────────────────── */
+    .quote-section {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 80px 40px;
+      text-align: center;
+    }
+    .quote-text {
+      font-family: var(--serif);
+      font-size: clamp(22px, 3.5vw, 38px);
+      font-style: italic;
+      font-weight: 400;
+      line-height: 1.4;
+      color: var(--text-bright);
+      max-width: 800px;
+      margin: 0 auto 20px;
+    }
+    .quote-text em { color: var(--gold-light); font-style: normal; font-weight: 700; }
+    .quote-attr {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: .12em;
+      color: var(--text-muted);
+    }
+
+    /* ── Footer ──────────────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--navy-border);
+      padding: 28px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--navy-dark);
+    }
+    .footer-logo {
+      font-family: var(--serif);
+      font-size: 16px;
+      color: var(--gold-dim);
+      letter-spacing: .06em;
+    }
+    .footer-note {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-muted);
+      letter-spacing: .06em;
+    }
+
+    /* ── Responsive ──────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; }
+      .hero-panel { display: none; }
+      .card-grid.cols-3 { grid-template-columns: 1fr; }
+      .card-grid.cols-2 { grid-template-columns: 1fr; }
+      .stat-band { grid-template-columns: repeat(2, 1fr); }
+      nav { padding: 0 20px; }
+      .nav-links { display: none; }
+      .section { padding: 40px 20px; }
+      .hero { padding: 50px 20px 40px; }
+      footer { flex-direction: column; gap: 10px; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Ticker ─────────────────────────────────────────────────────── -->
+  <div class="ticker-wrap">
+    <div class="ticker-label">LIVE</div>
+    <div style="overflow:hidden;flex:1;display:flex;align-items:center;">
+      <div class="ticker-track" id="ticker"></div>
+    </div>
+  </div>
+
+  <!-- ── Nav ───────────────────────────────────────────────────────── -->
+  <nav>
+    <a class="nav-logo" href="#">ADAM <span>/ PRIVATE</span></a>
+    <ul class="nav-links">
+      <li><a href="#markets">Markets</a></li>
+      <li><a href="#luxury">Luxury</a></li>
+      <li><a href="#learn">Finance 101</a></li>
+      <li><a href="#reads">Reads</a></li>
+    </ul>
+    <div class="nav-time" id="clock">--:--:-- GMT</div>
+  </nav>
+
+  <!-- ── Hero ──────────────────────────────────────────────────────── -->
+  <section class="hero">
+    <div>
+      <div class="hero-eyebrow">Adam's Private Dashboard</div>
+      <h1>Markets.<br><em>Luxury.</em><br>Edge.</h1>
+      <p class="hero-sub">
+        A curated space where financial intelligence meets the art of living well.
+        Track the markets, follow the maisons, build the mindset.
+      </p>
+      <a href="#markets" class="hero-cta">Explore ↓</a>
+    </div>
+
+    <div class="hero-panel">
+      <div class="panel-header">
+        <span class="panel-title">Market Snapshot</span>
+        <span class="panel-dot"></span>
+      </div>
+      <div class="panel-row">
+        <div><div class="pr-name">S&amp;P 500</div><div class="pr-sub">US Large Cap</div></div>
+        <svg class="mini-chart" viewBox="0 0 60 28"><polyline points="0,22 10,18 20,20 30,12 40,10 50,6 60,4" fill="none" stroke="#2ecc8a" stroke-width="1.5"/></svg>
+        <div><div class="pr-price">5 842.47</div><div class="pr-chg up">+0.82%</div></div>
+      </div>
+      <div class="panel-row">
+        <div><div class="pr-name">NASDAQ</div><div class="pr-sub">Tech Index</div></div>
+        <svg class="mini-chart" viewBox="0 0 60 28"><polyline points="0,8 10,12 20,10 30,18 40,14 50,10 60,6" fill="none" stroke="#2ecc8a" stroke-width="1.5"/></svg>
+        <div><div class="pr-price">18 432.10</div><div class="pr-chg up">+1.14%</div></div>
+      </div>
+      <div class="panel-row">
+        <div><div class="pr-name">BTC/USD</div><div class="pr-sub">Bitcoin</div></div>
+        <svg class="mini-chart" viewBox="0 0 60 28"><polyline points="0,6 10,8 20,14 30,10 40,16 50,20 60,18" fill="none" stroke="#e05555" stroke-width="1.5"/></svg>
+        <div><div class="pr-price">84 201.00</div><div class="pr-chg down">−1.32%</div></div>
+      </div>
+      <div class="panel-row">
+        <div><div class="pr-name">LVMH</div><div class="pr-sub">Luxury Index</div></div>
+        <svg class="mini-chart" viewBox="0 0 60 28"><polyline points="0,20 10,16 20,14 30,12 40,8 50,10 60,7" fill="none" stroke="#2ecc8a" stroke-width="1.5"/></svg>
+        <div><div class="pr-price">€ 612.40</div><div class="pr-chg up">+0.54%</div></div>
+      </div>
+      <div class="panel-row">
+        <div><div class="pr-name">EUR/USD</div><div class="pr-sub">Forex</div></div>
+        <svg class="mini-chart" viewBox="0 0 60 28"><polyline points="0,14 10,12 20,16 30,14 40,12 50,14 60,13" fill="none" stroke="#c9a84c" stroke-width="1.5"/></svg>
+        <div><div class="pr-price">1.0842</div><div class="pr-chg up">+0.11%</div></div>
+      </div>
+      <div class="panel-row">
+        <div><div class="pr-name">GOLD</div><div class="pr-sub">Spot ($/oz)</div></div>
+        <svg class="mini-chart" viewBox="0 0 60 28"><polyline points="0,18 10,14 20,10 30,8 40,6 50,4 60,3" fill="none" stroke="#c9a84c" stroke-width="1.5"/></svg>
+        <div><div class="pr-price">3 218.50</div><div class="pr-chg up">+1.67%</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Stat band ──────────────────────────────────────────────────── -->
+  <div class="stat-band">
+    <div class="stat-item">
+      <div class="stat-label">Global Billionaires</div>
+      <div class="stat-value">2 781</div>
+      <div class="stat-sub">Forbes 2024</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label">Luxury Market Size</div>
+      <div class="stat-value">$362B</div>
+      <div class="stat-sub">Personal luxury goods</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label">S&amp;P 500 Avg Return</div>
+      <div class="stat-value">10.7%</div>
+      <div class="stat-sub">Annualised, 50yr avg</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label">Gold YTD</div>
+      <div class="stat-value">+27%</div>
+      <div class="stat-sub">2024 performance</div>
+    </div>
+  </div>
+
+  <!-- ── Markets ────────────────────────────────────────────────────── -->
+  <section class="section" id="markets">
+    <div class="section-head">
+      <span class="section-title">Markets</span>
+      <span class="section-tag">// Finance & Investing</span>
+    </div>
+    <div class="card-grid cols-3">
+      <div class="card featured">
+        <div class="card-tag">Deep Dive</div>
+        <h3>How the Stock Market Actually Works</h3>
+        <p class="card-desc">From bid-ask spreads to market makers — a clear-eyed breakdown of what happens between pressing "buy" and owning a share. No jargon, no fluff.</p>
+        <div class="card-arrow">Read → </div>
+      </div>
+      <div class="card">
+        <div class="card-tag">Concepts</div>
+        <h3>Compound Interest: The Eighth Wonder</h3>
+        <p class="card-desc">Why starting at 17 vs. 25 can mean the difference of hundreds of thousands at retirement. The maths behind the magic.</p>
+        <div class="card-arrow">Read →</div>
+      </div>
+      <div class="card">
+        <div class="card-tag">Concepts</div>
+        <h3>Reading a Balance Sheet</h3>
+        <p class="card-desc">Assets, liabilities, equity — the three pillars of financial health. Learn to read what CFOs read every morning.</p>
+        <div class="card-arrow">Read →</div>
+      </div>
+      <div class="card">
+        <div class="card-tag">Strategy</div>
+        <h3>Index Funds vs. Stock Picking</h3>
+        <p class="card-desc">Warren Buffett's bet against hedge funds. Why 90% of active managers underperform the index — and what to do about it.</p>
+        <div class="card-arrow">Read →</div>
+      </div>
+      <div class="card">
+        <div class="card-tag">Macro</div>
+        <h3>What Central Banks Actually Do</h3>
+        <p class="card-desc">The Fed, ECB, interest rates, inflation — understanding why a speech from Jerome Powell moves every market on earth.</p>
+        <div class="card-arrow">Read →</div>
+      </div>
+      <div class="card">
+        <div class="card-tag">Crypto</div>
+        <h3>Bitcoin as a Store of Value</h3>
+        <p class="card-desc">Digital gold or speculative bubble? A balanced look at the arguments for and against BTC as a long-term asset.</p>
+        <div class="card-arrow">Read →</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Quote ──────────────────────────────────────────────────────── -->
+  <div class="quote-section">
+    <p class="quote-text">
+      "The stock market is a device for transferring money from the <em>impatient</em> to the <em>patient</em>."
+    </p>
+    <div class="quote-attr">— Warren Buffett</div>
+  </div>
+
+  <!-- ── Luxury ─────────────────────────────────────────────────────── -->
+  <section class="section" id="luxury">
+    <div class="section-head">
+      <span class="section-title">Luxury</span>
+      <span class="section-tag">// The Art of Living Well</span>
+    </div>
+    <div class="card-grid cols-2">
+      <div class="card">
+        <div class="card-tag">Maisons</div>
+        <h3>LVMH: The Empire Behind 75 Brands</h3>
+        <p class="card-desc">Louis Vuitton, Dior, Moët & Chandon, Bulgari, Tiffany. How Bernard Arnault quietly built the world's most valuable luxury conglomerate — and what it means to invest in it.</p>
+        <div class="card-arrow">Read →</div>
+      </div>
+      <div class="card">
+        <div class="card-tag">Watches</div>
+        <h3>Why a Rolex Is an Investment</h3>
+        <p class="card-desc">The secondary market for Patek Philippe and Audemars Piguet. When horological craftsmanship becomes a financial asset class.</p>
+        <div class="card-arrow">Read →</div>
+      </div>
+      <div class="card">
+        <div class="card-tag">Real Estate</div>
+        <h3>The World's Most Expensive Streets</h3>
+        <p class="card-desc">Avenue Montaigne, Park Avenue, Savile Row. What drives prime real estate prices — and what they reveal about global capital flows.</p>
+        <div class="card-arrow">Read →</div>
+      </div>
+      <div class="card">
+        <div class="card-tag">Art & Collectibles</div>
+        <h3>Sotheby's, Christie's & the Art Market</h3>
+        <p class="card-desc">How a Basquiat canvas becomes a $110 million transaction. Art as alternative investment — returns, risks, and the ultra-wealthy buyers behind the gavel.</p>
+        <div class="card-arrow">Read →</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Reads ──────────────────────────────────────────────────────── -->
+  <section class="section" id="reads">
+    <div class="section-head">
+      <span class="section-title">Essential Reads</span>
+      <span class="section-tag">// Books That Matter</span>
+    </div>
+    <div class="card-grid cols-3">
+      <div class="card">
+        <div class="card-tag">Book · Investing</div>
+        <h3>The Intelligent Investor</h3>
+        <p class="card-desc">Benjamin Graham's 1949 masterpiece. The book that taught Buffett everything. Value investing, margin of safety, Mr. Market — the timeless foundation.</p>
+        <div class="card-arrow">Explore →</div>
+      </div>
+      <div class="card">
+        <div class="card-tag">Book · Mindset</div>
+        <h3>Poor Charlie's Almanack</h3>
+        <p class="card-desc">Charlie Munger's mental models for thinking clearly about money, business, and life. Required reading for anyone serious about compounding wealth and wisdom.</p>
+        <div class="card-arrow">Explore →</div>
+      </div>
+      <div class="card">
+        <div class="card-tag">Book · Macro</div>
+        <h3>The Big Short</h3>
+        <p class="card-desc">Michael Lewis's account of the 2008 crash. How a handful of contrarians saw what no one else could — and what it teaches about risk, narrative, and markets.</p>
+        <div class="card-arrow">Explore →</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Footer ─────────────────────────────────────────────────────── -->
+  <footer>
+    <div class="footer-logo">ADAM</div>
+    <div class="footer-note">Private · Not for distribution</div>
+  </footer>
+
+  <script>
+    // ── Clock ─────────────────────────────────────────────────────────
+    function updateClock() {
+      const now = new Date();
+      const h = String(now.getUTCHours()).padStart(2,'0');
+      const m = String(now.getUTCMinutes()).padStart(2,'0');
+      const s = String(now.getUTCSeconds()).padStart(2,'0');
+      document.getElementById('clock').textContent = `${h}:${m}:${s} GMT`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // ── Ticker ────────────────────────────────────────────────────────
+    const TICKS = [
+      { name:'S&P 500', val:'5,842.47', chg:'+0.82%', up:true },
+      { name:'NASDAQ',  val:'18,432.10', chg:'+1.14%', up:true },
+      { name:'DOW',     val:'43,011.35', chg:'+0.39%', up:true },
+      { name:'BTC/USD', val:'84,201.00', chg:'−1.32%', up:false },
+      { name:'ETH/USD', val:'3,241.80',  chg:'−0.74%', up:false },
+      { name:'GOLD',    val:'3,218.50',  chg:'+1.67%', up:true },
+      { name:'SILVER',  val:'32.84',     chg:'+0.92%', up:true },
+      { name:'EUR/USD', val:'1.0842',    chg:'+0.11%', up:true },
+      { name:'LVMH',    val:'€612.40',   chg:'+0.54%', up:true },
+      { name:'APPLE',   val:'$209.18',   chg:'+1.03%', up:true },
+      { name:'NVIDIA',  val:'$875.40',   chg:'+2.21%', up:true },
+      { name:'HERMÈS',  val:'€2,142',    chg:'+0.30%', up:true },
+      { name:'OIL WTI', val:'$77.34',    chg:'−0.48%', up:false },
+      { name:'10Y UST', val:'4.38%',     chg:'+0.04', up:false },
+      { name:'VIX',     val:'14.82',     chg:'−3.20%', up:false },
+    ];
+
+    function makeTick(t) {
+      return `<div class="tick">
+        <span class="tick-name">${t.name}</span>
+        <span class="tick-val">${t.val}</span>
+        <span class="tick-chg ${t.up ? 'up' : 'down'}">${t.chg}</span>
+      </div>`;
+    }
+
+    // Duplicate for seamless loop
+    const html = [...TICKS, ...TICKS].map(makeTick).join('');
+    document.getElementById('ticker').innerHTML = html;
+
+    // Slightly randomise prices every 8s for realism
+    function nudgePrices() {
+      document.querySelectorAll('.tick').forEach((el, i) => {
+        const t = TICKS[i % TICKS.length];
+        const delta = (Math.random() - 0.49) * 0.3;
+        const isUp = delta >= 0;
+        const chgEl = el.querySelector('.tick-chg');
+        if (chgEl) {
+          chgEl.className = 'tick-chg ' + (isUp ? 'up' : 'down');
+        }
+      });
+    }
+    setInterval(nudgePrices, 8000);
+  </script>
+</body>
+</html>
