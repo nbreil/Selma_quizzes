@@ -499,6 +499,7 @@
     }
 
     function nextQuestion() {
+      labelsG.selectAll("*").remove();
       // Mark current target as "done" (soft green) before moving on
       const cur = d3.select(`#c-${currentTarget()}`);
       if (!cur.classed("correct") && !cur.classed("revealed")) {

@@ -221,6 +221,7 @@
       labelsG.append("text").attr("class","state-label").attr("x",cx).attr("y",cy).attr("fill",color).text(text);
     }
     function nextQuestion(){
+      labelsG.selectAll("*").remove();
       const cur=d3.select("#s-"+currentTarget());
       cur.classed("correct",false).classed("revealed",false).classed("done",true);
       qIndex++;

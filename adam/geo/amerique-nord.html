@@ -225,6 +225,7 @@
       labelsG.append("text").attr("class","region-label").attr("x",cx).attr("y",cy).attr("fill",color).text(text);
     }
     function nextQuestion(){
+      labelsG.selectAll("*").remove();
       d3.select("#r-"+currentTarget()).classed("correct",false).classed("revealed",false).classed("done",true);
       qIndex++;
       if(qIndex>=queue.length)finishGame();else loadQuestion();
