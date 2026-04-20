@@ -1,0 +1,4 @@
+- focus on middle america (small countries)
+- test in a speparate project some better maps
+- remove the name of the country after the question is complete
+- don't write the name of the country (right or wrong) on the country itself, but as a text in the map field

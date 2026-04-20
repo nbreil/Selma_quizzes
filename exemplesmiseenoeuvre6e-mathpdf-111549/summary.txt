@@ -1,0 +1,4 @@
+Source: exemplesmiseenoeuvre6e-mathpdf-111549.pdf
+Pages:  21
+Images: 57
+Output: /Users/nbreil/selma_quizz/exemplesmiseenoeuvre6e-mathpdf-111549
