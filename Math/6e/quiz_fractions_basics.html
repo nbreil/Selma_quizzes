@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Fractions - Bases</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --navy:#e8dcc8; --navy-dark:#d4c9b3; --navy-card:#f0e8d8;
+      --navy-border:#ddd2bf; --navy-hover:#ede5d6;
+      --gold:#c9a84c; --gold-light:#e2c46e; --gold-dim:#a68842;
+      --green:#2ecc8a; --red:#e05555;
+      --text:#3d3220; --text-bright:#2b2416; --text-muted:#8b7d69; --text-soft:#9d8f7a;
+      --mono:'IBM Plex Mono',monospace;
+      --sans:'IBM Plex Sans',sans-serif;
+      --serif:'Playfair Display',Georgia,serif;
+    }
+    html{scroll-behavior:smooth;}
+    body{font-family:var(--sans);background:var(--navy);color:var(--text);min-height:100vh;}
+
+    nav{display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:56px;border-bottom:1px solid var(--navy-border);background:var(--navy-dark);position:sticky;top:0;z-index:100;}
+    .nav-logo{font-family:var(--serif);font-size:20px;font-weight:700;color:var(--gold);text-decoration:none;letter-spacing:.06em;}
+    .nav-right{display:flex;align-items:center;gap:24px;}
+    .nav-link{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-soft);text-decoration:none;transition:color .2s;}
+    .nav-link:hover{color:var(--gold);}
+
+    .container{max-width:900px;margin:0 auto;padding:40px 20px;}
+    .header{text-align:center;margin-bottom:48px;padding-bottom:24px;border-bottom:2px solid var(--navy-border);}
+    .header h1{font-family:var(--serif);font-size:36px;font-weight:900;color:var(--text-bright);margin-bottom:8px;}
+    .header p{font-family:var(--mono);font-size:12px;color:var(--text-muted);letter-spacing:.06em;text-transform:uppercase;}
+
+    .question-block{margin-bottom:40px;padding:24px;background:var(--navy-card);border:1px solid var(--navy-border);border-radius:4px;}
+    .question-num{font-family:var(--mono);font-size:11px;color:var(--gold);text-transform:uppercase;margin-bottom:8px;letter-spacing:.1em;}
+    .question-text{font-family:var(--serif);font-size:18px;font-weight:700;color:var(--text-bright);margin-bottom:16px;line-height:1.4;}
+    .options{display:flex;flex-direction:column;gap:10px;}
+    .option{display:flex;align-items:center;padding:12px 16px;border:1px solid var(--navy-border);border-radius:3px;cursor:pointer;transition:all .2s;background:#fff;position:relative;}
+    .option:hover{background:var(--navy-hover);border-color:var(--gold);}
+    .option input[type="radio"]{margin-right:12px;cursor:pointer;}
+    .option label{cursor:pointer;flex:1;font-size:15px;}
+    .option input[type="radio"]:checked ~ label{font-weight:600;color:var(--gold);}
+
+    .submit-btn{display:block;width:100%;padding:16px;margin-top:48px;background:var(--gold);color:var(--text-bright);border:none;border-radius:3px;font-family:var(--sans);font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;letter-spacing:.08em;text-transform:uppercase;}
+    .submit-btn:hover{background:var(--gold-dim);transform:translateY(-2px);}
+
+    .result{margin-top:48px;padding:24px;background:var(--navy-card);border:2px solid var(--navy-border);border-radius:4px;text-align:center;}
+    .result h2{font-family:var(--serif);font-size:24px;color:var(--text-bright);margin-bottom:12px;}
+    .score-display{font-family:var(--mono);font-size:48px;font-weight:bold;color:var(--gold);margin:16px 0;}
+    .result p{font-size:14px;color:var(--text-muted);margin-bottom:8px;}
+    .download-btn{display:inline-block;margin-top:16px;padding:10px 20px;background:var(--gold);color:var(--text-bright);text-decoration:none;border-radius:3px;font-weight:600;font-size:12px;letter-spacing:.08em;text-transform:uppercase;}
+
+    @media(max-width:600px){
+      .container{padding:20px 16px;}
+      .header h1{font-size:28px;}
+      .question-text{font-size:16px;}
+      nav{padding:0 20px;}
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="../../../index.html">SELMA</a>
+  <div class="nav-right">
+    <a class="nav-link" href="../../../index.html">Accueil</a>
+    <a class="nav-link active" href="#">Quiz Maths</a>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="header">
+    <h1>Fractions — Bases</h1>
+    <p>Comprendre les fractions et les parts d'un tout</p>
+  </div>
+
+  <form id="quiz-form">
+    <!-- Q1 -->
+    <div class="question-block">
+      <div class="question-num">Question 1</div>
+      <div class="question-text">Un gâteau est coupé en 8 parts égales. Tom en mange 3 parts. Quelle fraction du gâteau Tom a-t-il mangée ?</div>
+      <div class="options">
+        <div class="option"><input type="radio" name="q1" value="a" id="q1a"/><label for="q1a">1/8</label></div>
+        <div class="option"><input type="radio" name="q1" value="b" id="q1b"/><label for="q1b">3/8</label></div>
+        <div class="option"><input type="radio" name="q1" value="c" id="q1c"/><label for="q1c">5/8</label></div>
+        <div class="option"><input type="radio" name="q1" value="d" id="q1d"/><label for="q1d">8/3</label></div>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="question-block">
+      <div class="question-num">Question 2</div>
+      <div class="question-text">Quelle fraction est égale à 1 ?</div>
+      <div class="options">
+        <div class="option"><input type="radio" name="q2" value="a" id="q2a"/><label for="q2a">4/5</label></div>
+        <div class="option"><input type="radio" name="q2" value="b" id="q2b"/><label for="q2b">6/6</label></div>
+        <div class="option"><input type="radio" name="q2" value="c" id="q2c"/><label for="q2c">5/7</label></div>
+        <div class="option"><input type="radio" name="q2" value="d" id="q2d"/><label for="q2d">3/4</label></div>
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="question-block">
+      <div class="question-num">Question 3</div>
+      <div class="question-text">Une pizza est divisée en 6 parts. Léa en mange 2 parts et Léo en mange 1 part. Quelle fraction de la pizza reste-t-il ?</div>
+      <div class="options">
+        <div class="option"><input type="radio" name="q3" value="a" id="q3a"/><label for="q3a">2/6</label></div>
+        <div class="option"><input type="radio" name="q3" value="b" id="q3b"/><label for="q3b">3/6</label></div>
+        <div class="option"><input type="radio" name="q3" value="c" id="q3c"/><label for="q3c">1/6</label></div>
+        <div class="option"><input type="radio" name="q3" value="d" id="q3d"/><label for="q3d">5/6</label></div>
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="question-block">
+      <div class="question-num">Question 4</div>
+      <div class="question-text">La fraction 9/9 est égale à :</div>
+      <div class="options">
+        <div class="option"><input type="radio" name="q4" value="a" id="q4a"/><label for="q4a">0</label></div>
+        <div class="option"><input type="radio" name="q4" value="b" id="q4b"/><label for="q4b">1</label></div>
+        <div class="option"><input type="radio" name="q4" value="c" id="q4c"/><label for="q4c">9</label></div>
+        <div class="option"><input type="radio" name="q4" value="d" id="q4d"/><label for="q4d">1/9</label></div>
+      </div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="question-block">
+      <div class="question-num">Question 5</div>
+      <div class="question-text">Quel est le numérateur de la fraction 5/12 ?</div>
+      <div class="options">
+        <div class="option"><input type="radio" name="q5" value="a" id="q5a"/><label for="q5a">5</label></div>
+        <div class="option"><input type="radio" name="q5" value="b" id="q5b"/><label for="q5b">12</label></div>
+        <div class="option"><input type="radio" name="q5" value="c" id="q5c"/><label for="q5c">7</label></div>
+        <div class="option"><input type="radio" name="q5" value="d" id="q5d"/><label for="q5d">17</label></div>
+      </div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="question-block">
+      <div class="question-num">Question 6</div>
+      <div class="question-text">Une barre de chocolat est coupée en 10 carrés. Margot en mange 4. Quelle fraction reste-t-il ?</div>
+      <div class="options">
+        <div class="option"><input type="radio" name="q6" value="a" id="q6a"/><label for="q6a">4/10</label></div>
+        <div class="option"><input type="radio" name="q6" value="b" id="q6b"/><label for="q6b">6/10</label></div>
+        <div class="option"><input type="radio" name="q6" value="c" id="q6c"/><label for="q6c">10/6</label></div>
+        <div class="option"><input type="radio" name="q6" value="d" id="q6d"/><label for="q6d">10/4</label></div>
+      </div>
+    </div>
+
+    <!-- Q7 -->
+    <div class="question-block">
+      <div class="question-num">Question 7</div>
+      <div class="question-text">La fraction 7/7 est-elle égale à 1 ?</div>
+      <div class="options">
+        <div class="option"><input type="radio" name="q7" value="a" id="q7a"/><label for="q7a">Oui, toujours</label></div>
+        <div class="option"><input type="radio" name="q7" value="b" id="q7b"/><label for="q7b">Non, jamais</label></div>
+        <div class="option"><input type="radio" name="q7" value="c" id="q7c"/><label for="q7c">Seulement si 7 est pair</label></div>
+        <div class="option"><input type="radio" name="q7" value="d" id="q7d"/><label for="q7d">C'est plus grand que 1</label></div>
+      </div>
+    </div>
+
+    <!-- Q8 -->
+    <div class="question-block">
+      <div class="question-num">Question 8</div>
+      <div class="question-text">Un ruban est divisé en 4 parties égales. Combien de parties font 3/4 du ruban ?</div>
+      <div class="options">
+        <div class="option"><input type="radio" name="q8" value="a" id="q8a"/><label for="q8a">1 partie</label></div>
+        <div class="option"><input type="radio" name="q8" value="b" id="q8b"/><label for="q8b">2 parties</label></div>
+        <div class="option"><input type="radio" name="q8" value="c" id="q8c"/><label for="q8c">3 parties</label></div>
+        <div class="option"><input type="radio" name="q8" value="d" id="q8d"/><label for="q8d">4 parties</label></div>
+      </div>
+    </div>
+
+    <!-- Q9 -->
+    <div class="question-block">
+      <div class="question-num">Question 9</div>
+      <div class="question-text">Quel est le dénominateur de la fraction 7/15 ?</div>
+      <div class="options">
+        <div class="option"><input type="radio" name="q9" value="a" id="q9a"/><label for="q9a">7</label></div>
+        <div class="option"><input type="radio" name="q9" value="b" id="q9b"/><label for="q9b">15</label></div>
+        <div class="option"><input type="radio" name="q9" value="c" id="q9c"/><label for="q9c">8</label></div>
+        <div class="option"><input type="radio" name="q9" value="d" id="q9d"/><label for="q9d">22</label></div>
+      </div>
+    </div>
+
+    <!-- Q10 -->
+    <div class="question-block">
+      <div class="question-num">Question 10</div>
+      <div class="question-text">Une classe de 20 élèves : 12 jouent au foot, 5 jouent au tennis, 3 jouent au basket. Quelle fraction joue au foot ?</div>
+      <div class="options">
+        <div class="option"><input type="radio" name="q10" value="a" id="q10a"/><label for="q10a">5/20</label></div>
+        <div class="option"><input type="radio" name="q10" value="b" id="q10b"/><label for="q10b">12/20</label></div>
+        <div class="option"><input type="radio" name="q10" value="c" id="q10c"/><label for="q10c">3/20</label></div>
+        <div class="option"><input type="radio" name="q10" value="d" id="q10d"/><label for="q10d">15/20</label></div>
+      </div>
+    </div>
+
+    <!-- Q11 -->
+    <div class="question-block">
+      <div class="question-num">Question 11</div>
+      <div class="question-text">Un rectangle est partagé en 12 carrés égaux. On en colorie 5. Quelle fraction est coloriée ?</div>
+      <div class="options">
+        <div class="option"><input type="radio" name="q11" value="a" id="q11a"/><label for="q11a">5/7</label></div>
+        <div class="option"><input type="radio" name="q11" value="b" id="q11b"/><label for="q11b">7/12</label></div>
+        <div class="option"><input type="radio" name="q11" value="c" id="q11c"/><label for="q11c">5/12</label></div>
+        <div class="option"><input type="radio" name="q11" value="d" id="q11d"/><label for="q11d">12/5</label></div>
+      </div>
+    </div>
+
+    <!-- Q12 -->
+    <div class="question-block">
+      <div class="question-num">Question 12</div>
+      <div class="question-text">La fraction 15/15 est égale à :</div>
+      <div class="options">
+        <div class="option"><input type="radio" name="q12" value="a" id="q12a"/><label for="q12a">15</label></div>
+        <div class="option"><input type="radio" name="q12" value="b" id="q12b"/><label for="q12b">1</label></div>
+        <div class="option"><input type="radio" name="q12" value="c" id="q12c"/><label for="q12c">1/15</label></div>
+        <div class="option"><input type="radio" name="q12" value="d" id="q12d"/><label for="q12d">0</label></div>
+      </div>
+    </div>
+
+    <!-- Q13 -->
+    <div class="question-block">
+      <div class="question-num">Question 13</div>
+      <div class="question-text">Un livre a 24 pages. Tom en a lu 10. Quelle fraction a-t-il lue ?</div>
+      <div class="options">
+        <div class="option"><input type="radio" name="q13" value="a" id="q13a"/><label for="q13a">10/24</label></div>
+        <div class="option"><input type="radio" name="q13" value="b" id="q13b"/><label for="q13b">14/24</label></div>
+        <div class="option"><input type="radio" name="q13" value="c" id="q13c"/><label for="q13c">24/10</label></div>
+        <div class="option"><input type="radio" name="q13" value="d" id="q13d"/><label for="q13d">12/24</label></div>
+      </div>
+    </div>
+
+    <!-- Q14 -->
+    <div class="question-block">
+      <div class="question-num">Question 14</div>
+      <div class="question-text">Quel est le numérateur de 3/11 ?</div>
+      <div class="options">
+        <div class="option"><input type="radio" name="q14" value="a" id="q14a"/><label for="q14a">11</label></div>
+        <div class="option"><input type="radio" name="q14" value="b" id="q14b"/><label for="q14b">8</label></div>
+        <div class="option"><input type="radio" name="q14" value="c" id="q14c"/><label for="q14c">3</label></div>
+        <div class="option"><input type="radio" name="q14" value="d" id="q14d"/><label for="q14d">14</label></div>
+      </div>
+    </div>
+
+    <!-- Q15 -->
+    <div class="question-block">
+      <div class="question-num">Question 15</div>
+      <div class="question-text">Une ficelle est coupée en 8 morceaux égaux. Combien de morceaux font 5/8 de la ficelle ?</div>
+      <div class="options">
+        <div class="option"><input type="radio" name="q15" value="a" id="q15a"/><label for="q15a">3 morceaux</label></div>
+        <div class="option"><input type="radio" name="q15" value="b" id="q15b"/><label for="q15b">5 morceaux</label></div>
+        <div class="option"><input type="radio" name="q15" value="c" id="q15c"/><label for="q15c">8 morceaux</label></div>
+        <div class="option"><input type="radio" name="q15" value="d" id="q15d"/><label for="q15d">13 morceaux</label></div>
+      </div>
+    </div>
+
+    <button type="submit" class="submit-btn">Soumettre le quiz</button>
+  </form>
+
+  <div id="result" style="display:none;">
+    <div class="result">
+      <h2>Quiz Terminé!</h2>
+      <div class="score-display" id="score-num">0/15</div>
+      <p id="score-percent">0%</p>
+      <a href="javascript:location.reload()" class="download-btn">Recommencer</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  const QUIZ_ID = "Maths6e_Fractions_Basics";
+  const CORRECT_ANSWERS = {q1:'b',q2:'b',q3:'c',q4:'b',q5:'a',q6:'b',q7:'a',q8:'c',q9:'b',q10:'b',q11:'c',q12:'b',q13:'a',q14:'c',q15:'b'};
+
+  document.getElementById('quiz-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    let score = 0;
+    for (let i = 1; i <= 15; i++) {
+      const answer = document.querySelector(`input[name="q${i}"]:checked`);
+      if (answer && answer.value === CORRECT_ANSWERS[`q${i}`]) score++;
+    }
+
+    const percent = Math.round((score / 15) * 100);
+    document.getElementById('score-num').textContent = `${score}/15`;
+    document.getElementById('score-percent').textContent = `${percent}%`;
+    document.getElementById('quiz-form').style.display = 'none';
+    document.getElementById('result').style.display = 'block';
+
+    const hist = JSON.parse(localStorage.getItem(`scores_${QUIZ_ID}`) || '[]');
+    hist.unshift({score, total: 15, date: new Date().toLocaleDateString('fr-FR')});
+    localStorage.setItem(`scores_${QUIZ_ID}`, JSON.stringify(hist));
+
+    const txt = `Quiz: Fractions — Bases\nScore: ${score}/15 (${percent}%)\nDate: ${new Date().toLocaleDateString('fr-FR')}\n`;
+    const blob = new Blob([txt], {type: 'text/plain'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `score_fractions_basics_${Date.now()}.txt`;
+    a.click();
+  });
+</script>
+</body>
+</html>

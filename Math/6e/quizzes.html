@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Quiz Mathématiques — 6e</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --navy:#e8dcc8; --navy-dark:#d4c9b3; --navy-card:#f0e8d8;
+      --navy-border:#ddd2bf; --navy-hover:#ede5d6;
+      --gold:#c9a84c; --gold-light:#e2c46e; --gold-dim:#a68842;
+      --green:#2ecc8a; --red:#e05555;
+      --text:#3d3220; --text-bright:#2b2416; --text-muted:#8b7d69; --text-soft:#9d8f7a;
+      --mono:'IBM Plex Mono',monospace;
+      --sans:'IBM Plex Sans',sans-serif;
+      --serif:'Playfair Display',Georgia,serif;
+    }
+    html{scroll-behavior:smooth;}
+    body{font-family:var(--sans);background:var(--navy);color:var(--text);min-height:100vh;}
+
+    nav{display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:56px;border-bottom:1px solid var(--navy-border);background:var(--navy-dark);position:sticky;top:0;z-index:100;}
+    .nav-logo{font-family:var(--serif);font-size:20px;font-weight:700;color:var(--gold);text-decoration:none;letter-spacing:.06em;}
+    .nav-right{display:flex;align-items:center;gap:24px;}
+    .nav-link{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-soft);text-decoration:none;transition:color .2s;}
+    .nav-link:hover{color:var(--gold);}
+    .nav-link.active{color:var(--gold);}
+
+    .hero{padding:60px 40px 48px;max-width:1200px;margin:0 auto;border-bottom:1px solid var(--navy-border);}
+    .hero-eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-dim);margin-bottom:14px;}
+    .hero h1{font-family:var(--serif);font-size:clamp(36px,5vw,60px);font-weight:900;line-height:1.05;color:var(--text-bright);margin-bottom:14px;}
+    .hero h1 em{font-style:italic;color:var(--gold);}
+    .hero-sub{font-family:var(--mono);font-size:12px;color:var(--text-muted);letter-spacing:.06em;line-height:1.8;}
+
+    .section{max-width:1200px;margin:0 auto;padding:52px 40px;}
+    .section-head{display:flex;align-items:baseline;gap:16px;margin-bottom:28px;padding-bottom:14px;border-bottom:1px solid var(--navy-border);}
+    .section-title{font-family:var(--serif);font-size:24px;font-weight:700;color:var(--text-bright);}
+    .section-tag{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-dim);}
+    .section-count{font-family:var(--mono);font-size:10px;color:var(--text-muted);margin-left:auto;}
+
+    .quiz-grid{display:grid;gap:1px;background:var(--navy-border);}
+    .quiz-grid.cols-4{grid-template-columns:repeat(4,1fr);}
+    .quiz-grid.cols-3{grid-template-columns:repeat(3,1fr);}
+    .quiz-grid.cols-2{grid-template-columns:repeat(2,1fr);}
+
+    .qcard{
+      background:var(--navy-card);
+      padding:24px 24px 28px;
+      text-decoration:none;
+      display:flex;
+      flex-direction:column;
+      gap:0;
+      transition:background .18s;
+      position:relative;
+      overflow:hidden;
+      cursor:pointer;
+    }
+    .qcard::before{
+      content:'';
+      position:absolute;
+      top:0;left:0;right:0;height:2px;
+      background:var(--gold);
+      transform:scaleX(0);
+      transform-origin:left;
+      transition:transform .3s ease;
+    }
+    .qcard:hover{background:var(--navy-hover);}
+    .qcard:hover::before{transform:scaleX(1);}
+
+    .qcard-region{
+      font-family:var(--mono);
+      font-size:9px;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+      color:var(--gold-dim);
+      margin-bottom:12px;
+    }
+    .qcard-icon{
+      font-size:28px;
+      margin-bottom:12px;
+      line-height:1;
+      filter:grayscale(.3);
+    }
+    .qcard h3{
+      font-family:var(--serif);
+      font-size:18px;
+      font-weight:700;
+      color:var(--text-bright);
+      line-height:1.2;
+      margin-bottom:8px;
+    }
+    .qcard-meta{
+      font-family:var(--mono);
+      font-size:10px;
+      color:var(--text-muted);
+      letter-spacing:.04em;
+      flex:1;
+      margin-bottom:18px;
+    }
+    .qcard-score{
+      font-family:var(--mono);
+      font-size:10px;
+      color:var(--text-muted);
+      letter-spacing:.04em;
+      margin-bottom:14px;
+      min-height:14px;
+    }
+    .qcard-score span{color:var(--gold);}
+    .qcard-cta{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-family:var(--mono);
+      font-size:10px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:var(--gold);
+      border:1px solid var(--gold-dim);
+      padding:7px 14px;
+      width:fit-content;
+      transition:background .2s,color .2s;
+    }
+    .qcard:hover .qcard-cta{background:var(--gold);color:var(--text-bright);}
+
+    .badge{
+      position:absolute;top:14px;right:14px;
+      font-family:var(--mono);font-size:9px;
+      background:rgba(201,168,76,.12);
+      border:1px solid var(--gold-dim);
+      color:var(--gold);
+      padding:3px 8px;
+      letter-spacing:.08em;
+    }
+
+    .divider{border:none;border-top:1px solid var(--navy-border);margin:0;}
+
+    footer{border-top:1px solid var(--navy-border);padding:24px 40px;display:flex;align-items:center;justify-content:space-between;background:var(--navy-dark);}
+    .footer-logo{font-family:var(--serif);font-size:15px;color:var(--gold-dim);letter-spacing:.06em;}
+    .footer-note{font-family:var(--mono);font-size:10px;color:var(--text-muted);letter-spacing:.06em;}
+
+    @media(max-width:900px){
+      .quiz-grid.cols-4,.quiz-grid.cols-3{grid-template-columns:repeat(2,1fr);}
+      .quiz-grid.cols-2{grid-template-columns:1fr;}
+      nav,footer{padding:0 20px;} footer{flex-direction:column;gap:8px;text-align:center;}
+      .hero,.section{padding:40px 20px;}
+    }
+    @media(max-width:560px){
+      .quiz-grid.cols-4,.quiz-grid.cols-3,.quiz-grid.cols-2{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a class="nav-logo" href="../../index.html">SELMA</a>
+    <div class="nav-right">
+      <a class="nav-link" href="../../index.html">Accueil</a>
+      <a class="nav-link active" href="#">Maths 6e</a>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-eyebrow">Apprentissage · Entraînement</div>
+    <h1>Mathématiques <em>6e</em></h1>
+    <div class="hero-sub">
+      Fractions · Proportionnalité · 10 quiz · 15 questions par quiz · Score suivi localement
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="section-head">
+      <span class="section-title">Fractions</span>
+      <span class="section-tag">// Comprendre et calculer</span>
+      <span class="section-count">6 quiz</span>
+    </div>
+
+    <div class="quiz-grid cols-3">
+
+      <a class="qcard" href="quiz_fractions_basics.html">
+        <div class="qcard-region">Fractions</div>
+        <div class="qcard-icon">🔢</div>
+        <h3>Les Bases</h3>
+        <div class="qcard-meta">Comprendre numérateur & dénominateur</div>
+        <div class="qcard-score" id="score-fractions-basics">—</div>
+        <div class="qcard-cta">Jouer →</div>
+      </a>
+
+      <a class="qcard" href="quiz_fractions_quotients.html">
+        <div class="qcard-region">Fractions</div>
+        <div class="qcard-icon">÷</div>
+        <h3>Quotients & Décimales</h3>
+        <div class="qcard-meta">Fractions comme divisions</div>
+        <div class="qcard-score" id="score-fractions-quotients">—</div>
+        <div class="qcard-cta">Jouer →</div>
+      </a>
+
+      <a class="qcard" href="quiz_fractions_mixed_numbers.html">
+        <div class="qcard-region">Fractions</div>
+        <div class="qcard-icon">1¾</div>
+        <h3>Nombres Mixtes</h3>
+        <div class="qcard-meta">Convertir fractions et entiers</div>
+        <div class="qcard-score" id="score-fractions-mixed">—</div>
+        <div class="qcard-cta">Jouer →</div>
+      </a>
+
+      <a class="qcard" href="quiz_comparing_fractions.html">
+        <div class="qcard-region">Fractions</div>
+        <div class="qcard-icon">⚖️</div>
+        <h3>Comparer & Ordonner</h3>
+        <div class="qcard-meta">Fractions équivalentes, inégalités</div>
+        <div class="qcard-score" id="score-comparing-fractions">—</div>
+        <div class="qcard-cta">Jouer →</div>
+      </a>
+
+      <a class="qcard" href="quiz_adding_subtracting_fractions.html">
+        <div class="qcard-region">Fractions</div>
+        <div class="qcard-icon">➕➖</div>
+        <h3>Addition & Soustraction</h3>
+        <div class="qcard-meta">Opérations sur les fractions</div>
+        <div class="qcard-score" id="score-adding-fractions">—</div>
+        <div class="qcard-cta">Jouer →</div>
+      </a>
+
+      <a class="qcard" href="quiz_multiplying_fractions.html">
+        <div class="qcard-region">Fractions</div>
+        <div class="qcard-icon">× </div>
+        <h3>Multiplier par une Fraction</h3>
+        <div class="qcard-meta">Fractions d'un nombre</div>
+        <div class="qcard-score" id="score-multiplying-fractions">—</div>
+        <div class="qcard-cta">Jouer →</div>
+      </a>
+
+    </div>
+  </section>
+
+  <hr class="divider"/>
+
+  <section class="section">
+    <div class="section-head">
+      <span class="section-title">Proportionnalité</span>
+      <span class="section-tag">// Modèle & Applications</span>
+      <span class="section-count">3 quiz</span>
+    </div>
+
+    <div class="quiz-grid cols-3">
+
+      <a class="qcard" href="quiz_proportionality_basics.html">
+        <div class="qcard-region">Proportionnalité</div>
+        <div class="qcard-icon">📊</div>
+        <h3>Les Bases</h3>
+        <div class="qcard-meta">Reconnaître et identifier</div>
+        <div class="qcard-score" id="score-proportionality-basics">—</div>
+        <div class="qcard-cta">Jouer →</div>
+      </a>
+
+      <a class="qcard" href="quiz_proportionality_problems.html">
+        <div class="qcard-region">Proportionnalité</div>
+        <div class="qcard-icon">🎯</div>
+        <h3>Problèmes</h3>
+        <div class="qcard-meta">Méthodes et résolution</div>
+        <div class="qcard-score" id="score-proportionality-problems">—</div>
+        <div class="qcard-cta">Jouer →</div>
+      </a>
+
+      <a class="qcard" href="quiz_percentages.html">
+        <div class="qcard-region">Proportionnalité</div>
+        <div class="qcard-icon">%</div>
+        <h3>Pourcentages</h3>
+        <div class="qcard-meta">Proportions & calculs</div>
+        <div class="qcard-score" id="score-percentages">—</div>
+        <div class="qcard-cta">Jouer →</div>
+      </a>
+
+    </div>
+  </section>
+
+  <hr class="divider"/>
+
+  <section class="section">
+    <div class="section-head">
+      <span class="section-title">Défi</span>
+      <span class="section-tag">// Mélangé & Approfondi</span>
+      <span class="section-count">1 quiz</span>
+    </div>
+
+    <div class="quiz-grid cols-2">
+
+      <a class="qcard" href="quiz_challenge_mixed.html">
+        <div class="qcard-region">Défi</div>
+        <div class="qcard-icon">⭐</div>
+        <h3>Quiz Défi</h3>
+        <div class="qcard-meta">Mélange de tous les sujets</div>
+        <div class="qcard-score" id="score-challenge">—</div>
+        <div class="qcard-cta">Jouer →</div>
+      </a>
+
+    </div>
+  </section>
+
+  <hr class="divider"/>
+
+  <footer>
+    <div class="footer-logo">SELMA</div>
+    <div class="footer-note">Scores sauvegardés localement · Mathématiques 6e</div>
+  </footer>
+
+  <script>
+    const SCORE_MAP = {
+      'score-fractions-basics': 'scores_Maths6e_Fractions_Basics',
+      'score-fractions-quotients': 'scores_Maths6e_Fractions_Quotients',
+      'score-fractions-mixed': 'scores_Maths6e_Fractions_MixedNumbers',
+      'score-comparing-fractions': 'scores_Maths6e_Comparing_Fractions',
+      'score-adding-fractions': 'scores_Maths6e_Adding_Fractions',
+      'score-multiplying-fractions': 'scores_Maths6e_Multiplying_Fractions',
+      'score-proportionality-basics': 'scores_Maths6e_Proportionality_Basics',
+      'score-proportionality-problems': 'scores_Maths6e_Proportionality_Problems',
+      'score-percentages': 'scores_Maths6e_Percentages',
+      'score-challenge': 'scores_Maths6e_Challenge_Mixed',
+    };
+
+    for (const [elId, key] of Object.entries(SCORE_MAP)) {
+      const el = document.getElementById(elId);
+      if (!el) continue;
+      try {
+        const hist = JSON.parse(localStorage.getItem(key) || '[]');
+        if (hist.length === 0) { el.textContent = 'Not played yet'; continue; }
+        const best = Math.max(...hist.map(h => h.score));
+        const last = hist[0];
+        el.innerHTML = `Best <span>${best} / ${last.total}</span> · Last ${last.date}`;
+      } catch(e) {
+        el.textContent = '—';
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Proportionnalité — Bases</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --navy:#e8dcc8; --navy-dark:#d4c9b3; --navy-card:#f0e8d8;
+      --navy-border:#ddd2bf; --navy-hover:#ede5d6;
+      --gold:#c9a84c; --gold-light:#e2c46e; --gold-dim:#a68842;
+      --green:#2ecc8a; --red:#e05555;
+      --text:#3d3220; --text-bright:#2b2416; --text-muted:#8b7d69; --text-soft:#9d8f7a;
+      --mono:'IBM Plex Mono',monospace;
+      --sans:'IBM Plex Sans',sans-serif;
+      --serif:'Playfair Display',Georgia,serif;
+    }
+    html{scroll-behavior:smooth;}
+    body{font-family:var(--sans);background:var(--navy);color:var(--text);min-height:100vh;}
+    nav{display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:56px;border-bottom:1px solid var(--navy-border);background:var(--navy-dark);position:sticky;top:0;z-index:100;}
+    .nav-logo{font-family:var(--serif);font-size:20px;font-weight:700;color:var(--gold);text-decoration:none;letter-spacing:.06em;}
+    .nav-right{display:flex;align-items:center;gap:24px;}
+    .nav-link{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-soft);text-decoration:none;transition:color .2s;}
+    .nav-link:hover{color:var(--gold);}
+    .container{max-width:900px;margin:0 auto;padding:40px 20px;}
+    .header{text-align:center;margin-bottom:48px;padding-bottom:24px;border-bottom:2px solid var(--navy-border);}
+    .header h1{font-family:var(--serif);font-size:36px;font-weight:900;color:var(--text-bright);margin-bottom:8px;}
+    .header p{font-family:var(--mono);font-size:12px;color:var(--text-muted);letter-spacing:.06em;text-transform:uppercase;}
+    .question-block{margin-bottom:40px;padding:24px;background:var(--navy-card);border:1px solid var(--navy-border);border-radius:4px;}
+    .question-num{font-family:var(--mono);font-size:11px;color:var(--gold);text-transform:uppercase;margin-bottom:8px;letter-spacing:.1em;}
+    .question-text{font-family:var(--serif);font-size:18px;font-weight:700;color:var(--text-bright);margin-bottom:16px;line-height:1.4;}
+    .options{display:flex;flex-direction:column;gap:10px;}
+    .option{display:flex;align-items:center;padding:12px 16px;border:1px solid var(--navy-border);border-radius:3px;cursor:pointer;transition:all .2s;background:#fff;position:relative;}
+    .option:hover{background:var(--navy-hover);border-color:var(--gold);}
+    .option input[type="radio"]{margin-right:12px;cursor:pointer;}
+    .option label{cursor:pointer;flex:1;font-size:15px;}
+    .option input[type="radio"]:checked ~ label{font-weight:600;color:var(--gold);}
+    .submit-btn{display:block;width:100%;padding:16px;margin-top:48px;background:var(--gold);color:var(--text-bright);border:none;border-radius:3px;font-family:var(--sans);font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;letter-spacing:.08em;text-transform:uppercase;}
+    .submit-btn:hover{background:var(--gold-dim);transform:translateY(-2px);}
+    .result{margin-top:48px;padding:24px;background:var(--navy-card);border:2px solid var(--navy-border);border-radius:4px;text-align:center;}
+    .result h2{font-family:var(--serif);font-size:24px;color:var(--text-bright);margin-bottom:12px;}
+    .score-display{font-family:var(--mono);font-size:48px;font-weight:bold;color:var(--gold);margin:16px 0;}
+    .result p{font-size:14px;color:var(--text-muted);margin-bottom:8px;}
+    .download-btn{display:inline-block;margin-top:16px;padding:10px 20px;background:var(--gold);color:var(--text-bright);text-decoration:none;border-radius:3px;font-weight:600;font-size:12px;letter-spacing:.08em;text-transform:uppercase;}
+    @media(max-width:600px){.container{padding:20px 16px;} .header h1{font-size:28px;} .question-text{font-size:16px;} nav{padding:0 20px;}}
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="../../../index.html">SELMA</a>
+  <div class="nav-right">
+    <a class="nav-link" href="../../../index.html">Accueil</a>
+    <a class="nav-link active" href="#">Quiz Maths</a>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="header">
+    <h1>Proportionnalité — Bases</h1>
+    <p>Reconnaître et utiliser la proportionnalité</p>
+  </div>
+
+  <form id="quiz-form">
+    <div class="question-block">
+      <div class="question-num">Question 1</div>
+      <div class="question-text">Deux grandeurs sont proportionnelles si :</div>
+      <div class="options">
+        <div class="option"><input type="radio" name="q1" value="a" id="q1a"/><label for="q1a">elles augmentent ensemble</label></div>
+        <div class="option"><input type="radio" name="q1" value="b" id="q1b"/><label for="q1b">en multipliant l'une par un nombre, l'autre est multipliée par le même nombre</label></div>
+        <div class="option"><input type="radio" name="q1" value="c" id="q1c"/><label for="q1c">elles sont toujours égales</label></div>
+        <div class="option"><input type="radio" name="q1" value="d" id="q1d"/><label for="q1d">l'une est plus grande que l'autre</label></div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-num">Question 2</div>
+      <div class="question-text">Si 3 livres coûtent 15€, combien coûte 1 livre ?</div>
+      <div class="options">
+        <div class="option"><input type="radio" name="q2" value="a" id="q2a"/><label for="q2a">3€</label></div>
+        <div class="option"><input type="radio" name="q2" value="b" id="q2b"/><label for="q2b">5€</label></div>
+        <div class="option"><input type="radio" name="q2" value="c" id="q2c"/><label for="q2c">10€</label></div>
+        <div class="option"><input type="radio" name="q2" value="d" id="q2d"/><label for="q2d">15€</label></div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-num">Question 3</div>
+      <div class="question-text">Une voiture parcourt 120 km en 2 heures. Quelle distance en 4 heures ?</div>
+      <div class="options">
+        <div class="option"><input type="radio" name="q3" value="a" id="q3a"/><label for="q3a">60 km</label></div>
+        <div class="option"><input type="radio" name="q3" value="b" id="q3b"/><label for="q3b">240 km</label></div>
+        <div class="option"><input type="radio" name="q3" value="c" id="q3c"/><label for="q3c">180 km</label></div>
+        <div class="option"><input type="radio" name="q3" value="d" id="q3d"/><label for="q3d">360 km</label></div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-num">Question 4</div>
+      <div class="question-text">Laquelle de ces situations est proportionnelle ?</div>
+      <div class="options">
+        <div class="option"><input type="radio" name="q4" value="a" id="q4a"/><label for="q4a">L'âge et la taille d'une personne</label></div>
+        <div class="option"><input type="radio" name="q4" value="b" id="q4b"/><label for="q4b">Le nombre d'articles et le prix total</label></div>
+        <div class="option"><input type="radio" name="q4" value="c" id="q4c"/><label for="q4c">L'année et le nombre d'habitants</label></div>
+        <div class="option"><input type="radio" name="q4" value="d" id="q4d"/><label for="q4d">L'heure et la température</label></div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-num">Question 5</div>
+      <div class="question-text">Si 4 kg de pommes coûtent 12€, quel prix pour 2 kg ?</div>
+      <div class="options">
+        <div class="option"><input type="radio" name="q5" value="a" id="q5a"/><label for="q5a">3€</label></div>
+        <div class="option"><input type="radio" name="q5" value="b" id="q5b"/><label for="q5b">6€</label></div>
+        <div class="option"><input type="radio" name="q5" value="c" id="q5c"/><label for="q5c">8€</label></div>
+        <div class="option"><input type="radio" name="q5" value="d" id="q5d"/><label for="q5d">12€</label></div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-num">Question 6</div>
+      <div class="question-text">Sur un tableau : si x=2 et y=10, et si y=25, alors x=</div>
+      <div class="options">
+        <div class="option"><input type="radio" name="q6" value="a" id="q6a"/><label for="q6a">4</label></div>
+        <div class="option"><input type="radio" name="q6" value="b" id="q6b"/><label for="q6b">5</label></div>
+        <div class="option"><input type="radio" name="q6" value="c" id="q6c"/><label for="q6c">10</label></div>
+        <div class="option"><input type="radio" name="q6" value="d" id="q6d"/><label for="q6d">20</label></div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-num">Question 7</div>
+      <div class="question-text">Une recette : 200g de farine pour 4 personnes. Pour 8 personnes ?</div>
+      <div class="options">
+        <div class="option"><input type="radio" name="q7" value="a" id="q7a"/><label for="q7a">100g</label></div>
+        <div class="option"><input type="radio" name="q7" value="b" id="q7b"/><label for="q7b">200g</label></div>
+        <div class="option"><input type="radio" name="q7" value="c" id="q7c"/><label for="q7c">400g</label></div>
+        <div class="option"><input type="radio" name="q7" value="d" id="q7d"/><label for="q7d">600g</label></div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-num">Question 8</div>
+      <div class="question-text">Si 5 stylos coûtent 10€, combien coûtent 8 stylos ?</div>
+      <div class="options">
+        <div class="option"><input type="radio" name="q8" value="a" id="q8a"/><label for="q8a">12€</label></div>
+        <div class="option"><input type="radio" name="q8" value="b" id="q8b"/><label for="q8b">14€</label></div>
+        <div class="option"><input type="radio" name="q8" value="c" id="q8c"/><label for="q8c">16€</label></div>
+        <div class="option"><input type="radio" name="q8" value="d" id="q8d"/><label for="q8d">18€</label></div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-num">Question 9</div>
+      <div class="question-text">Sur une carte : 1 cm = 10 km. 5 cm représente ?</div>
+      <div class="options">
+        <div class="option"><input type="radio" name="q9" value="a" id="q9a"/><label for="q9a">5 km</label></div>
+        <div class="option"><input type="radio" name="q9" value="b" id="q9b"/><label for="q9b">15 km</label></div>
+        <div class="option"><input type="radio" name="q9" value="c" id="q9c"/><label for="q9c">30 km</label></div>
+        <div class="option"><input type="radio" name="q9" value="d" id="q9d"/><label for="q9d">50 km</label></div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-num">Question 10</div>
+      <div class="question-text">Un train roule à 100 km/h. En 3 heures, il parcourt ?</div>
+      <div class="options">
+        <div class="option"><input type="radio" name="q10" value="a" id="q10a"/><label for="q10a">100 km</label></div>
+        <div class="option"><input type="radio" name="q10" value="b" id="q10b"/><label for="q10b">150 km</label></div>
+        <div class="option"><input type="radio" name="q10" value="c" id="q10c"/><label for="q10c">200 km</label></div>
+        <div class="option"><input type="radio" name="q10" value="d" id="q10d"/><label for="q10d">300 km</label></div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-num">Question 11</div>
+      <div class="question-text">Si 6 oeufs coûtent 3€, quel prix pour 12 oeufs ?</div>
+      <div class="options">
+        <div class="option"><input type="radio" name="q11" value="a" id="q11a"/><label for="q11a">3€</label></div>
+        <div class="option"><input type="radio" name="q11" value="b" id="q11b"/><label for="q11b">6€</label></div>
+        <div class="option"><input type="radio" name="q11" value="c" id="q11c"/><label for="q11c">9€</label></div>
+        <div class="option"><input type="radio" name="q11" value="d" id="q11d"/><label for="q11d">12€</label></div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-num">Question 12</div>
+      <div class="question-text">Une imprimante : 60 pages par minute. En 5 minutes ?</div>
+      <div class="options">
+        <div class="option"><input type="radio" name="q12" value="a" id="q12a"/><label for="q12a">100 pages</label></div>
+        <div class="option"><input type="radio" name="q12" value="b" id="q12b"/><label for="q12b">200 pages</label></div>
+        <div class="option"><input type="radio" name="q12" value="c" id="q12c"/><label for="q12c">300 pages</label></div>
+        <div class="option"><input type="radio" name="q12" value="d" id="q12d"/><label for="q12d">400 pages</label></div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-num">Question 13</div>
+      <div class="question-text">La proportionnalité est un modèle qui :</div>
+      <div class="options">
+        <div class="option"><input type="radio" name="q13" value="a" id="q13a"/><label for="q13a">ne fonctionne jamais</label></div>
+        <div class="option"><input type="radio" name="q13" value="b" id="q13b"/><label for="q13b">fonctionne toujours</label></div>
+        <div class="option"><input type="radio" name="q13" value="c" id="q13c"/><label for="q13c">fonctionne pour certaines situations</label></div>
+        <div class="option"><input type="radio" name="q13" value="d" id="q13d"/><label for="q13d">est compliqué à utiliser</label></div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-num">Question 14</div>
+      <div class="question-text">Si 2 mètres de tissu coûtent 20€, 5 mètres coûtent ?</div>
+      <div class="options">
+        <div class="option"><input type="radio" name="q14" value="a" id="q14a"/><label for="q14a">25€</label></div>
+        <div class="option"><input type="radio" name="q14" value="b" id="q14b"/><label for="q14b">40€</label></div>
+        <div class="option"><input type="radio" name="q14" value="c" id="q14c"/><label for="q14c">50€</label></div>
+        <div class="option"><input type="radio" name="q14" value="d" id="q14d"/><label for="q14d">100€</label></div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-num">Question 15</div>
+      <div class="question-text">Procedure du retour à l'unité : d'abord :</div>
+      <div class="options">
+        <div class="option"><input type="radio" name="q15" value="a" id="q15a"/><label for="q15a">multiplier par le coefficient</label></div>
+        <div class="option"><input type="radio" name="q15" value="b" id="q15b"/><label for="q15b">trouver le prix d'une unité</label></div>
+        <div class="option"><input type="radio" name="q15" value="c" id="q15c"/><label for="q15c">additionner</label></div>
+        <div class="option"><input type="radio" name="q15" value="d" id="q15d"/><label for="q15d">diviser par 2</label></div>
+      </div>
+    </div>
+
+    <button type="submit" class="submit-btn">Soumettre le quiz</button>
+  </form>
+
+  <div id="result" style="display:none;">
+    <div class="result">
+      <h2>Quiz Terminé!</h2>
+      <div class="score-display" id="score-num">0/15</div>
+      <p id="score-percent">0%</p>
+      <a href="javascript:location.reload()" class="download-btn">Recommencer</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  const QUIZ_ID = "Maths6e_Proportionality_Basics";
+  const CORRECT_ANSWERS = {q1:'b',q2:'b',q3:'b',q4:'b',q5:'b',q6:'b',q7:'c',q8:'c',q9:'d',q10:'d',q11:'b',q12:'c',q13:'c',q14:'c',q15:'b'};
+
+  document.getElementById('quiz-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    let score = 0;
+    for (let i = 1; i <= 15; i++) {
+      const answer = document.querySelector(`input[name="q${i}"]:checked`);
+      if (answer && answer.value === CORRECT_ANSWERS[`q${i}`]) score++;
+    }
+
+    const percent = Math.round((score / 15) * 100);
+    document.getElementById('score-num').textContent = `${score}/15`;
+    document.getElementById('score-percent').textContent = `${percent}%`;
+    document.getElementById('quiz-form').style.display = 'none';
+    document.getElementById('result').style.display = 'block';
+
+    const hist = JSON.parse(localStorage.getItem(`scores_${QUIZ_ID}`) || '[]');
+    hist.unshift({score, total: 15, date: new Date().toLocaleDateString('fr-FR')});
+    localStorage.setItem(`scores_${QUIZ_ID}`, JSON.stringify(hist));
+
+    const txt = `Quiz: Proportionnalité — Bases\nScore: ${score}/15 (${percent}%)\nDate: ${new Date().toLocaleDateString('fr-FR')}\n`;
+    const blob = new Blob([txt], {type: 'text/plain'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `score_quiz_proportionality_basics_${Date.now()}.txt`;
+    a.click();
+  });
+</script>
+</body>
+</html>
