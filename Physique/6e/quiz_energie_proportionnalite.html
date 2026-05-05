@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Quiz Interdisciplinaire - Énergie & Proportionnalité</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --pink-deep:    #e8628a;
+      --pink-mid:     #f093b0;
+      --pink-light:   #fcd9e7;
+      --pink-blush:   #fff0f5;
+      --rose:         #f7c5d5;
+      --text-dark:    #3d1a2b;
+      --text-mid:     #7a4460;
+      --text-soft:    #c48aa8;
+      --white:        #fffbfc;
+      --card-border:  #f5c8db;
+    }
+    html{scroll-behavior:smooth;}
+    body{font-family:'Nunito',sans-serif;background:var(--pink-blush);color:var(--text-dark);min-height:100vh;position:relative;overflow-x:hidden;}
+    body::before{
+      content:'';
+      position:fixed;
+      inset:0;
+      background-image:
+        radial-gradient(ellipse 60% 40% at 15% 20%, rgba(248,180,210,0.35) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 60% at 85% 75%, rgba(244,155,195,0.25) 0%, transparent 55%);
+      pointer-events:none;
+      z-index:0;
+    }
+    nav{display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:56px;border-bottom:1px solid var(--card-border);background:var(--white);position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(232,98,138,.07);}
+    .nav-logo{font-family:'Playfair Display',serif;font-size:20px;font-weight:600;color:var(--pink-deep);text-decoration:none;letter-spacing:-0.5px;}
+    .nav-right{display:flex;align-items:center;gap:24px;}
+    .nav-link{font-family:'Nunito',sans-serif;font-size:14px;font-weight:600;color:var(--text-soft);text-decoration:none;transition:color .2s;}
+    .nav-link:hover{color:var(--pink-deep);}
+    .nav-link.active{color:var(--pink-deep);}
+    .container{max-width:820px;margin:0 auto;padding:40px 20px;position:relative;z-index:1;}
+    .header{text-align:center;margin-bottom:48px;padding-bottom:24px;border-bottom:2px solid var(--card-border);}
+    .header h1{font-family:'Playfair Display',serif;font-size:36px;font-weight:600;color:var(--pink-deep);text-shadow:0 2px 16px rgba(232,98,138,.15);margin-bottom:8px;}
+    .header p{font-family:'Nunito',sans-serif;font-size:13px;color:var(--text-soft);font-weight:500;letter-spacing:0.05em;}
+    .info-box{background:var(--pink-light);padding:16px;border-radius:6px;margin-bottom:32px;border-left:4px solid var(--pink-deep);}
+    .info-box p{font-size:14px;color:var(--text-dark);line-height:1.6;}
+    .info-box strong{color:var(--pink-deep);}
+    .question-block{margin-bottom:40px;padding:24px;background:var(--white);border:1.5px solid var(--card-border);border-radius:8px;box-shadow:0 2px 8px rgba(232,98,138,.07);}
+    .question-num{font-family:'Nunito',sans-serif;font-size:12px;color:var(--pink-mid);text-transform:uppercase;margin-bottom:8px;letter-spacing:.1em;font-weight:700;}
+    .question-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:600;color:var(--text-dark);margin-bottom:12px;line-height:1.4;}
+    .question-context{background:var(--pink-blush);padding:12px;border-left:3px solid var(--pink-mid);margin-bottom:16px;border-radius:4px;font-size:13px;line-height:1.6;}
+    .question-context strong{color:var(--pink-deep);}
+    .input-section{margin-bottom:16px;}
+    .input-label{font-size:12px;font-weight:600;color:var(--text-mid);text-transform:uppercase;margin-bottom:6px;display:block;}
+    textarea{width:100%;padding:12px;border:1.5px solid var(--card-border);border-radius:6px;font-family:'Nunito',sans-serif;font-size:14px;color:var(--text-dark);resize:vertical;}
+    textarea:focus{outline:none;border-color:var(--pink-deep);box-shadow:0 0 0 3px rgba(232,98,138,.1);}
+    .char-count{font-size:11px;color:var(--text-soft);margin-top:6px;}
+    .answer-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+    .submit-btn{display:block;width:100%;padding:16px;margin-top:48px;background:var(--pink-deep);color:var(--white);border:none;border-radius:6px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:.08em;text-transform:uppercase;box-shadow:0 4px 12px rgba(232,98,138,.2);}
+    .submit-btn:hover{background:var(--pink-mid);transform:translateY(-2px);box-shadow:0 6px 16px rgba(232,98,138,.3);}
+    .result{margin-top:48px;padding:32px 24px;background:var(--white);border:2px solid var(--pink-mid);border-radius:8px;text-align:center;box-shadow:0 4px 16px rgba(232,98,138,.15);}
+    .result h2{font-family:'Playfair Display',serif;font-size:28px;color:var(--pink-deep);margin-bottom:16px;}
+    .result p{font-family:'Nunito',sans-serif;font-size:14px;color:var(--text-soft);margin-bottom:16px;}
+    .download-btn{display:inline-block;padding:12px 24px;background:var(--pink-deep);color:var(--white);text-decoration:none;border-radius:6px;font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase;transition:all .2s;border:none;cursor:pointer;margin:8px 8px;}
+    .download-btn:hover{background:var(--pink-mid);box-shadow:0 4px 12px rgba(232,98,138,.2);}
+    .restart-btn{background:var(--text-soft);}
+    .restart-btn:hover{background:var(--text-mid);}
+    .answers-preview{text-align:left;background:var(--pink-blush);padding:20px;border-radius:6px;margin-top:20px;max-height:400px;overflow-y:auto;}
+    .answer-item{margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--card-border);}
+    .answer-item:last-child{border-bottom:none;}
+    .answer-question{font-weight:600;color:var(--pink-deep);font-size:13px;margin-bottom:8px;}
+    .answer-section{margin-bottom:12px;}
+    .answer-section-title{font-size:11px;font-weight:600;color:var(--text-mid);text-transform:uppercase;margin-bottom:4px;}
+    .answer-text{font-size:12px;color:var(--text-dark);line-height:1.5;white-space:pre-wrap;background:var(--white);padding:8px;border-radius:4px;}
+    @media(max-width:600px){
+      .answer-row{grid-template-columns:1fr;}
+      .container{padding:20px 16px;}
+      .header h1{font-size:28px;}
+      nav{padding:0 20px;}
+      .download-btn{display:block;margin:8px 0;}
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="../../../../index.html">SELMA</a>
+  <div class="nav-right">
+    <a class="nav-link" href="../../../../index.html">Accueil</a>
+    <a class="nav-link active" href="#">Physique & Maths 6e</a>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="header">
+    <h1>Quiz Interdisciplinaire</h1>
+    <p>Conversion d'Énergie + Proportionnalité</p>
+  </div>
+
+  <div class="info-box">
+    <p><strong>Instructions:</strong> Résous ces 5 problèmes de proportionnalité dans des contextes de conversion d'énergie. <strong>Montre tout ton travail!</strong> Indique la méthode utilisée (produit en croix, coefficient, tableau, etc.), détaille les calculs, et donne la réponse finale.</p>
+  </div>
+
+  <form id="quiz-form">
+
+    <!-- Q1: Produit en Croix -->
+    <div class="question-block">
+      <div class="question-num">Question 1</div>
+      <div class="question-title">Produit en Croix - Conversion Chimique</div>
+      <div class="question-context">
+        <strong>Contexte:</strong> Un combustible produit de l'énergie par conversion chimique.<br>
+        <strong>Données:</strong> 2 kg de combustible produit 8000 joules d'énergie.<br>
+        <strong>Question:</strong> Combien de joules pour 5 kg de combustible?
+      </div>
+
+      <div class="input-section">
+        <label class="input-label">Méthode utilisée</label>
+        <textarea id="q1_method" name="q1_method" placeholder="Ex: Produit en croix, coefficient, tableau..."></textarea>
+        <div class="char-count" id="count1_method">0 caractères</div>
+      </div>
+
+      <div class="input-section">
+        <label class="input-label">Calculs détaillés</label>
+        <textarea id="q1_calc" name="q1_calc" placeholder="Écris toutes tes étapes de calcul..."></textarea>
+        <div class="char-count" id="count1_calc">0 caractères</div>
+      </div>
+
+      <div class="input-section">
+        <label class="input-label">Réponse finale</label>
+        <textarea id="q1_answer" name="q1_answer" placeholder="Ex: 20000 joules"></textarea>
+        <div class="char-count" id="count1_answer">0 caractères</div>
+      </div>
+    </div>
+
+    <!-- Q2: Coefficient de Proportionnalité -->
+    <div class="question-block">
+      <div class="question-num">Question 2</div>
+      <div class="question-title">Coefficient - Énergie Brûlée</div>
+      <div class="question-context">
+        <strong>Contexte:</strong> Un athlète en entraînement convertit l'énergie chimique en mouvement.<br>
+        <strong>Données:</strong> En 20 minutes de course, l'athlète brûle 200 calories.<br>
+        <strong>Question:</strong> Combien de calories en 60 minutes?
+      </div>
+
+      <div class="input-section">
+        <label class="input-label">Méthode utilisée</label>
+        <textarea id="q2_method" name="q2_method" placeholder="Ex: Coefficient de proportionnalité..."></textarea>
+        <div class="char-count" id="count2_method">0 caractères</div>
+      </div>
+
+      <div class="input-section">
+        <label class="input-label">Calculs détaillés</label>
+        <textarea id="q2_calc" name="q2_calc" placeholder="Écris toutes tes étapes de calcul..."></textarea>
+        <div class="char-count" id="count2_calc">0 caractères</div>
+      </div>
+
+      <div class="input-section">
+        <label class="input-label">Réponse finale</label>
+        <textarea id="q2_answer" name="q2_answer" placeholder="Ex: 600 calories"></textarea>
+        <div class="char-count" id="count2_answer">0 caractères</div>
+      </div>
+    </div>
+
+    <!-- Q3: Tableau -->
+    <div class="question-block">
+      <div class="question-num">Question 3</div>
+      <div class="question-title">Tableau de Proportionnalité - Ampoule Électrique</div>
+      <div class="question-context">
+        <strong>Contexte:</strong> Une ampoule électrique convertit l'énergie électrique en lumière et chaleur.<br>
+        <strong>Données:</strong> Pour 1 heure, elle consomme 0.1 kWh. Pour 2 heures, 0.2 kWh.<br>
+        <strong>Question:</strong> Complète le tableau. Combien pour 3 heures? Et pour 5 heures?
+      </div>
+
+      <div class="input-section">
+        <label class="input-label">Tableau complété avec le coefficient</label>
+        <textarea id="q3_method" name="q3_method" placeholder="Écris le coefficient et complète le tableau...&#10;&#10;Temps (h) | 1  | 2   | 3  | 5&#10;Énergie (kWh) | 0.1 | 0.2 | ? | ?"></textarea>
+        <div class="char-count" id="count3_method">0 caractères</div>
+      </div>
+
+      <div class="input-section">
+        <label class="input-label">Calculs</label>
+        <textarea id="q3_calc" name="q3_calc" placeholder="Détaille tes calculs..."></textarea>
+        <div class="char-count" id="count3_calc">0 caractères</div>
+      </div>
+
+      <div class="answer-row">
+        <div class="input-section">
+          <label class="input-label">Réponse pour 3 heures</label>
+          <textarea id="q3_answer1" name="q3_answer1" placeholder="Ex: 0.3 kWh" style="min-height:60px;"></textarea>
+        </div>
+        <div class="input-section">
+          <label class="input-label">Réponse pour 5 heures</label>
+          <textarea id="q3_answer2" name="q3_answer2" placeholder="Ex: 0.5 kWh" style="min-height:60px;"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q4: Passage à l'Unité -->
+    <div class="question-block">
+      <div class="question-num">Question 4</div>
+      <div class="question-title">Passage à l'Unité - Radiateur Électrique</div>
+      <div class="question-context">
+        <strong>Contexte:</strong> Un système de chauffage convertit l'énergie électrique en énergie thermique.<br>
+        <strong>Données:</strong> Un radiateur électrique consomme 1500 watts pour 4 heures.<br>
+        <strong>Question:</strong> Combien consomme-t-il pour 10 heures?
+      </div>
+
+      <div class="input-section">
+        <label class="input-label">Étape 1: Calcule la consommation par heure</label>
+        <textarea id="q4_step1" name="q4_step1" placeholder="Ex: 1500 ÷ 4 = ..."></textarea>
+        <div class="char-count" id="count4_step1">0 caractères</div>
+      </div>
+
+      <div class="input-section">
+        <label class="input-label">Étape 2: Multiplie par le nombre d'heures voulu</label>
+        <textarea id="q4_step2" name="q4_step2" placeholder="Ex: ... × 10 = ..."></textarea>
+        <div class="char-count" id="count4_step2">0 caractères</div>
+      </div>
+
+      <div class="input-section">
+        <label class="input-label">Réponse finale</label>
+        <textarea id="q4_answer" name="q4_answer" placeholder="Ex: 3750 watts-heures"></textarea>
+        <div class="char-count" id="count4_answer">0 caractères</div>
+      </div>
+    </div>
+
+    <!-- Q5: Lien entre Colonnes -->
+    <div class="question-block">
+      <div class="question-num">Question 5</div>
+      <div class="question-title">Tableau - Énergie de Pesanteur</div>
+      <div class="question-context">
+        <strong>Contexte:</strong> L'énergie de pesanteur (hauteur) convertit en énergie cinétique (chute).<br>
+        <strong>Données:</strong> À 1 mètre de hauteur, un objet a 50 joules. À 2 mètres, 100 joules.<br>
+        <strong>Question:</strong> Complète le tableau pour 3 et 4 mètres.
+      </div>
+
+      <div class="input-section">
+        <label class="input-label">Tableau et coefficient</label>
+        <textarea id="q5_method" name="q5_method" placeholder="Quel est le coefficient?&#10;&#10;Hauteur (m) | 1 | 2 | 3 | 4&#10;Énergie (J) | 50 | 100 | ? | ?"></textarea>
+        <div class="char-count" id="count5_method">0 caractères</div>
+      </div>
+
+      <div class="input-section">
+        <label class="input-label">Calculs détaillés</label>
+        <textarea id="q5_calc" name="q5_calc" placeholder="Écris comment tu as calculé..."></textarea>
+        <div class="char-count" id="count5_calc">0 caractères</div>
+      </div>
+
+      <div class="answer-row">
+        <div class="input-section">
+          <label class="input-label">Réponse pour 3 mètres</label>
+          <textarea id="q5_answer1" name="q5_answer1" placeholder="Ex: 150 joules" style="min-height:60px;"></textarea>
+        </div>
+        <div class="input-section">
+          <label class="input-label">Réponse pour 4 mètres</label>
+          <textarea id="q5_answer2" name="q5_answer2" placeholder="Ex: 200 joules" style="min-height:60px;"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <button type="submit" class="submit-btn">Enregistrer mes réponses</button>
+  </form>
+
+  <div id="result" class="result" style="display:none;">
+    <h2>Réponses Enregistrées</h2>
+    <p>Tes réponses ont été sauvegardées. Tu peux les télécharger pour les vérifier avec un adulte.</p>
+
+    <div class="answers-preview" id="preview">
+      <!-- Les réponses seront affichées ici -->
+    </div>
+
+    <button class="download-btn" onclick="downloadAnswers()">Télécharger mes réponses (TXT)</button>
+    <button class="submit-btn restart-btn" onclick="location.reload()" style="margin-top:16px;">Répondre à nouveau</button>
+  </div>
+</div>
+
+<script>
+const QUIZ_ID = "quiz_energie_proportionnalite";
+
+// Auto-save and character count
+const allInputs = document.querySelectorAll('textarea');
+allInputs.forEach(textarea => {
+  const countId = textarea.id.replace(/_method|_calc|_answer|_answer1|_answer2|_step1|_step2/, '') + '_' + textarea.name.split('_').pop();
+  const countDiv = document.getElementById('count' + textarea.id.substring(1));
+
+  textarea.addEventListener('input', function() {
+    if (countDiv) {
+      countDiv.textContent = `${this.value.length} caractères`;
+    }
+    saveAnswers();
+  });
+});
+
+// Load saved answers on page load
+window.addEventListener('DOMContentLoaded', function() {
+  loadAnswers();
+});
+
+function saveAnswers() {
+  const answers = {};
+  allInputs.forEach(textarea => {
+    answers[textarea.id] = textarea.value;
+  });
+  localStorage.setItem(`${QUIZ_ID}_answers`, JSON.stringify(answers));
+}
+
+function loadAnswers() {
+  const saved = localStorage.getItem(`${QUIZ_ID}_answers`);
+  if (saved) {
+    const answers = JSON.parse(saved);
+    for (const [id, value] of Object.entries(answers)) {
+      const textarea = document.getElementById(id);
+      if (textarea && value) {
+        textarea.value = value;
+        const countDiv = document.getElementById('count' + id.substring(1));
+        if (countDiv) {
+          countDiv.textContent = `${value.length} caractères`;
+        }
+      }
+    }
+  }
+}
+
+document.getElementById('quiz-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+
+  const answers = {};
+  allInputs.forEach(textarea => {
+    answers[textarea.id] = textarea.value;
+  });
+
+  // Save to localStorage with timestamp
+  const submission = {
+    date: new Date().toLocaleString('fr-FR'),
+    answers: answers
+  };
+
+  localStorage.setItem(`${QUIZ_ID}_submission`, JSON.stringify(submission));
+
+  // Display results
+  document.getElementById('quiz-form').style.display = 'none';
+  document.getElementById('result').style.display = 'block';
+
+  displayAnswersPreview(answers);
+});
+
+function displayAnswersPreview(answers) {
+  const questions = [
+    { title: "Q1 - Produit en Croix", sections: ['q1_method', 'q1_calc', 'q1_answer'], labels: ['Méthode', 'Calculs', 'Réponse'] },
+    { title: "Q2 - Coefficient", sections: ['q2_method', 'q2_calc', 'q2_answer'], labels: ['Méthode', 'Calculs', 'Réponse'] },
+    { title: "Q3 - Tableau", sections: ['q3_method', 'q3_calc', 'q3_answer1', 'q3_answer2'], labels: ['Tableau', 'Calculs', 'Pour 3h', 'Pour 5h'] },
+    { title: "Q4 - Passage à l'Unité", sections: ['q4_step1', 'q4_step2', 'q4_answer'], labels: ['Étape 1', 'Étape 2', 'Réponse'] },
+    { title: "Q5 - Énergie de Pesanteur", sections: ['q5_method', 'q5_calc', 'q5_answer1', 'q5_answer2'], labels: ['Tableau', 'Calculs', 'Pour 3m', 'Pour 4m'] }
+  ];
+
+  let preview = '';
+  questions.forEach(q => {
+    preview += `<div class="answer-item">`;
+    preview += `<div class="answer-question">${q.title}</div>`;
+    q.sections.forEach((sectionId, idx) => {
+      const value = answers[sectionId] || '(pas de réponse)';
+      preview += `
+        <div class="answer-section">
+          <div class="answer-section-title">${q.labels[idx]}</div>
+          <div class="answer-text">${value}</div>
+        </div>
+      `;
+    });
+    preview += `</div>`;
+  });
+
+  document.getElementById('preview').innerHTML = preview;
+}
+
+function downloadAnswers() {
+  const submission = JSON.parse(localStorage.getItem(`${QUIZ_ID}_submission`) || '{}');
+  const answers = submission.answers || {};
+
+  const questions = [
+    {
+      num: "Q1",
+      title: "Produit en Croix - Conversion Chimique",
+      context: "2 kg de combustible produit 8000 joules. Combien pour 5 kg?",
+      sections: [
+        { label: "Méthode utilisée", id: 'q1_method' },
+        { label: "Calculs détaillés", id: 'q1_calc' },
+        { label: "Réponse finale", id: 'q1_answer' }
+      ]
+    },
+    {
+      num: "Q2",
+      title: "Coefficient - Énergie Brûlée",
+      context: "20 minutes = 200 calories. Combien pour 60 minutes?",
+      sections: [
+        { label: "Méthode utilisée", id: 'q2_method' },
+        { label: "Calculs détaillés", id: 'q2_calc' },
+        { label: "Réponse finale", id: 'q2_answer' }
+      ]
+    },
+    {
+      num: "Q3",
+      title: "Tableau - Ampoule Électrique",
+      context: "1h = 0.1 kWh. Complète pour 3h et 5h.",
+      sections: [
+        { label: "Tableau et coefficient", id: 'q3_method' },
+        { label: "Calculs", id: 'q3_calc' },
+        { label: "Réponse pour 3h", id: 'q3_answer1' },
+        { label: "Réponse pour 5h", id: 'q3_answer2' }
+      ]
+    },
+    {
+      num: "Q4",
+      title: "Passage à l'Unité - Radiateur",
+      context: "1500 watts pour 4h. Combien pour 10h?",
+      sections: [
+        { label: "Consommation par heure", id: 'q4_step1' },
+        { label: "Multiplication pour 10h", id: 'q4_step2' },
+        { label: "Réponse finale", id: 'q4_answer' }
+      ]
+    },
+    {
+      num: "Q5",
+      title: "Énergie de Pesanteur",
+      context: "1m = 50J, 2m = 100J. Complète pour 3m et 4m.",
+      sections: [
+        { label: "Tableau et coefficient", id: 'q5_method' },
+        { label: "Calculs détaillés", id: 'q5_calc' },
+        { label: "Réponse pour 3m", id: 'q5_answer1' },
+        { label: "Réponse pour 4m", id: 'q5_answer2' }
+      ]
+    }
+  ];
+
+  let content = `QUIZ INTERDISCIPLINAIRE - ÉNERGIE & PROPORTIONNALITÉ\n`;
+  content += `====================================================\n\n`;
+  content += `Nom/Prénom: Selma\n`;
+  content += `Date: ${submission.date || new Date().toLocaleString('fr-FR')}\n\n`;
+  content += `====================================================\n\n`;
+
+  questions.forEach(q => {
+    content += `${q.num} - ${q.title}\n`;
+    content += `Contexte: ${q.context}\n`;
+    content += `---\n`;
+    q.sections.forEach(section => {
+      const answer = answers[section.id] || '(pas de réponse)';
+      content += `\n${section.label}:\n${answer}\n`;
+    });
+    content += `\n====================================================\n\n`;
+  });
+
+  content += `Fin du quiz - À vérifier ensemble!\n`;
+
+  // Create and download file
+  const blob = new Blob([content], {type: 'text/plain; charset=utf-8'});
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${QUIZ_ID}_Selma_${new Date().getTime()}.txt`;
+  a.click();
+  window.URL.revokeObjectURL(url);
+}
+</script>
+
+</body>
+</html>
