@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Quiz Moyen - Conversion d'Énergie</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --pink-deep:    #e8628a;
+      --pink-mid:     #f093b0;
+      --pink-light:   #fcd9e7;
+      --pink-blush:   #fff0f5;
+      --rose:         #f7c5d5;
+      --text-dark:    #3d1a2b;
+      --text-mid:     #7a4460;
+      --text-soft:    #c48aa8;
+      --white:        #fffbfc;
+      --card-border:  #f5c8db;
+    }
+    html{scroll-behavior:smooth;}
+    body{font-family:'Nunito',sans-serif;background:var(--pink-blush);color:var(--text-dark);min-height:100vh;position:relative;overflow-x:hidden;}
+    body::before{
+      content:'';
+      position:fixed;
+      inset:0;
+      background-image:
+        radial-gradient(ellipse 60% 40% at 15% 20%, rgba(248,180,210,0.35) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 60% at 85% 75%, rgba(244,155,195,0.25) 0%, transparent 55%);
+      pointer-events:none;
+      z-index:0;
+    }
+    nav{display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:56px;border-bottom:1px solid var(--card-border);background:var(--white);position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(232,98,138,.07);}
+    .nav-logo{font-family:'Playfair Display',serif;font-size:20px;font-weight:600;color:var(--pink-deep);text-decoration:none;letter-spacing:-0.5px;}
+    .nav-right{display:flex;align-items:center;gap:24px;}
+    .nav-link{font-family:'Nunito',sans-serif;font-size:14px;font-weight:600;color:var(--text-soft);text-decoration:none;transition:color .2s;}
+    .nav-link:hover{color:var(--pink-deep);}
+    .nav-link.active{color:var(--pink-deep);}
+    .container{max-width:820px;margin:0 auto;padding:40px 20px;position:relative;z-index:1;}
+    .header{text-align:center;margin-bottom:48px;padding-bottom:24px;border-bottom:2px solid var(--card-border);}
+    .header h1{font-family:'Playfair Display',serif;font-size:36px;font-weight:600;color:var(--pink-deep);text-shadow:0 2px 16px rgba(232,98,138,.15);margin-bottom:8px;}
+    .header p{font-family:'Nunito',sans-serif;font-size:13px;color:var(--text-soft);font-weight:500;letter-spacing:0.05em;}
+    .question-block{margin-bottom:40px;padding:24px;background:var(--white);border:1.5px solid var(--card-border);border-radius:8px;box-shadow:0 2px 8px rgba(232,98,138,.07);}
+    .question-num{font-family:'Nunito',sans-serif;font-size:12px;color:var(--pink-mid);text-transform:uppercase;margin-bottom:8px;letter-spacing:.1em;font-weight:700;}
+    .question-text{font-family:'Playfair Display',serif;font-size:18px;font-weight:600;color:var(--text-dark);margin-bottom:16px;line-height:1.4;}
+    .options{display:flex;flex-direction:column;gap:10px;}
+    .option{display:flex;align-items:center;padding:12px 16px;border:1.5px solid var(--card-border);border-radius:6px;cursor:pointer;transition:all .2s;background:var(--white);}
+    .option:hover{background:var(--pink-blush);border-color:var(--pink-mid);}
+    .option input[type="radio"]{margin-right:12px;cursor:pointer;accent-color:var(--pink-deep);}
+    .option label{cursor:pointer;flex:1;font-size:15px;font-family:'Nunito',sans-serif;}
+    .option input[type="radio"]:checked ~ label{font-weight:700;color:var(--pink-deep);}
+    .submit-btn{display:block;width:100%;padding:16px;margin-top:48px;background:var(--pink-deep);color:var(--white);border:none;border-radius:6px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:.08em;text-transform:uppercase;box-shadow:0 4px 12px rgba(232,98,138,.2);}
+    .submit-btn:hover{background:var(--pink-mid);transform:translateY(-2px);box-shadow:0 6px 16px rgba(232,98,138,.3);}
+    .result{margin-top:48px;padding:32px 24px;background:var(--white);border:2px solid var(--pink-mid);border-radius:8px;text-align:center;box-shadow:0 4px 16px rgba(232,98,138,.15);}
+    .result h2{font-family:'Playfair Display',serif;font-size:28px;color:var(--pink-deep);margin-bottom:16px;}
+    .score-display{font-family:'Nunito',sans-serif;font-size:48px;font-weight:700;color:var(--pink-deep);margin:16px 0;}
+    .result p{font-family:'Nunito',sans-serif;font-size:14px;color:var(--text-soft);margin-bottom:8px;}
+    .download-btn{display:inline-block;margin-top:16px;padding:10px 20px;background:var(--pink-deep);color:var(--white);text-decoration:none;border-radius:6px;font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase;transition:all .2s;border:none;cursor:pointer;}
+    .download-btn:hover{background:var(--pink-mid);box-shadow:0 4px 12px rgba(232,98,138,.2);}
+    .restart-btn{background:var(--text-soft);}
+    .restart-btn:hover{background:var(--text-mid);}
+    @media(max-width:600px){
+      .container{padding:20px 16px;}
+      .header h1{font-size:28px;}
+      nav{padding:0 20px;}
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="../../../../index.html">SELMA</a>
+  <div class="nav-right">
+    <a class="nav-link" href="../../../../index.html">Accueil</a>
+    <a class="nav-link active" href="#">Physique 6e</a>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="header">
+    <h1>Quiz Moyen</h1>
+    <p>Conversion d'Énergie - 7 Questions</p>
+  </div>
+
+  <form id="quiz-form">
+    <div class="question-block">
+      <div class="question-num">Question 1</div>
+      <div class="question-text">Quelle forme d'énergie possède un objet qui tombe du haut d'une falaise?</div>
+      <div class="options">
+        <div class="option">
+          <input type="radio" id="q1a" name="q1" value="a">
+          <label for="q1a">Énergie de pesanteur (au départ) et cinétique (en tombant)</label>
+        </div>
+        <div class="option">
+          <input type="radio" id="q1b" name="q1" value="b">
+          <label for="q1b">Seulement l'énergie cinétique</label>
+        </div>
+        <div class="option">
+          <input type="radio" id="q1c" name="q1" value="c">
+          <label for="q1c">Énergie thermique</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-num">Question 2</div>
+      <div class="question-text">Vrai ou Faux? La conversion d'énergie signifie qu'une énergie disparaît.</div>
+      <div class="options">
+        <div class="option">
+          <input type="radio" id="q2a" name="q2" value="a">
+          <label for="q2a">Vrai</label>
+        </div>
+        <div class="option">
+          <input type="radio" id="q2b" name="q2" value="b">
+          <label for="q2b">Faux - l'énergie se transforme</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-num">Question 3</div>
+      <div class="question-text">Quelle est la chaîne énergétique d'une bougie allumée?</div>
+      <div class="options">
+        <div class="option">
+          <input type="radio" id="q3a" name="q3" value="a">
+          <label for="q3a">Énergie chimique → Énergie thermique + lumineuse</label>
+        </div>
+        <div class="option">
+          <input type="radio" id="q3b" name="q3" value="b">
+          <label for="q3b">Énergie cinétique → Énergie thermique</label>
+        </div>
+        <div class="option">
+          <input type="radio" id="q3c" name="q3" value="c">
+          <label for="q3c">Énergie de pesanteur → Énergie chimique</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-num">Question 4</div>
+      <div class="question-text">Rôle d'une flèche énergétique dans une chaîne:</div>
+      <div class="options">
+        <div class="option">
+          <input type="radio" id="q4a" name="q4" value="a">
+          <label for="q4a">Montrer comment l'énergie se transforme d'une forme à l'autre</label>
+        </div>
+        <div class="option">
+          <input type="radio" id="q4b" name="q4" value="b">
+          <label for="q4b">Indiquer la vitesse de transformation</label>
+        </div>
+        <div class="option">
+          <input type="radio" id="q4c" name="q4" value="c">
+          <label for="q4c">Montrer la direction du mouvement</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-num">Question 5</div>
+      <div class="question-text">Un téléphone rechargeable: Quelle énergie est stockée?</div>
+      <div class="options">
+        <div class="option">
+          <input type="radio" id="q5a" name="q5" value="a">
+          <label for="q5a">Énergie chimique</label>
+        </div>
+        <div class="option">
+          <input type="radio" id="q5b" name="q5" value="b">
+          <label for="q5b">Énergie thermique</label>
+        </div>
+        <div class="option">
+          <input type="radio" id="q5c" name="q5" value="c">
+          <label for="q5c">Énergie cinétique</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-num">Question 6</div>
+      <div class="question-text">Différence entre énergie cinétique et énergie de pesanteur:</div>
+      <div class="options">
+        <div class="option">
+          <input type="radio" id="q6a" name="q6" value="a">
+          <label for="q6a">Cinétique = mouvement; Pesanteur = hauteur</label>
+        </div>
+        <div class="option">
+          <input type="radio" id="q6b" name="q6" value="b">
+          <label for="q6b">Cinétique = hauteur; Pesanteur = mouvement</label>
+        </div>
+        <div class="option">
+          <input type="radio" id="q6c" name="q6" value="c">
+          <label for="q6c">Il n'y a pas de différence</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-num">Question 7</div>
+      <div class="question-text">Exemple de conversion d'énergie dans la vie quotidienne:</div>
+      <div class="options">
+        <div class="option">
+          <input type="radio" id="q7a" name="q7" value="a">
+          <label for="q7a">Toutes les réponses sont correctes</label>
+        </div>
+        <div class="option">
+          <input type="radio" id="q7b" name="q7" value="b">
+          <label for="q7b">Évier qui coule</label>
+        </div>
+        <div class="option">
+          <input type="radio" id="q7c" name="q7" value="c">
+          <label for="q7c">Consulter un livre</label>
+        </div>
+      </div>
+    </div>
+
+    <button type="submit" class="submit-btn">Vérifier mes réponses</button>
+  </form>
+
+  <div id="result" class="result" style="display:none;">
+    <h2>Résultats</h2>
+    <div class="score-display"><span id="score">0</span>/7</div>
+    <p id="score-percent"></p>
+    <button class="download-btn" onclick="downloadScore('Quiz Moyen - Conversion d\'Énergie')">Télécharger mon score</button>
+    <button class="submit-btn restart-btn" onclick="location.reload()" style="margin-top:16px;">Recommencer le quiz</button>
+  </div>
+</div>
+
+<script>
+const QUIZ_ID = "quiz_moyen_conversion_energie";
+const CORRECT_ANSWERS = {q1:'a', q2:'b', q3:'a', q4:'a', q5:'a', q6:'a', q7:'a'};
+
+document.getElementById('quiz-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+
+  let score = 0;
+  for (const [question, correctAnswer] of Object.entries(CORRECT_ANSWERS)) {
+    const selected = document.querySelector(`input[name="${question}"]:checked`);
+    if (selected && selected.value === correctAnswer) {
+      score++;
+    }
+  }
+
+  const total = Object.keys(CORRECT_ANSWERS).length;
+  const percent = Math.round((score / total) * 100);
+
+  document.getElementById('quiz-form').style.display = 'none';
+  document.getElementById('result').style.display = 'block';
+  document.getElementById('score').textContent = score;
+  document.getElementById('score-percent').textContent = `${percent}% de réussite`;
+
+  // Save to localStorage
+  const scores = JSON.parse(localStorage.getItem('scores_' + QUIZ_ID) || '[]');
+  scores.push({
+    score: score,
+    total: total,
+    date: new Date().toLocaleString('fr-FR')
+  });
+  localStorage.setItem('scores_' + QUIZ_ID, JSON.stringify(scores));
+});
+
+function downloadScore(title) {
+  const scores = JSON.parse(localStorage.getItem('scores_' + QUIZ_ID) || '[]');
+  const lastScore = scores[scores.length - 1];
+
+  let content = `Quiz: ${title}\n`;
+  content += `Date: ${lastScore.date}\n`;
+  content += `Score: ${lastScore.score}/${lastScore.total}\n`;
+  content += `Pourcentage: ${Math.round((lastScore.score/lastScore.total)*100)}%\n`;
+
+  const blob = new Blob([content], {type: 'text/plain'});
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${QUIZ_ID}_${new Date().getTime()}.txt`;
+  a.click();
+}
+</script>
+
+</body>
+</html>
